@@ -1,0 +1,274 @@
+{
+  "_note": "Synthetic defaults. All values are illustrative assumptions unless listed in verified_facts.csv. Units are in the key names or in assumptions.csv.",
+  "seed": 42,
+  "horizon_days": 1,
+  "max_horizon_days": 7,
+  "start_date": "2025-06-15",
+  "reporting_interval_min": 15,
+
+  "hotel": {
+    "rooms": 533,
+    "floors": 13,
+    "occupancy": 0.80
+  },
+
+  "population": {
+    "group_sizes": [1, 2, 3, 4, 5],
+    "group_size_probs": [0.10, 0.40, 0.25, 0.20, 0.05],
+    "park_intention": 0.75,
+    "external_day_visitors": 0,
+    "couple_share_of_size2": 0.80,
+    "family_share_of_size3plus": 0.75,
+    "senior_share_of_adults": 0.10,
+    "young_child_share_of_children": 0.45,
+    "budget_vnd_per_person_median": 700000,
+    "budget_lognormal_sigma": 0.4,
+    "queue_tolerance_min_median": 30,
+    "queue_tolerance_lognormal_sigma": 0.35,
+    "recommendation_acceptance_scale": 1.0,
+    "wake_mean_hhmm": "07:15", "wake_sd_min": 50,
+    "park_departure_mean_hhmm": "09:45", "park_departure_sd_min": 45,
+    "park_return_mean_hhmm": "18:00", "park_return_sd_min": 90,
+    "bedtime_mean_hhmm": "22:30", "bedtime_sd_min": 45,
+    "breakfast_probability": 0.9,
+    "preference_noise_sd": 0.2,
+    "preference_means": {
+      "solo":    {"thrill": 0.60, "family": 0.25, "indoor": 0.50, "water": 0.50, "show": 0.40, "pool": 0.50, "spa": 0.25, "gym": 0.20, "kids": 0.00},
+      "couple":  {"thrill": 0.50, "family": 0.30, "indoor": 0.50, "water": 0.50, "show": 0.60, "pool": 0.60, "spa": 0.40, "gym": 0.15, "kids": 0.00},
+      "family":  {"thrill": 0.30, "family": 0.80, "indoor": 0.60, "water": 0.60, "show": 0.60, "pool": 0.60, "spa": 0.20, "gym": 0.10, "kids": 0.70},
+      "friends": {"thrill": 0.70, "family": 0.30, "indoor": 0.50, "water": 0.70, "show": 0.50, "pool": 0.50, "spa": 0.30, "gym": 0.20, "kids": 0.00}
+    }
+  },
+
+  "needs": {
+    "_scale": "hunger, fatigue, heat_discomfort are bounded 0-100 (synthetic index). Rates are points per minute.",
+    "hunger_rate_per_min": 0.11,
+    "meal_hunger_reduction": 70,
+    "initial_hunger_at_wake": 55,
+    "fatigue_rates_per_min": {
+      "IN_ROOM": -0.5, "FINISHED": -0.5, "EATING": -0.15, "TRAVELING": 0.12, "QUEUING": 0.06,
+      "VISITING": 0.08, "RESTING": -0.6, "WAITING_TRANSPORT": 0.04
+    },
+    "overnight_fatigue_after_sleep": 10,
+    "heat_gain_per_min_per_degC_above_26": 0.04,
+    "heat_recovery_indoor_per_min": 0.6,
+    "heat_recovery_shaded_per_min": 0.2,
+    "water_ride_heat_relief": 10
+  },
+
+  "decision": {
+    "temperature": 0.12,
+    "weights": {
+      "preference_match": 1.0,
+      "activity_interest": 0.4,
+      "hunger_relief": 1.6,
+      "fatigue_relief": 1.3,
+      "heat_relief": 0.6,
+      "travel_penalty_per_30min": 0.5,
+      "expected_wait_penalty_per_tolerance": 0.9,
+      "price_penalty": 0.6,
+      "repeat_visit_penalty_per_visit": 0.45,
+      "schedule_conflict_penalty_per_hour": 1.0,
+      "time_pressure_per_hour": 0.6,
+      "go_park_base": 1.0,
+      "room_rest_base": 0.1
+    },
+    "posted_wait_noise_sigma": 0.25,
+    "balk_factor": 1.3,
+    "abandon_probability": 0.75,
+    "excluded_after_abandon_min": 60,
+    "latest_park_departure_hhmm": "15:00",
+    "force_end_day_hhmm": "23:30"
+  },
+
+  "transport": {
+    "capacity_persons": 45,
+    "interval_min": 15,
+    "ride_min": 15,
+    "hotel_first_departure_hhmm": "08:00",
+    "hotel_last_departure_hhmm": "20:30",
+    "park_first_departure_hhmm": "08:30",
+    "park_last_departure_hhmm": "22:00",
+    "include_transport_energy": false,
+    "kwh_per_trip": 6.0
+  },
+
+  "network": {
+    "nodes": {
+      "ROOMS":            {"label_vi": "Khối phòng (533)",     "zone": "hotel", "x": 8,  "y": 82},
+      "LOBBY":            {"label_vi": "Sảnh & lễ tân",         "zone": "hotel", "x": 20, "y": 62},
+      "HOTEL_RESTAURANT": {"label_vi": "Nhà hàng khách sạn",    "zone": "hotel", "x": 6,  "y": 44},
+      "POOL":             {"label_vi": "Hồ bơi / thư giãn",     "zone": "hotel", "x": 24, "y": 32},
+      "HOTEL_STOP":       {"label_vi": "Điểm đón KS",           "zone": "hotel", "x": 36, "y": 60},
+      "SPA":              {"label_vi": "Spa",                   "zone": "hotel", "x": 14, "y": 72},
+      "GYM":              {"label_vi": "Phòng gym",             "zone": "hotel", "x": 20, "y": 76},
+      "KIDS_CLUB":        {"label_vi": "Câu lạc bộ trẻ em",     "zone": "hotel", "x": 26, "y": 72},
+      "PARK_STOP":        {"label_vi": "Cổng & điểm đón công viên", "zone": "park", "x": 58, "y": 60},
+      "PARK_RESTAURANT":  {"label_vi": "Nhà hàng công viên",    "zone": "park",  "x": 74, "y": 60},
+      "FAMILY":           {"label_vi": "Trò chơi gia đình",     "zone": "park",  "x": 72, "y": 84},
+      "THRILL":           {"label_vi": "Trò chơi cảm giác mạnh","zone": "park",  "x": 92, "y": 84},
+      "INDOOR":           {"label_vi": "Khu trong nhà",         "zone": "park",  "x": 90, "y": 62},
+      "REST_A":           {"label_vi": "Khu nghỉ có điều hòa",  "zone": "park",  "x": 94, "y": 40},
+      "WATER":            {"label_vi": "Trò chơi nước",         "zone": "park",  "x": 82, "y": 30},
+      "REST_B":           {"label_vi": "Khu nghỉ có mái che",   "zone": "park",  "x": 70, "y": 42},
+      "SHOW":             {"label_vi": "Sân khấu biểu diễn",    "zone": "park",  "x": 62, "y": 26}
+    },
+    "walk_edges_min": [
+      ["ROOMS", "LOBBY", 4], ["LOBBY", "HOTEL_RESTAURANT", 3], ["LOBBY", "POOL", 4],
+      ["LOBBY", "HOTEL_STOP", 3], ["HOTEL_RESTAURANT", "POOL", 3],
+      ["LOBBY", "SPA", 2], ["LOBBY", "GYM", 2], ["LOBBY", "KIDS_CLUB", 2],
+      ["PARK_STOP", "PARK_RESTAURANT", 5], ["PARK_RESTAURANT", "FAMILY", 5], ["PARK_RESTAURANT", "INDOOR", 4],
+      ["PARK_RESTAURANT", "REST_B", 3], ["FAMILY", "THRILL", 6], ["INDOOR", "THRILL", 7],
+      ["INDOOR", "REST_A", 3], ["REST_A", "WATER", 5], ["WATER", "REST_B", 4],
+      ["REST_B", "SHOW", 3], ["SHOW", "PARK_STOP", 6], ["WATER", "SHOW", 5]
+    ],
+    "outdoor_walking": true
+  },
+
+  "facilities": {
+    "HOTEL_RESTAURANT": {"kind": "restaurant", "node": "HOTEL_RESTAURANT", "label_vi": "Nhà hàng khách sạn",
+      "capacity_persons": 260, "windows": [["06:00", "10:30"], ["11:30", "14:30"], ["18:00", "22:00"]],
+      "duration_min_mean": 55, "duration_min_sd": 12, "breakfast_duration_min_mean": 35,
+      "price_vnd_per_person": 300000, "breakfast_price_vnd_per_person": 0, "indoor": true,
+      "energy": {"base_kw_open": 30, "kitchen_kw_open": 45, "base_kw_closed": 8, "kwh_per_cover": 0.3}},
+    "POOL": {"kind": "continuous", "node": "POOL", "label_vi": "Hồ bơi", "activity": "pool",
+      "capacity_persons": 220, "windows": [["07:00", "19:00"]], "duration_min_mean": 75, "duration_min_sd": 20,
+      "indoor": false, "energy": {}},
+    "SPA": {"kind": "continuous", "node": "SPA", "label_vi": "Spa", "activity": "spa", "hotel_amenity": true, "once_per_day": true, "interest_scale": 0.5,
+      "capacity_persons": 24, "windows": [["09:00", "21:00"]], "duration_min_mean": 75, "duration_min_sd": 15,
+      "price_vnd_per_person": 800000, "indoor": true, "rests": true,
+      "energy": {"base_kw_open": 15, "kw_per_visitor": 0.4}},
+    "GYM": {"kind": "continuous", "node": "GYM", "label_vi": "Phòng gym", "activity": "gym", "hotel_amenity": true, "once_per_day": true, "interest_scale": 0.3,
+      "capacity_persons": 30, "windows": [["06:00", "22:00"]], "duration_min_mean": 45, "duration_min_sd": 10,
+      "indoor": true, "heat_relief": 0.0, "energy": {"base_kw_open": 8, "kw_per_visitor": 0.15}},
+    "KIDS_CLUB": {"kind": "continuous", "node": "KIDS_CLUB", "label_vi": "Câu lạc bộ trẻ em", "activity": "kids", "once_per_day": true,
+      "hotel_amenity": true, "requires_children": true,
+      "capacity_persons": 40, "windows": [["08:00", "18:00"]], "duration_min_mean": 60, "duration_min_sd": 15,
+      "indoor": true, "energy": {"base_kw_open": 6, "kw_per_visitor": 0.05}},
+    "THRILL": {"kind": "batch", "node": "THRILL", "label_vi": "Trò chơi cảm giác mạnh", "activity": "thrill",
+      "capacity_persons": 24, "cycle_min": 4, "windows": [["09:00", "21:00"]], "no_young_children": true,
+      "indoor": false, "energy": {"standby_kw": 18, "kwh_per_cycle": 5.0, "kwh_per_rider": 0.02}},
+    "FAMILY": {"kind": "batch", "node": "FAMILY", "label_vi": "Trò chơi gia đình", "activity": "family",
+      "capacity_persons": 32, "cycle_min": 6, "windows": [["09:00", "21:00"]],
+      "indoor": false, "energy": {"standby_kw": 6, "kwh_per_cycle": 1.2, "kwh_per_rider": 0.01}},
+    "WATER": {"kind": "batch", "node": "WATER", "label_vi": "Trò chơi nước", "activity": "water",
+      "capacity_persons": 16, "cycle_min": 3, "windows": [["09:30", "18:30"]],
+      "indoor": false, "water_relief": true, "energy": {"standby_kw": 40, "kwh_per_cycle": 0.8, "kwh_per_rider": 0.01}},
+    "INDOOR": {"kind": "continuous", "node": "INDOOR", "label_vi": "Khu trải nghiệm trong nhà", "activity": "indoor",
+      "capacity_persons": 120, "windows": [["09:00", "21:00"]], "duration_min_mean": 20, "duration_min_sd": 4,
+      "indoor": true,
+      "energy": {"standby_kw": 15, "cooling_ua_kw_per_degC": 6.0, "cooling_setpoint_c": 24,
+                 "internal_kw_per_visitor": 0.12, "equipment_heat_kw": 15, "cop": 3.0, "precool_min": 30}},
+    "SHOW": {"kind": "show", "node": "SHOW", "label_vi": "Chương trình biểu diễn", "activity": "show",
+      "capacity_persons": 500, "show_times": ["11:00", "14:00", "16:30", "19:30"], "duration_min": 30,
+      "doors_open_before_min": 30, "windows": [["09:00", "21:00"]], "indoor": false,
+      "energy": {"standby_kw": 8, "performance_kw": 70}},
+    "PARK_RESTAURANT": {"kind": "restaurant", "node": "PARK_RESTAURANT", "label_vi": "Nhà hàng công viên",
+      "capacity_persons": 220, "windows": [["10:30", "20:30"]], "duration_min_mean": 45, "duration_min_sd": 12,
+      "price_vnd_per_person": 200000, "indoor": true,
+      "energy": {"base_kw_open": 25, "kitchen_kw_open": 35, "base_kw_closed": 5, "kwh_per_cover": 0.3}},
+    "REST_A": {"kind": "rest", "node": "REST_A", "label_vi": "Khu nghỉ có điều hòa", "capacity_persons": 80,
+      "windows": [["09:00", "21:00"]], "duration_min_mean": 25, "duration_min_sd": 8, "indoor": true,
+      "energy": {"base_kw_open": 12}},
+    "REST_B": {"kind": "rest", "node": "REST_B", "label_vi": "Khu nghỉ có mái che", "capacity_persons": 100,
+      "windows": [["09:00", "21:00"]], "duration_min_mean": 25, "duration_min_sd": 8, "indoor": false, "shaded": true,
+      "energy": {"base_kw_open": 2}}
+  },
+  "closing_grace_min": 30,
+  "fill_in_anti_starvation_min": 10,
+
+  "weather": {
+    "_note": "Synthetic smooth diurnal profile, not measured site data.",
+    "mean_c": 29.0, "amplitude_c": 3.5, "peak_hour": 14.0, "day_offset_sd_c": 0.6,
+    "solar_start_hour": 6.0, "solar_end_hour": 18.0
+  },
+
+  "rooms": {
+    "thermal_capacitance_kwh_per_c": 0.8,
+    "ua_kw_per_c": 0.05,
+    "solar_gain_peak_kw": 0.3,
+    "cooling_capacity_kw_thermal": 3.5,
+    "cop": 3.2,
+    "fan_kw": 0.04,
+    "deadband_c": 1.0,
+    "person_heat_kw": 0.1,
+    "guest_setpoints_c": [23, 24, 25, 26],
+    "guest_setpoint_probs": [0.15, 0.35, 0.35, 0.15],
+    "staff_cleaning_setpoint_c": 25,
+    "unsold_initial_temp_c": [26.5, 29.0],
+    "keycard_bypass_share": 0.25,
+    "loads_kw": {
+      "occupied_awake_light": 0.18, "occupied_awake_plug": 0.10,
+      "occupied_asleep_light": 0.01, "occupied_asleep_plug": 0.05,
+      "cleaning_light_plug": 0.25,
+      "bypass_unoccupied_light": 0.12, "bypass_unoccupied_plug": 0.06,
+      "sold_unoccupied_standby": 0.03,
+      "unsold_standby": 0.02
+    },
+    "comfort_threshold_c": 27.0,
+    "hot_water_kwh_per_person_shower": 0.8
+  },
+
+  "hotel_common": {
+    "public_kw_day": 160, "public_kw_night": 110, "day_start_hhmm": "06:00", "day_end_hhmm": "23:00",
+    "temp_sensitivity_kw_per_c_above_28": 5.0,
+    "exterior_lighting_kw": 30, "exterior_on_hhmm": "18:00", "exterior_off_hhmm": "06:00",
+    "pool_pumps_kw": 15
+  },
+
+  "park_common": {
+    "open_kw": 25, "pathway_lighting_kw": 45, "lighting_on_hhmm": "18:00", "lighting_after_close_min": 60,
+    "park_open_hhmm": "09:00", "park_close_hhmm": "21:00"
+  },
+
+  "housekeeping": {
+    "workers": 26,
+    "shift_start_hhmm": "08:00",
+    "shift_end_hhmm": "16:30",
+    "stayover_clean_min_mean": 28, "stayover_clean_min_sd": 5,
+    "between_rooms_min": 3,
+    "dnd_probability": 0.06,
+    "towel_request_base_prob": 0.6,
+    "linen_request_base_prob": 0.25,
+    "conservation_effect_on_request": 0.5,
+    "towel_kg_per_person": 0.8,
+    "linen_kg_per_room": 3.0
+  },
+
+  "laundry": {
+    "machines": 3,
+    "capacity_kg": 50,
+    "cycle_min": 90,
+    "kwh_per_full_batch": 20,
+    "fixed_energy_fraction": 0.75,
+    "standby_kw": 4,
+    "open_hhmm": "07:00",
+    "last_start_hhmm": "20:30",
+    "close_hhmm": "22:00",
+    "baseline_flush_times": ["11:00", "15:00", "19:00"],
+    "min_partial_kg": 10,
+    "coordinated_flush_times": ["19:00"]
+  },
+
+  "emissions": {
+    "factor_kg_per_kwh": 0.60,
+    "_note": "Illustrative demonstration factor, NOT an official Vietnamese grid factor.",
+    "time_varying_factor_csv": null
+  },
+
+  "policies": {
+    "occupancy_hvac": false,
+    "housekeeping_coordination": false,
+    "park_recommendations": false,
+    "ride_dispatch": false
+  },
+
+  "policy_params": {
+    "occupancy_hvac": {"setback_c": 28.0, "precool_lead_min": 45, "prediction_error_sd_min": 45,
+                        "hotel_trip_default_min": 60},
+    "housekeeping_coordination": {"towel_nudge_reduction": 0.7, "keep_setback_while_cleaning": true,
+                                   "min_predicted_absence_min": 40},
+    "park_recommendations": {"trigger_wait_min": 15, "min_improvement_min": 10},
+    "ride_dispatch": {"min_load_factor": 0.6, "max_hold_min": 3}
+  }
+}

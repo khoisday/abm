@@ -1,0 +1,55 @@
+id,category,parameter,value,unit,basis
+A01,scope,Hotel rooms,533,rooms,"Project brief requirement; also self-reported in the draft assessment workbook (Q1.1). Not independently verified."
+A02,scope,Occupancy (default),0.80,share,"Project brief default. Draft workbook self-reports 53% (Q1.3), and 132776 room-nights/yr (Q1.2) implies 68.2%; inconsistent, not used for calibration."
+A03,scope,Guest stay,whole horizon,-,"No check-in/check-out within the horizon; housekeeping cleans stayover rooms only."
+A04,scope,External day visitors,0,persons,Project brief: disabled initially.
+A05,population,Group-size probabilities 1..5,"0.10, 0.40, 0.25, 0.20, 0.05",share,Project brief default.
+A06,population,Composition,"size 2: 80% couple / 20% adult+child; size 3-5: 75% family (2 adults; 2-3 if size 5) / 25% friends",-,Synthetic.
+A07,population,Seniors among adults / young children among children,0.10 / 0.45,share,Synthetic; young children (<8 y) are ineligible for the thrill ride and the group stays together.
+A08,population,Preference vector,category mean + N(0;0.2) clipped to [0.02;1],0-1 index,"Synthetic; varies within categories. Not a psychological measurement."
+A09,population,Budget,700000 VND/person × lognormal(σ=0.4),VND,Synthetic.
+A10,population,Queue tolerance,median 30 × lognormal(σ=0.35); ×0.8 with young children; clipped 8-120,min,Synthetic.
+A11,population,Recommendation acceptance,clip(0.15 + 0.5·conservation + N(0;0.1)),probability,Synthetic. Policy availability ≠ acceptance.
+A12,schedule,Wake / park departure / park return / bedtime means,"07:15 / 09:45 / 18:00 / 22:30 (sd 50/45/90/45 min)",clock,Synthetic. Agents see only their own intentions plus posted waits.
+A13,needs,Hunger rate / meal relief,0.11 per min / -70,points (0-100),Synthetic bounded index.
+A14,needs,Fatigue rates by state,"walk +0.12, queue +0.06, visit +0.08, rest -0.6, room -0.5 per min",points/min,Synthetic bounded index.
+A15,needs,Heat discomfort,"+0.04 per min per °C above 26 outdoors; -0.6/min indoors; -0.2/min shade; -10 after water ride",points,Synthetic bounded index.
+A16,decision,Utility weights and softmax temperature,see config/defaults.json decision.weights; T=0.12,-,Synthetic; logged per decision.
+A17,decision,Posted-wait information,queue persons / nominal throughput × lognormal noise σ=0.25,min,Agents do not know future queues.
+A18,decision,Balking / abandonment,balk if observed wait > 1.3 × tolerance; abandon with p=0.75 at tolerance,-,Synthetic.
+A19,network,Walking times,see network.walk_edges_min,min,"Synthetic schematic. Not measured; layout of the 3D map is illustrative only."
+A20,transport,Hotel–park shuttle,"45 persons, every 15 min, 15 min ride, 08:00-20:30 / 08:30-22:00, extra on-demand trips until 24:00",-,"Synthetic. Mainland access (boat / cable car) is not modelled."
+A21,transport,Transport electricity,excluded by default (6 kWh/trip if enabled),kWh,Boundary shown on dashboard.
+A22,facilities,Capacities / cycles / hours,see facilities in config/defaults.json,-,"Synthetic generic attractions; real capacities, hours and names not verified."
+A23,facilities,Queue discipline,FIFO with fill-in by smaller groups; no fill-in past a group waiting ≥10 min,-,Departure from strict FIFO to avoid empty seats while preventing starvation.
+A24,facilities,Closing,"no new queue joins after closing; queued guests served during 30-min grace, then rejected and recorded",-,Synthetic.
+A25,weather,Outdoor temperature,29 ± 3.5 °C diurnal cosine (peak 14:00) + daily offset N(0;0.6),°C,Synthetic smooth profile; not measured site data.
+A26,rooms,Thermal model,"C=0.8 kWh/°C, UA=0.05 kW/°C, solar peak 0.3 kW, person 0.1 kW, 1-min explicit Euler (dt·UA/C≈0.001, stable)",-,Synthetic first-order model.
+A27,rooms,Room HVAC,"3.5 kW thermal, COP 3.2, fan 0.04 kW, deadband 1 °C",-,Synthetic.
+A28,rooms,Guest setpoints,"23/24/25/26 °C with p=0.15/0.35/0.35/0.15",°C,"Consistent with draft Excel Q2.18 policy 24-26 °C; some guests choose 23 °C."
+A29,rooms,Baseline keycard control,"HVAC off when guests are away, except 25% bypassed rooms that keep running",-,"Plausible baseline consistent with draft Excel Q2.14 (76-100% rooms with automatic HVAC sensors). Not deliberately inefficient."
+A30,rooms,Lighting and plug loads,see rooms.loads_kw,kW,Synthetic (LED per Q2.13).
+A31,rooms,Unsold rooms,"HVAC off, 0.02 kW standby; temperature floats",-,Vacant rooms stay in accounting.
+A32,rooms,Comfort threshold,27,°C,Occupied room-hours and degree-hours above this are reported.
+A33,rooms,Hot water,0.8 kWh electric per person per shower; 2 showers/day,kWh,Synthetic heat-pump assumption.
+A34,hotel,Common areas,"160 kW day / 110 kW night + 5 kW/°C above 28 °C, exterior lighting 30 kW, pool pumps 15 kW",kW,Synthetic aggregated load.
+A35,hotel,Restaurant,"30 kW base + 45 kW kitchen while open, 8 kW closed, 0.3 kWh/cover",-,Synthetic.
+A36,park,Attraction electricity,"standby while open (+30 min checks); fixed kWh per operated cycle + small per-rider term",-,Ride electricity does not scale linearly with riders.
+A37,park,Indoor attraction cooling,"UA 6 kW/°C to 24 °C, 0.12 kW/visitor, 15 kW equipment heat, COP 3",-,Synthetic.
+A38,park,Park common,"25 kW while open, 45 kW pathway lighting 18:00 to close+60, rest areas 12 kW / 2 kW",kW,Synthetic.
+A39,housekeeping,Staffing,"26 attendants (~16 occupied rooms each at 80%), 08:00-16:30, 28±5 min per stayover + 3 min move",-,"Synthetic; first draft used 22 and left 54 rooms uncleaned for capacity, judged implausible as a baseline."
+A40,housekeeping,DND,6% of rooms per day,share,Synthetic.
+A41,housekeeping,Towel/linen requests,"towels p=0.6×(1-0.5×conservation); linen p=0.25; 0.8 kg/person, 3 kg/room",-,"Draft Excel Q2.42: towels/linen only replaced on request. Request rate is synthetic."
+A42,laundry,Machines,"3 × 50 kg, 90 min, 20 kWh per full batch (75% fixed), 4 kW standby 07:00-22:00",-,Synthetic electric washer+dryer.
+A43,laundry,Baseline dispatch,full loads + partial flushes ≥10 kg at 11:00/15:00/19:00,-,Synthetic plausible practice.
+A44,emissions,Emission factor,0.60,kg CO2e/kWh,Illustrative demonstration value; NOT an official Vietnamese factor.
+A45,policy,Occupancy HVAC,"setback 28 °C when away (all rooms, incl. former bypass); pre-cool 45 min before predicted return; prediction error sd 45 min",-,Uses intended return + error; never the actual future return.
+A46,policy,Housekeeping coordination,"prioritise rooms of guests in the park; HVAC left off/setback while cleaning; towel nudge cuts request probability by 70% if accepted; one flush at 19:00",-,Synthetic.
+A47,policy,Park recommendations,"offered when posted wait ≥15 min and an alternative is ≥10 min shorter; guest may refuse",-,Synthetic.
+A48,policy,Ride dispatch,"hold a departure until ≥60% load or the oldest waiting group has waited 3 min; never near closing",-,Safety loads (standby) unchanged.
+A49,accounting,Occupied room-nights,sold rooms × nights (census at 23:59 each night),-,No check-in/out in horizon.
+A50,accounting,Energy beyond the horizon,"energy of cycles/batches running past the horizon is reported as spillover, not in-horizon",-,Prevents apparent savings from postponement.
+A51,facilities,Hotel amenities,"Spa 24 persons 09:00-21:00 75±15 min 800000 VND/person; gym 30 persons 06:00-22:00 45±10 min; kids club 40 persons 08:00-18:00 60±15 min (groups with children only)",-,"Synthetic. At most one visit per amenity per group per day; interest scale spa 0.5 / gym 0.3."
+A52,energy,Amenity electricity,"spa 15 kW + 0.4 kW/visitor; gym 8 kW + 0.15 kW/visitor; kids club 6 kW + 0.05 kW/visitor while open",kW,Synthetic; reported as end use hotel_wellness.
+A53,decision,Room-rest base utility,+0.1,utility,"Resting in the room is a normal mid-day choice; earlier value -0.2 made indoor amenities the default for hotel-staying groups."
+A54,population,Amenity preferences,"spa 0.20-0.40, gym 0.10-0.20, kids club 0.70 (families) by group type, ± noise 0.2",0-1 index,Synthetic.

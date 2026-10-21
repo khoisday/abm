@@ -1,0 +1,26 @@
+# source data (not published; add locally to reproduce input inspection)
+assessment_answers_categorized.xlsx
+*_15min_NREL.csv
+image.png
+*.webp
+
+# generated outputs (re-create with run_simulation.py); keep the paired-comparison tables used by build_site.py
+outputs/*
+!outputs/scenario_summary.csv
+!outputs/per_seed_comparison.csv
+
+# static site build (published from the gh-pages branch)
+site/
+.vercel/
+
+# python / tooling
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# editor lock files
+~$*
+
+# local-only source settings (property name used to read the workbook)
+config/source_data.json

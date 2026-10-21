@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virtual Hotel Monitoring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  // theme before first paint: stored choice, else light (default)
+  try { const t = localStorage.getItem('vhm-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+  :root, :root[data-theme="light"] {
+    color-scheme: light;
+    --page: #f6ead3; --card: #fffdf6; --card-2: #fbf1dc; --frame: #8a4b1e; --frame-2: #6b3714; --frame-3: #c99a5b;
+    --ink: #4a2a12; --ink-2: #7a5a3c; --muted: #9a7d5e; --grid: #efe1c5; --axis: #d9c39b; --accent: #f08a24; --leaf: #3e9e2a;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+    --neutral-1: #ddd5c4; --neutral-2: #a69c88; --div-mid: #f0efec;
+    --seq-0: #eef4fc; --seq-1: #9ec5f4; --seq-2: #3987e5; --seq-3: #1c5cab; --seq-4: #0d366b;
+    --good: #006300; --bad: #d03b3b; --shadow: 0 5px 0 var(--frame-2), 0 12px 26px rgba(60,30,5,.16);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d1430; --card: #18224a; --card-2: #1e2a58; --frame: #3a4a8a; --frame-2: #0a1029; --frame-3: #f6b800;
+    --ink: #f4f6ff; --ink-2: #c4cbea; --muted: #8f9ac4; --grid: #263369; --axis: #3a4a8a; --accent: #f6b800; --leaf: #6cc040;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --neutral-1: #2a3560; --neutral-2: #56608c; --div-mid: #3a3f58;
+    --seq-0: #1f2b5a; --seq-1: #184f95; --seq-2: #2a78d6; --seq-3: #6da7ec; --seq-4: #cde2fb;
+    --good: #0ca30c; --bad: #e66767; --shadow: 0 5px 0 var(--frame-2), 0 14px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--page); color: var(--ink); font-family: "Nunito", system-ui, sans-serif; }
+  body { min-height: 100vh; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 18px 16px 48px; }
+  h1, h2, h3 { font-family: "Baloo 2", system-ui, sans-serif; margin: 0; line-height: 1.1; }
+  .card { background: var(--card); border: 4px solid var(--frame); border-radius: 20px; box-shadow: var(--shadow); padding: 16px 18px; }
+  .hero { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: space-between; }
+  .hero h1 { font-size: 30px; color: var(--accent); }
+  :root[data-theme="light"] .hero h1 { -webkit-text-stroke: 1.2px #7a3e12; paint-order: stroke fill; text-shadow: 0 3px 0 #7a3e12; }
+  .hero .sub { color: var(--ink-2); font-weight: 600; font-size: 13px; margin-top: 4px; }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  label.ctl { display: flex; flex-direction: column; gap: 3px; font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  select, input[type=number] { font: 700 14px "Nunito", sans-serif; color: var(--ink); background: var(--card-2); border: 2px solid var(--frame-3);
+    border-radius: 12px; padding: 7px 10px; min-width: 0; }
+  .iconbtn, .btn { font: 800 13px "Baloo 2", sans-serif; color: var(--ink); background: var(--card-2); border: 2px solid var(--frame-3);
+    border-radius: 12px; padding: 7px 12px; cursor: pointer; box-shadow: 0 3px 0 var(--frame-3); transition: transform .08s, box-shadow .08s; }
+  .iconbtn:active, .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--frame-3); }
+  .iconbtn { display: inline-grid; place-items: center; width: 42px; height: 40px; padding: 0; }
+  .iconbtn svg { width: 20px; height: 20px; }
+  .btn.small { font-size: 12px; padding: 4px 10px; box-shadow: 0 2px 0 var(--frame-3); }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 18px 0; }
+  .tile { background: var(--card); border: 3px solid var(--frame); border-radius: 16px; padding: 10px 12px; box-shadow: 0 4px 0 var(--frame-2); }
+  .tile .l { font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+  .tile .v { font: 800 26px "Baloo 2", sans-serif; color: var(--ink); line-height: 1.15; margin-top: 2px; }
+  .tile .u { font-size: 12px; color: var(--ink-2); font-weight: 600; }
+  .tile .d { font-size: 12px; font-weight: 800; margin-top: 2px; }
+  .d.good { color: var(--good); } .d.bad { color: var(--bad); } .d.flat { color: var(--muted); }
+
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tabs button { font: 800 14px "Baloo 2", sans-serif; color: var(--ink-2); background: var(--card); border: 3px solid var(--frame);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer; box-shadow: 0 3px 0 var(--frame-2); }
+  .tabs button[aria-selected="true"] { color: #fff; background: var(--leaf); border-color: var(--leaf); }
+  :root[data-theme="dark"] .tabs button[aria-selected="true"] { color: #0d1430; background: var(--accent); border-color: var(--accent); }
+  .panel { display: none; } .panel.active { display: block; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 16px; }
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+  .card h2 { font-size: 20px; color: var(--ink); margin-bottom: 4px; }
+  .card .hint { font-size: 12.5px; color: var(--ink-2); font-weight: 600; margin-bottom: 8px; }
+  .chart { width: 100%; height: 340px; }
+  .chart.tall { height: 430px; }
+  .row { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 10px; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .grow { flex: 1 1 260px; }
+  .seg { display: inline-flex; border: 2px solid var(--frame-3); border-radius: 12px; overflow: hidden; }
+  .seg button { font: 800 13px "Baloo 2", sans-serif; background: var(--card-2); color: var(--ink-2); border: 0; padding: 7px 12px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #2a1606; }
+  .chips { display: flex; gap: 8px 14px; flex-wrap: wrap; font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 6px 0 2px; }
+  .chips i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 6px; vertical-align: -2px; }
+  .mini { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .mini .tile { box-shadow: none; border-width: 2px; padding: 8px 10px; }
+  .mini .tile .v { font-size: 20px; }
+
+  .tbl-wrap { overflow: auto; max-height: 420px; border: 2px solid var(--grid); border-radius: 12px; margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { position: sticky; top: 0; background: var(--card-2); color: var(--ink-2); font-weight: 800; font-size: 12px; z-index: 1; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ok { color: var(--good); font-weight: 800; } .ko { color: var(--bad); font-weight: 800; }
+  details { border: 2px solid var(--grid); border-radius: 12px; padding: 6px 10px; margin: 6px 0; background: var(--card-2); }
+  details summary { cursor: pointer; font-weight: 700; font-size: 13.5px; }
+  .iframe-wrap { border: 4px solid var(--frame); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); height: min(78vh, 760px); }
+  .iframe-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .md h1, .md h2, .md h3 { margin: 14px 0 6px; } .md p, .md li { font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+  .links a { color: var(--accent); font-weight: 800; text-decoration: none; display: inline-block; margin: 3px 12px 3px 0; }
+  .links a:hover { text-decoration: underline; }
+  #loading { position: fixed; inset: auto 16px 16px auto; background: var(--card); border: 3px solid var(--frame); border-radius: 12px;
+    padding: 8px 14px; font-weight: 800; display: none; z-index: 10; }
+  .tabmenu, #kpiToggle { display: none; }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 24px; } .chart { height: 300px; } .chart.tall { height: 360px; }
+    .hero > div:first-child, .controls { width: 100%; }
+    .controls label.ctl { flex: 1 1 100%; }
+    .controls select { width: 100%; }
+    .kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kpis.hidden { display: none; }
+    .tile .v { font-size: 21px; }
+    #kpiToggle { display: inline-block; }
+    .tabmenu { display: flex; width: 100%; justify-content: space-between; align-items: center; margin-bottom: 8px;
+      font: 800 15px "Baloo 2", sans-serif; color: var(--ink); background: var(--card); border: 3px solid var(--frame);
+      border-radius: 14px; padding: 8px 14px; cursor: pointer; box-shadow: 0 3px 0 var(--frame-2); }
+    .tabmenu svg { width: 20px; height: 20px; transition: transform .2s; }
+    .tabmenu[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .tabs { display: none; flex-direction: column; }
+    .tabs.open { display: flex; }
+    .tabs button { text-align: left; border-radius: 12px; }
+    .iframe-wrap { height: 72vh; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="card hero">
+    <div><h1>Virtual Hotel Monitoring</h1><div class="sub" id="sub"></div></div>
+    <div class="controls">
+      <label class="ctl">Kịch bản<select id="scenario"></select></label>
+      <button class="btn" id="kpiToggle" aria-expanded="true" aria-controls="kpis">Ẩn chỉ số</button>
+      <button class="iconbtn" id="theme" title="Đổi giao diện sáng / tối" aria-label="Đổi giao diện sáng / tối"></button>
+    </div>
+  </header>
+  <section class="kpis" id="kpis"></section>
+  <button class="tabmenu" id="tabMenu" aria-expanded="false" aria-controls="tabs"><span>☰ <span id="tabCur"></span></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+
+  <section class="panel" id="p-map"><div class="iframe-wrap"><iframe id="mapframe" title="Bản đồ 3D" loading="lazy"></iframe></div></section>
+
+  <section class="panel" id="p-rooms"><div class="stack">
+    <div class="card">
+      <h2>Lưới 533 phòng</h2>
+      <div class="row">
+        <label class="ctl grow">Thời điểm <span id="snapLabel"></span><input type="range" id="snap" min="0" value="0"></label>
+        <div class="seg" role="group" aria-label="Tô màu theo"><button id="mTemp" aria-pressed="true">Nhiệt độ</button><button id="mState" aria-pressed="false">Trạng thái</button></div>
+        <label class="ctl">Phòng<input type="number" id="roomNo" min="1" max="533" value="1" style="width:90px"></label>
+      </div>
+      <div class="chips" id="roomLegend"></div>
+      <div id="roomGrid" class="chart tall"></div>
+    </div>
+    <div class="card"><h2 id="roomTitle"></h2><div class="hint" id="roomInfo"></div>
+      <div class="grid2"><div id="roomTemp" class="chart"></div><div id="roomPower" class="chart"></div></div></div>
+  </div></section>
+
+  <section class="panel" id="p-groups"><div class="stack">
+    <div class="card">
+      <div class="row">
+        <h2 class="grow">Nhóm khách</h2>
+        <button class="btn" id="gPrev">◀</button>
+        <label class="ctl">Mã nhóm<input type="number" id="gid" min="0" value="0" style="width:90px"></label>
+        <button class="btn" id="gNext">▶</button>
+        <button class="btn" id="gPark">Nhóm đi công viên</button>
+      </div>
+      <div class="mini" id="gTiles"></div>
+      <div class="grid2"><div id="gPref" class="chart"></div><div id="gGantt" class="chart"></div></div>
+    </div>
+    <div class="card"><h2>Hành trình</h2><div id="gItin"></div></div>
+    <div class="card"><h2>Lý do lựa chọn</h2><div class="hint">Thành phần hữu dụng của các phương án tại mỗi lần ra quyết định.</div><div id="gDec"></div></div>
+  </div></section>
+
+  <section class="panel" id="p-energy"><div class="stack">
+    <div class="mini" id="eTiles"></div>
+    <div class="card"><h2>Công suất trung bình 15 phút theo mục đích</h2><div class="hint">kW · xếp chồng</div><div id="eArea" class="chart tall"></div></div>
+    <div class="grid2">
+      <div class="card"><h2>Điện theo mục đích sử dụng</h2><div class="hint">kWh cả ngày</div><div id="eBar" class="chart tall"></div></div>
+      <div class="card"><h2>Phát thải liên quan điện</h2><div class="hint">kg CO2e mỗi 15 phút</div><div id="eCo2" class="chart tall"></div></div>
+    </div>
+    <div class="card"><h2>Hình dạng phụ tải ngày</h2><div class="hint">Công suất ÷ trung bình ngày</div><div id="eShape" class="chart"></div></div>
+  </div></section>
+
+  <section class="panel" id="p-queues"><div class="stack">
+    <div class="card"><h2>Độ dài hàng chờ</h2><div class="hint">Số người xếp hàng · ảnh chụp 5 phút</div><div id="qHeat" class="chart tall"></div></div>
+    <div class="card"><h2>Thống kê hàng chờ</h2><div id="qTable"></div></div>
+    <div class="grid2">
+      <div class="card"><h2>Dịch vụ & di chuyển</h2><div class="mini" id="sTiles"></div></div>
+      <div class="card"><h2>Buồng phòng & giặt là</h2><div class="mini" id="hTiles"></div><div id="hTable"></div></div>
+    </div>
+    <div class="card"><h2>Các mẻ giặt</h2><div id="lTable"></div></div>
+  </div></section>
+
+  <section class="panel" id="p-compare"><div class="stack">
+    <div class="card">
+      <div class="row"><h2 class="grow">Chênh lệch ghép cặp so với baseline</h2>
+        <label class="ctl">Chỉ số<select id="metric"></select></label></div>
+      <div id="cBar" class="chart"></div>
+    </div>
+    <div class="card"><h2>Tất cả chỉ số</h2><div id="cTable"></div></div>
+    <div class="card"><h2>Đánh đổi điện năng – thời gian chờ</h2><div id="cScatter" class="chart"></div></div>
+    <div class="card"><h2>Kết quả từng seed</h2><div id="cSeeds"></div></div>
+  </div></section>
+
+  <section class="panel" id="p-data"><div class="stack">
+    <div class="card"><h2 id="chkTitle">Kiểm tra mô hình</h2><div id="chk"></div></div>
+    <div class="card"><h2>Tải dữ liệu</h2><div class="links" id="dl"></div></div>
+    <div class="card"><h2>Giả định</h2><div id="asm"></div></div>
+    <div class="card"><div class="row"><h2 class="grow">Sổ đăng ký quy tắc (file Excel)</h2>
+      <label class="ctl">Trạng thái<select id="ruleFilter"><option value="">Tất cả</option></select></label></div><div id="rules"></div></div>
+    <div class="card"><h2>Dữ kiện đã kiểm chứng</h2><div id="facts"></div></div>
+    <div class="card md" id="prov"></div>
+  </div></section>
+</div>
+<div id="loading">Đang tải…</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.34.0/plotly.min.js"></script>
+<script>
+(async function () {
+const $ = id => document.getElementById(id);
+const nf = (v, d = 0) => v === null || v === undefined || Number.isNaN(v) ? '–' :
+  Number(v).toLocaleString('vi-VN', { minimumFractionDigits: d, maximumFractionDigits: d });
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const SLOTS = () => [1, 2, 3, 4, 5, 6, 7, 8].map(i => css(`--s${i}`));
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const hm = t => { const m = ((Math.round(t) % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
+const TABS = [['map', 'Bản đồ 3D'], ['rooms', 'Lưới 533 phòng'], ['groups', 'Hành trình nhóm khách'], ['energy', 'Điện & phát thải'],
+  ['queues', 'Hàng chờ & dịch vụ'], ['compare', 'So sánh kịch bản'], ['data', 'Giả định & dữ liệu']];
+const NODE_VI = { ROOMS: 'Phòng', HOTEL_RESTAURANT: 'Nhà hàng KS', POOL: 'Hồ bơi', THRILL: 'Cảm giác mạnh', FAMILY: 'Trò gia đình',
+  INDOOR: 'Khu trong nhà', WATER: 'Trò chơi nước', SHOW: 'Biểu diễn', PARK_RESTAURANT: 'Nhà hàng CV', REST_A: 'Nghỉ có điều hòa',
+  REST_B: 'Nghỉ có mái che', ROOM_REST: 'Nghỉ trong phòng', END: 'Kết thúc ngày', SPA: 'Spa', GYM: 'Phòng gym', KIDS_CLUB: 'CLB trẻ em' };
+const PARK_NODES = new Set(['THRILL', 'FAMILY', 'INDOOR', 'WATER', 'SHOW', 'PARK_RESTAURANT', 'REST_A', 'REST_B']);
+const CAT_VI = { solo: 'Một mình', couple: 'Cặp đôi', family: 'Gia đình', friends: 'Bạn bè' };
+const UP_IS_BETTER = new Set(['ride_cycle_utilization', 'completed_attraction_visits_persons', 'park_visitor_hours']);
+
+const S = { scenario: 'baseline', tab: 'map', data: {}, dec: {}, decoded: {}, snap: 168, mode: 'temp', room: 0, gid: 0, metric: 'total_kwh' };
+const loading = on => { $('loading').style.display = on ? 'block' : 'none'; };
+async function getJSON(url) { const r = await fetch(url); if (!r.ok) throw new Error(url + ' ' + r.status); return r.json(); }
+
+// ------------------------------------------------------------------ plot helpers
+function layout(extra = {}) {
+  const ink2 = css('--ink-2'), grid = css('--grid'), axis = css('--axis');
+  const ax = { gridcolor: grid, linecolor: axis, zerolinecolor: axis, tickfont: { color: ink2, size: 11 }, title: { font: { color: ink2, size: 12 } } };
+  return Object.assign({
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { family: 'Nunito, sans-serif', color: ink2, size: 12 },
+    margin: { l: 56, r: 16, t: 10, b: 44 }, xaxis: { ...ax }, yaxis: { ...ax },
+    legend: { orientation: 'h', y: -0.18, font: { color: ink2, size: 11.5 } },
+    hoverlabel: { bgcolor: css('--card'), bordercolor: css('--frame-3'), font: { color: css('--ink'), family: 'Nunito' } },
+  }, extra);
+}
+const CFG = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines'] };
+function plot(id, data, lay) { Plotly.react($(id), data, layout(lay), CFG); }
+
+function table(cols, rows, opts = {}) {
+  const head = cols.map(c => `<th class="${c.num ? 'num' : ''}">${esc(c.label)}</th>`).join('');
+  const body = rows.map(r => '<tr>' + cols.map(c => {
+    const v = typeof c.fmt === 'function' ? c.fmt(r) : r[c.key];
+    return `<td class="${c.num ? 'num' : ''}">${c.html ? v : esc(v)}</td>`; }).join('') + '</tr>').join('');
+  return `<div class="tbl-wrap" style="${opts.max ? `max-height:${opts.max}px` : ''}"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+// "Xem bảng" twin for every chart
+function tableToggle(chartId, cols, rows) {
+  const el = $(chartId); let box = el.nextElementSibling;
+  if (!box || !box.classList.contains('tt')) {
+    box = document.createElement('div'); box.className = 'tt';
+    box.innerHTML = '<button class="btn small">Xem bảng</button><div class="tt-body" hidden></div>';
+    el.after(box);
+    box.querySelector('button').onclick = () => { const b = box.querySelector('.tt-body'); b.hidden = !b.hidden;
+      box.querySelector('button').textContent = b.hidden ? 'Xem bảng' : 'Ẩn bảng'; };
+  }
+  box.querySelector('.tt-body').innerHTML = table(cols, rows, { max: 300 });
+}
+function tile(label, value, unit = '', delta = '') {
+  return `<div class="tile"><div class="l">${esc(label)}</div><div class="v">${value}</div><div class="u">${esc(unit)}</div>${delta}</div>`;
+}
+function deltaHtml(key, cur, base) {
+  if (S.scenario === 'baseline' || base === null || base === undefined || cur === null) return '';
+  const d = cur - base; if (Math.abs(d) < 1e-9) return '<div class="d flat">= baseline</div>';
+  const better = UP_IS_BETTER.has(key) ? d > 0 : d < 0;
+  const pct = base ? ` (${d > 0 ? '+' : ''}${nf(d / Math.abs(base) * 100, 1)}%)` : '';
+  return `<div class="d ${better ? 'good' : 'bad'}">${d > 0 ? '▲' : '▼'} ${d > 0 ? '+' : ''}${nf(d, Math.abs(d) < 10 ? 1 : 0)}${pct} so với baseline</div>`;
+}
+
+// ------------------------------------------------------------------ theme
+const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function paintThemeBtn() { $('theme').innerHTML = document.documentElement.dataset.theme === 'dark' ? SUN : MOON; }
+$('theme').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t; try { localStorage.setItem('vhm-theme', t); } catch (e) {}
+  paintThemeBtn(); render(); };
+paintThemeBtn();
+
+// ------------------------------------------------------------------ data
+loading(true);
+const ST = await getJSON('data/static.json');
+async function scen(key) {
+  if (!S.data[key]) { loading(true); const sc = ST.scenarios.find(s => s.key === key); S.data[key] = await getJSON(`data/${sc.slug}.json`); loading(false); }
+  return S.data[key];
+}
+function decode(key) {
+  if (S.decoded[key]) return S.decoded[key];
+  const R = S.data[key].rooms, dec = b => Uint8Array.from(atob(b), c => c.charCodeAt(0));
+  return (S.decoded[key] = { temp: dec(R.temp), sp: dec(R.sp), hvac: dec(R.hvac), light: dec(R.light) });
+}
+await scen('baseline');
+loading(false);
+
+ST.scenarios.forEach(s => { const o = document.createElement('option'); o.value = s.key; o.textContent = s.label; $('scenario').appendChild(o); });
+try { const q = new URLSearchParams(location.search).get('s'); if (q && ST.scenarios.some(s => s.key === q)) S.scenario = q; } catch (e) {}
+$('scenario').value = S.scenario;
+$('scenario').onchange = async () => { S.scenario = $('scenario').value;
+  history.replaceState(null, '', `?s=${S.scenario}${location.hash}`); await scen(S.scenario); render(); };
+
+function setTabMenu(open) { $('tabs').classList.toggle('open', open); $('tabMenu').setAttribute('aria-expanded', String(open)); }
+$('tabMenu').onclick = () => setTabMenu(!$('tabs').classList.contains('open'));
+TABS.forEach(([k, l]) => { const b = document.createElement('button'); b.role = 'tab'; b.textContent = l; b.dataset.tab = k;
+  b.onclick = () => { S.tab = k; setTabMenu(false); history.replaceState(null, '', `?s=${S.scenario}#${k}`); render(); }; $('tabs').appendChild(b); });
+$('kpiToggle').onclick = () => { const hidden = $('kpis').classList.toggle('hidden');
+  $('kpiToggle').textContent = hidden ? 'Hiện chỉ số' : 'Ẩn chỉ số'; $('kpiToggle').setAttribute('aria-expanded', String(!hidden)); };
+if (location.hash && TABS.some(t => t[0] === location.hash.slice(1))) S.tab = location.hash.slice(1);
+
+// ------------------------------------------------------------------ header + KPIs
+function renderHeader(D, B) {
+  const k = D.kpi, b = B.kpi;
+  $('sub').textContent = `${D.meta.label} · seed ${D.meta.seed} · ${k.rooms} phòng · ${k.occupied_rooms} phòng có khách · ${k.guest_groups} nhóm · ${nf(k.guests)} khách`;
+  const T = [['total_kwh', 'Tổng điện', 'kWh', 0], ['peak_15min_kw', 'Đỉnh 15 phút', 'kW', 0], ['emissions_kgco2e', 'Phát thải', 'kg CO2e', 0],
+    ['hotel_kwh_per_occupied_room_night', 'Điện KS / đêm phòng', 'kWh', 1], ['park_entries', 'Lượt vào công viên', 'nhóm', 0],
+    ['attraction_mean_wait_min', 'Chờ TB trò chơi', 'phút', 1], ['occupied_room_hours_above_comfort', 'Giờ-phòng quá nóng', 'giờ', 1]];
+  $('kpis').innerHTML = T.map(([key, l, u, d]) => tile(l, nf(k[key], d), u, deltaHtml(key, k[key], b[key]))).join('');
+}
+
+// ------------------------------------------------------------------ tabs
+function renderMap(D) { const src = `map/${D.meta.slug}.html`; if (!$('mapframe').src.endsWith(src)) $('mapframe').src = src; }
+
+const STATE_VI = ['Không bán', 'Vắng, điều hòa tắt', 'Vắng, điều hòa chạy', 'Có khách trong phòng', 'Đang dọn'];
+function stateColors() { return [css('--neutral-1'), css('--neutral-2'), css('--s1'), css('--s2'), css('--s3')]; }
+function renderRooms(D) {
+  const R = D.rooms, A = decode(S.scenario), n = R.group_of.length, per = Math.ceil(n / D.meta.floors), floors = D.meta.floors;
+  const N = R.t.length; $('snap').max = N - 1; S.snap = Math.min(S.snap, N - 1); $('snap').value = S.snap;
+  $('snapLabel').textContent = `· ${hm(R.t[S.snap])} · ngoài trời ${nf(R.tout[S.snap], 1)} °C`;
+  const st = R.state[S.snap], z = [], cd = [], text = [];
+  for (let f = 0; f < floors; f++) { const zr = [], cr = [];      // row 0 = floor 1 (bottom of the plot)
+    for (let c = 0; c < per; c++) { const r = f * per + c;
+      if (r >= n) { zr.push(null); cr.push(['', '', '']); continue; }
+      const temp = A.temp[S.snap * n + r] / 10 + 15, code = +st[r];
+      zr.push(S.mode === 'temp' ? temp : code); cr.push([r + 1, nf(temp, 1), STATE_VI[code]]); }
+    z.push(zr); cd.push(cr); }
+  const counts = [0, 0, 0, 0, 0]; for (const ch of st) counts[+ch]++;
+  let trace;
+  if (S.mode === 'temp') {
+    trace = { type: 'heatmap', z, customdata: cd, zmin: 21, zmax: 29, xgap: 2, ygap: 2,
+      colorscale: [[0, css('--seq-4') === '#cde2fb' ? '#6da7ec' : '#184f95'], [0.25, '#86b6ef'], [0.5, css('--div-mid')], [0.75, '#f08c86'], [1, '#b8302f']],
+      colorbar: { title: { text: '°C', font: { color: css('--ink-2') } }, tickfont: { color: css('--ink-2') }, thickness: 12, outlinewidth: 0 },
+      hovertemplate: 'Phòng %{customdata[0]}<br>%{customdata[1]} °C<br>%{customdata[2]}<extra></extra>' };
+    $('roomLegend').innerHTML = `<span>Xanh = mát hơn 25 °C · xám = 25 °C · đỏ = nóng hơn (ngưỡng tiện nghi ${R.comfort} °C)</span>`;
+  } else {
+    const col = stateColors(), cs = []; col.forEach((c, i) => { cs.push([i / 5, c], [(i + 1) / 5, c]); });
+    trace = { type: 'heatmap', z, customdata: cd, zmin: -0.5, zmax: 4.5, colorscale: cs, showscale: false, xgap: 2, ygap: 2,
+      hovertemplate: 'Phòng %{customdata[0]}<br>%{customdata[2]}<br>%{customdata[1]} °C<extra></extra>' };
+    $('roomLegend').innerHTML = STATE_VI.map((l, i) => `<span><i style="background:${col[i]}"></i>${l}: ${counts[i]}</span>`).join('');
+  }
+  plot('roomGrid', [trace], { margin: { l: 64, r: 16, t: 6, b: 34 },
+    yaxis: { tickvals: z.map((_, i) => i), ticktext: z.map((_, i) => `Tầng ${i + 1}`), gridcolor: 'rgba(0,0,0,0)', tickfont: { color: css('--ink-2'), size: 10.5 } },
+    xaxis: { title: { text: 'Phòng trên tầng', font: { color: css('--ink-2'), size: 11 } }, gridcolor: 'rgba(0,0,0,0)', tickfont: { color: css('--ink-2'), size: 10 } },
+    shapes: (() => { const r = S.room, f = Math.floor(r / per), c = r % per, y = f;
+      return [{ type: 'rect', x0: c - .5, x1: c + .5, y0: y - .5, y1: y + .5, line: { color: css('--ink'), width: 3 } }]; })() });
+  $('roomGrid').removeAllListeners?.('plotly_click');
+  $('roomGrid').on('plotly_click', ev => { const p = ev.points[0]; if (!p.customdata[0]) return; S.room = p.customdata[0] - 1; $('roomNo').value = S.room + 1; renderRooms(D); });
+  tableToggle('roomGrid', [{ key: 's', label: 'Trạng thái' }, { key: 'n', label: 'Số phòng', num: true }],
+    STATE_VI.map((s, i) => ({ s, n: counts[i] })));
+  renderRoomDetail(D, A, n);
+}
+function renderRoomDetail(D, A, n) {
+  const R = D.rooms, r = S.room, g = R.group_of[r], N = R.t.length, x = R.t.map(hm);
+  const series = arr => Array.from({ length: N }, (_, i) => arr[i * n + r]);
+  const temp = series(A.temp).map(v => v / 10 + 15), sp = series(A.sp).map(v => v / 10 + 15);
+  const hv = series(A.hvac).map(v => v / 200), li = series(A.light).map(v => v / 400);
+  const occ = R.state.map(s => s[r] === '3');
+  $('roomTitle').textContent = `Phòng ${r + 1}`;
+  const G = g >= 0 ? D.groups[g] : null;
+  $('roomInfo').textContent = G ? `Nhóm #${g} · ${G.size} người · điểm đặt ${G.guest_setpoint_c} °C · thẻ từ ${R.bypass[r] ? 'bị cài thẻ phụ (bypass)' : 'bình thường'}`
+    : 'Phòng không bán trong ngày mô phỏng';
+  const shapes = []; let s0 = null;
+  occ.forEach((o, i) => { if (o && s0 === null) s0 = i; if ((!o || i === N - 1) && s0 !== null) { shapes.push({ type: 'rect', xref: 'x', yref: 'paper',
+    x0: x[s0], x1: x[o ? i : i - 1], y0: 0, y1: 1, fillcolor: css('--grid'), opacity: .55, line: { width: 0 }, layer: 'below' }); s0 = null; } });
+  const c = SLOTS();
+  plot('roomTemp', [
+    { x, y: temp, name: 'Nhiệt độ phòng', mode: 'lines', line: { color: c[0], width: 2 } },
+    { x, y: sp, name: 'Điểm đặt', mode: 'lines', line: { color: c[1], width: 2, shape: 'hv' } },
+    { x, y: R.tout, name: 'Ngoài trời', mode: 'lines', line: { color: css('--muted'), width: 1.5 } },
+  ], { hovermode: 'x unified', yaxis: { title: { text: '°C' }, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } }, shapes,
+       xaxis: { nticks: 12, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } },
+       annotations: shapes.length ? [{ xref: 'x', yref: 'paper', x: shapes[0].x0, y: 1, yanchor: 'bottom', xanchor: 'left', text: 'vùng nền = có khách', showarrow: false, font: { size: 10.5, color: css('--muted') } }] : [] });
+  plot('roomPower', [
+    { x, y: hv, name: 'Điều hòa (kW)', stackgroup: 'p', mode: 'lines', line: { color: c[0], width: 1 }, fillcolor: c[0] },
+    { x, y: li, name: 'Chiếu sáng & ổ cắm (kW)', stackgroup: 'p', mode: 'lines', line: { color: c[1], width: 1 }, fillcolor: c[1] },
+  ], { hovermode: 'x unified', yaxis: { title: { text: 'kW' }, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } },
+       xaxis: { nticks: 12, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } } });
+  const rows = x.map((t, i) => ({ t, temp: nf(temp[i], 1), sp: nf(sp[i], 1), out: nf(R.tout[i], 1), hv: nf(hv[i], 2), li: nf(li[i], 2), occ: occ[i] ? 'có' : '' }));
+  tableToggle('roomPower', [{ key: 't', label: 'Giờ' }, { key: 'temp', label: 'Phòng °C', num: true }, { key: 'sp', label: 'Điểm đặt', num: true },
+    { key: 'out', label: 'Ngoài trời', num: true }, { key: 'hv', label: 'Điều hòa kW', num: true }, { key: 'li', label: 'Chiếu sáng kW', num: true }, { key: 'occ', label: 'Có khách' }], rows);
+}
+
+async function renderGroups(D) {
+  const G = D.groups; if (!G.length) { $('gTiles').innerHTML = '<div class="hint">Không có nhóm khách.</div>'; return; }
+  S.gid = Math.max(0, Math.min(G.length - 1, S.gid)); $('gid').max = G.length - 1; $('gid').value = S.gid;
+  const g = G[S.gid];
+  $('gTiles').innerHTML = [
+    tile('Phòng', g.room + 1), tile('Quy mô', g.size, `${g.adults} NL · ${g.children} TE${g.young_children ? ` (${g.young_children} dưới 8t)` : ''}`),
+    tile('Loại nhóm', CAT_VI[g.category] || g.category), tile('Ngưỡng chịu chờ', nf(g.queue_tolerance_min, 0), 'phút'),
+    tile('Ngân sách còn', nf(g.budget_left_vnd / 1000, 0), 'nghìn VND'), tile('Ưu tiên tiết kiệm', nf(g.conservation_pref, 2), '0–1'),
+    tile('Chấp nhận gợi ý', nf(g.rec_acceptance * 100, 0), '%'), tile('Điểm đặt điều hòa', g.guest_setpoint_c, '°C'),
+    tile('Đi bộ', nf(g.walking_min, 0), 'phút'), tile('Chờ + đi xe', nf(g.transport_min, 0), 'phút')].join('');
+  const prefKeys = [['pref_thrill', 'Cảm giác mạnh'], ['pref_family', 'Gia đình'], ['pref_indoor', 'Trong nhà'], ['pref_water', 'Trò nước'], ['pref_show', 'Biểu diễn'], ['pref_pool', 'Hồ bơi']];
+  plot('gPref', [{ type: 'bar', orientation: 'h', y: prefKeys.map(p => p[1]), x: prefKeys.map(p => g[p[0]]), marker: { color: SLOTS()[0], cornerradius: 4 },
+    text: prefKeys.map(p => nf(g[p[0]], 2)), textposition: 'outside', cliponaxis: false, hovertemplate: '%{y}: %{x:.2f}<extra></extra>' }],
+    { margin: { l: 104, r: 36, t: 26, b: 34 }, xaxis: { range: [0, 1.1], gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } },
+      yaxis: { autorange: 'reversed', tickfont: { color: css('--ink-2') } }, title: { text: 'Sở thích (0–1)', x: 0, font: { size: 13, color: css('--ink') } } });
+  const it = g.itinerary.filter(r => r[2] !== 'END');
+  const zoneOf = r => PARK_NODES.has(r[3]) ? 'Công viên' : 'Khách sạn', c = SLOTS();
+  const traces = ['Khách sạn', 'Công viên'].map((z, k) => { const rows = it.filter(r => zoneOf(r) === z);
+    return { type: 'bar', orientation: 'h', name: z, y: rows.map(r => NODE_VI[r[2]] || r[2]), base: rows.map(r => r[0]),
+      x: rows.map(r => Math.max(2, r[1] - r[0])), marker: { color: c[k], cornerradius: 4 },
+      customdata: rows.map(r => [hm(r[0]), hm(r[1]), r[4]]), hovertemplate: '%{y}<br>%{customdata[0]}–%{customdata[1]} · chờ %{customdata[2]} phút<extra></extra>' }; });
+  const ticks = []; for (let h = 6; h <= 24; h += 3) ticks.push(h * 60);
+  plot('gGantt', traces, { barmode: 'overlay', margin: { l: 120, r: 16, t: 26, b: 44 }, title: { text: 'Dòng thời gian trong ngày', x: 0, font: { size: 13, color: css('--ink') } },
+    xaxis: { tickvals: ticks, ticktext: ticks.map(hm), gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } },
+    yaxis: { categoryorder: 'array', categoryarray: [...new Set(it.map(r => NODE_VI[r[2]] || r[2]))].reverse(), tickfont: { color: css('--ink-2'), size: 11 } } });
+  $('gItin').innerHTML = table([{ key: 'a', label: 'Bắt đầu' }, { key: 'b', label: 'Kết thúc' }, { key: 'act', label: 'Hoạt động' },
+    { key: 'zone', label: 'Khu' }, { key: 'w', label: 'Chờ (phút)', num: true }],
+    g.itinerary.map(r => ({ a: hm(r[0]), b: hm(r[1]), act: NODE_VI[r[2]] || r[2], zone: r[2] === 'END' ? '' : zoneOf(r), w: r[4] })));
+  const shard = `${D.meta.slug}_${Math.floor(S.gid / 25)}`, gidNow = S.gid;
+  if (!S.dec[shard]) { $('gDec').innerHTML = '<div class="hint">Đang tải…</div>'; S.dec[shard] = await getJSON(`data/dec/${shard}.json`); }
+  if (gidNow !== S.gid) return;                 // user moved on while loading
+  const ds = S.dec[shard][String(S.gid)] || [];
+  const COMP = { utility: 'Hữu dụng', prob: 'Xác suất', preference_match: 'Sở thích', activity_interest: 'Hứng thú', hunger_relief: 'Giảm đói',
+    fatigue_relief: 'Giảm mệt', heat_relief: 'Giảm nóng', time_pressure: 'Áp lực giờ', travel_penalty: 'Phạt đi lại', expected_wait_penalty: 'Phạt chờ',
+    price_penalty: 'Phạt giá', repeat_visit_penalty: 'Phạt lặp lại', schedule_conflict_penalty: 'Phạt lịch' };
+  $('gDec').innerHTML = ds.map(d => { const keys = Object.keys(COMP).filter(k => d.options.some(o => o[k] !== undefined));
+    return `<details><summary>${hm(d.t)} → ${esc(d.chosen)} <span style="color:var(--muted)">· đói ${d.hunger} · mệt ${d.fatigue} · nóng ${d.heat}${d.rec ? ' · ' + esc(d.rec) : ''}</span></summary>` +
+      table([{ key: 'option', label: 'Phương án' }, ...keys.map(k => ({ key: k, label: COMP[k], num: true, fmt: o => o[k] === undefined ? '' : k === 'prob' ? nf(o[k] * 100, 0) + '%' : nf(o[k], 2) }))], d.options) + '</details>'; }).join('')
+    || '<div class="hint">Không có quyết định.</div>';
+}
+
+function renderEnergy(D) {
+  const E = D.energy, c = SLOTS(), ref = ST.reference;
+  $('eTiles').innerHTML = [tile('Điện khách sạn', nf(D.kpi.hotel_kwh, 0), 'kWh'), tile('Điện công viên', nf(D.kpi.park_kwh, 0), 'kWh'),
+    tile('Điện phương tiện', D.kpi.transport_energy_included ? 'Có tính' : 'Không tính', ''),
+    tile('Hệ số phát thải', nf(D.kpi.emission_factor_mean, 2), 'kg CO2e/kWh'),
+    ref.excel_kwh_day ? tile(`Điện lưới tự khai T${ref.month}`, nf(ref.excel_kwh_day, 0), 'kWh/ngày · bản nháp Excel') : ''].join('');
+  plot('eArea', E.groups.map((g, i) => ({ x: E.t, y: g.kw, name: g.label, stackgroup: 'e', mode: 'lines', line: { width: .8, color: css('--card') },
+    fillcolor: c[i], hovertemplate: `${g.label}: %{y:,.0f} kW<extra></extra>` })),
+    { hovermode: 'x unified', yaxis: { title: { text: 'kW' }, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } },
+      xaxis: { nticks: 12, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } }, legend: { orientation: 'h', y: -0.14, traceorder: 'normal', font: { color: css('--ink-2'), size: 11.5 } } });
+  tableToggle('eArea', [{ key: 't', label: 'Giờ' }, ...E.groups.map((g, i) => ({ key: 'g' + i, label: g.label, num: true })), { key: 'tot', label: 'Tổng kW', num: true }],
+    E.t.map((t, k) => Object.assign({ t, tot: nf(E.total_kw[k], 0) }, ...E.groups.map((g, i) => ({ ['g' + i]: nf(g.kw[k], 1) })))));
+  const det = [...E.detail].sort((a, b) => a.kwh - b.kwh);
+  plot('eBar', [{ type: 'bar', orientation: 'h', y: det.map(d => d.label), x: det.map(d => d.kwh), marker: { color: c[0], cornerradius: 4 },
+    text: det.map(d => nf(d.kwh, 0)), textposition: 'outside', cliponaxis: false, customdata: det.map(d => d.boundary === 'hotel' ? 'Khách sạn' : d.boundary === 'park' ? 'Công viên' : 'Phương tiện'),
+    hovertemplate: '%{y}<br>%{x:,.0f} kWh · %{customdata}<extra></extra>' }],
+    { margin: { l: 210, r: 54, t: 6, b: 40 }, xaxis: { title: { text: 'kWh' }, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } }, yaxis: { tickfont: { color: css('--ink-2'), size: 11 } } });
+  plot('eCo2', [{ x: E.t, y: E.emissions, mode: 'lines', line: { color: c[0], width: 2 }, name: 'kg CO2e', hovertemplate: '%{x}: %{y:,.1f} kg CO2e<extra></extra>' }],
+    { hovermode: 'x', yaxis: { title: { text: 'kg CO2e / 15 phút' }, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } }, xaxis: { nticks: 12, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } }, showlegend: false });
+  tableToggle('eCo2', [{ key: 't', label: 'Giờ' }, { key: 'e', label: 'kg CO2e', num: true }], E.t.map((t, i) => ({ t, e: nf(E.emissions[i], 1) })));
+  const hrs = E.shape.map((_, i) => i / 4), tr = [{ x: hrs, y: E.shape, name: 'Mô hình', mode: 'lines', line: { color: c[0], width: 2 } }];
+  if (ref.nrel_shape) tr.push({ x: hrs, y: ref.nrel_shape, name: 'Tham chiếu NREL 36667', mode: 'lines', line: { color: c[1], width: 2 } });
+  plot('eShape', tr, { hovermode: 'x unified', xaxis: { title: { text: 'Giờ trong ngày' }, dtick: 3, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } },
+    yaxis: { title: { text: '÷ trung bình' }, gridcolor: css('--grid'), tickfont: { color: css('--ink-2') } },
+    annotations: tr.map(t => ({ x: 23.75, y: t.y[t.y.length - 1], text: t.name, showarrow: false, xanchor: 'right', yanchor: 'bottom', font: { size: 11, color: css('--ink-2') } })) });
+}
+
+function renderQueues(D) {
+  const Q = D.queues, k = D.kpi;
+  const cs = [[0, css('--seq-0')], [.25, css('--seq-1')], [.5, css('--seq-2')], [.75, css('--seq-3')], [1, css('--seq-4')]];
+  plot('qHeat', [{ type: 'heatmap', z: Q.q, x: Q.t.map(hm), y: Q.labels, colorscale: cs, xgap: 1, ygap: 2,
+    colorbar: { title: { text: 'người', font: { color: css('--ink-2') } }, tickfont: { color: css('--ink-2') }, thickness: 12, outlinewidth: 0 },
+    hovertemplate: '%{y} · %{x}<br>%{z} người xếp hàng<extra></extra>' }],
+    { margin: { l: 180, r: 16, t: 6, b: 40 }, xaxis: { nticks: 14, gridcolor: 'rgba(0,0,0,0)', tickfont: { color: css('--ink-2') } }, yaxis: { tickfont: { color: css('--ink-2'), size: 11 } } });
+  tableToggle('qHeat', [{ key: 't', label: 'Giờ' }, ...Q.labels.map((l, i) => ({ key: 'f' + i, label: l, num: true }))],
+    Q.t.map((t, j) => Object.assign({ t: hm(t) }, ...Q.labels.map((_, i) => ({ ['f' + i]: Q.q[i][j] })))));
+  $('qTable').innerHTML = table([{ key: 'label_vi', label: 'Điểm' }, { key: 'admitted_persons', label: 'Lượt phục vụ (người)', num: true },
+    { key: 'mean_wait_min', label: 'Chờ TB (phút)', num: true, fmt: r => nf(r.mean_wait_min, 1) }, { key: 'p90_wait_min', label: 'Chờ P90', num: true, fmt: r => nf(r.p90_wait_min, 0) },
+    { key: 'max_queue_persons', label: 'Hàng dài nhất', num: true }, { key: 'abandonments_groups', label: 'Bỏ hàng (nhóm)', num: true },
+    { key: 'balks_groups', label: 'Không vào hàng', num: true }, { key: 'rejected_groups', label: 'Bị từ chối', num: true },
+    { key: 'cycles_or_shows', label: 'Chuyến / suất', num: true }, { key: 'cycle_utilization', label: 'Hệ số tải', num: true, fmt: r => r.cycle_utilization == null ? '' : nf(r.cycle_utilization * 100, 0) + '%' }],
+    D.queue_stats);
+  $('sTiles').innerHTML = [tile('Suất ăn', nf(k.meals_served_persons), 'người'), tile('Lượt chơi hoàn thành', nf(k.completed_attraction_visits_persons), 'người'),
+    tile('Giờ-khách trong công viên', nf(k.park_visitor_hours, 0), 'giờ'), tile('Đi bộ TB / nhóm', nf(k.mean_walking_min_per_group, 0), 'phút'),
+    tile('Chờ + đi xe TB / nhóm', nf(k.mean_transport_min_per_group, 0), 'phút'), tile('Giờ về KS (trung vị)', String(k.median_return_to_hotel || '–').slice(3)),
+    tile('Gợi ý đã đưa', nf(k.recommendations_offered), `${nf(k.recommendations_accepted)} được nhận`), tile('Hệ số tải chuyến', nf(k.ride_cycle_utilization * 100, 0), '%')].join('');
+  $('hTiles').innerHTML = [tile('Phòng đã dọn', nf(k.rooms_cleaned)), tile('Phòng chưa dọn', nf(k.rooms_pending_cleaning)),
+    tile('Dọn bị gián đoạn', nf(k.housekeeping_interruptions), 'khách về giữa chừng'), tile('Nhu cầu giặt', nf(k.laundry_demand_kg, 0), 'kg'),
+    tile('Đồ giặt tồn', nf(k.laundry_pending_kg, 1), 'kg'), tile('Điện để giặt nốt', nf(k.laundry_completion_kwh_estimate, 1), 'kWh')].join('');
+  $('hTable').innerHTML = table([{ key: 'day', label: 'Ngày', fmt: r => r.day + 1 }, { key: 'cleaned', label: 'Đã dọn', num: true }, { key: 'pending', label: 'Chưa dọn', num: true },
+    { key: 'pending_dnd', label: 'Do DND', num: true }, { key: 'pending_never_vacant', label: 'Khách không rời phòng', num: true }, { key: 'pending_capacity', label: 'Thiếu nhân lực', num: true }], D.hk_daily);
+  $('lTable').innerHTML = table([{ key: 'start', label: 'Bắt đầu', fmt: r => hm(r.start) }, { key: 'end', label: 'Kết thúc', fmt: r => hm(r.end) },
+    { key: 'machine', label: 'Máy', num: true, fmt: r => r.machine + 1 }, { key: 'load_kg', label: 'Khối lượng (kg)', num: true, fmt: r => nf(r.load_kg, 1) },
+    { key: 'kwh', label: 'kWh', num: true, fmt: r => nf(r.kwh, 1) }, { key: 'full', label: 'Đầy mẻ', fmt: r => r.full ? 'có' : 'không' }], D.laundry);
+}
+
+function renderCompare() {
+  const C = ST.compare;
+  if (!C) { $('cBar').innerHTML = '<div class="hint">Chưa có dữ liệu so sánh.</div>'; return; }
+  const scen = C.scenarios.filter(s => s.key !== 'baseline'), label = k => (C.scenarios.find(s => s.key === k) || {}).label || k;
+  if (!$('metric').options.length) { C.metrics.forEach(m => { const o = document.createElement('option'); o.value = m.key; o.textContent = m.label; $('metric').appendChild(o); });
+    $('metric').value = S.metric; $('metric').onchange = () => { S.metric = $('metric').value; renderCompare(); }; }
+  const row = (sc, m) => C.summary.find(r => r.scenario === sc && r.metric === m);
+  const mLabel = C.metrics.find(m => m.key === S.metric).label, rows = scen.map(s => row(s.key, S.metric)).filter(Boolean);
+  plot('cBar', [{ type: 'bar', x: rows.map(r => label(r.scenario)), y: rows.map(r => r.mean_paired_diff),
+    error_y: { type: 'data', array: rows.map(r => r.sd_paired_diff), color: css('--ink-2'), thickness: 1.5, width: 6 },
+    marker: { color: SLOTS()[0], cornerradius: 4 }, customdata: rows.map(r => [nf(r.sd_paired_diff, 2), r.mean_pct_diff == null ? '–' : nf(r.mean_pct_diff, 1) + '%', nf(r.baseline_mean, 1)]),
+    hovertemplate: '%{x}<br>Δ %{y:,.2f} ± %{customdata[0]} (%{customdata[1]})<br>Baseline TB %{customdata[2]}<extra></extra>' }],
+    { margin: { l: 64, r: 16, t: 10, b: 70 }, yaxis: { title: { text: 'Δ ' + mLabel }, gridcolor: css('--grid'), zerolinecolor: css('--ink-2'), zerolinewidth: 1.5, tickfont: { color: css('--ink-2') } },
+      xaxis: { tickfont: { color: css('--ink-2'), size: 11 } } });
+  tableToggle('cBar', [{ key: 's', label: 'Kịch bản' }, { key: 'd', label: 'Δ TB', num: true }, { key: 'sd', label: '± SD', num: true }, { key: 'p', label: '%', num: true }],
+    rows.map(r => ({ s: label(r.scenario), d: nf(r.mean_paired_diff, 2), sd: nf(r.sd_paired_diff, 2), p: r.mean_pct_diff == null ? '–' : nf(r.mean_pct_diff, 1) })));
+  const cell = (m, sc) => { const r = row(sc, m.key); if (!r) return '–'; const d = r.mean_paired_diff;
+    if (Math.abs(d) < 1e-9) return '<span class="d flat">0</span>';
+    const better = UP_IS_BETTER.has(m.key) ? d > 0 : d < 0, dec = Math.abs(d) < 10 ? 2 : 0;
+    return `<span class="d ${better ? 'good' : 'bad'}">${d > 0 ? '▲ +' : '▼ '}${nf(d, dec)}</span> <span style="color:var(--muted)">± ${nf(r.sd_paired_diff, dec)}${r.mean_pct_diff == null ? '' : ` · ${nf(r.mean_pct_diff, 1)}%`}</span>`; };
+  $('cTable').innerHTML = table([{ key: 'label', label: 'Chỉ số' }, { key: 'b', label: 'Baseline TB', num: true, fmt: m => { const r = row('baseline', m.key); return r ? nf(r.mean, Math.abs(r.mean) < 10 ? 2 : 0) : '–'; } },
+    ...scen.map(s => ({ key: s.key, label: s.label, html: true, num: true, fmt: m => cell(m, s.key) }))], C.metrics, { max: 640 });
+  const pts = scen.map(s => ({ s, x: (row(s.key, 'total_kwh') || {}).mean_paired_diff, y: (row(s.key, 'attraction_mean_wait_min') || {}).mean_paired_diff }));
+  plot('cScatter', [{ type: 'scatter', mode: 'markers+text', x: pts.map(p => p.x), y: pts.map(p => p.y), text: pts.map(p => p.s.label), textposition: 'top center',
+    textfont: { color: css('--ink-2'), size: 11 }, marker: { size: 12, color: SLOTS()[0], line: { color: css('--card'), width: 2 } }, cliponaxis: false,
+    hovertemplate: '%{text}<br>Δ điện %{x:,.0f} kWh<br>Δ chờ %{y:.2f} phút<extra></extra>' }],
+    { margin: { l: 64, r: 30, t: 30, b: 50 }, xaxis: { title: { text: 'Δ tổng điện (kWh)' }, gridcolor: css('--grid'), zerolinecolor: css('--ink-2'), tickfont: { color: css('--ink-2') } },
+      yaxis: { title: { text: 'Δ chờ TB (phút)' }, gridcolor: css('--grid'), zerolinecolor: css('--ink-2'), tickfont: { color: css('--ink-2') } } });
+  const keys = C.metrics.slice(0, 8);
+  $('cSeeds').innerHTML = table([{ key: 'scenario', label: 'Kịch bản', fmt: r => label(r.scenario) }, { key: 'seed', label: 'Seed', num: true },
+    ...keys.map(m => ({ key: m.key, label: m.label, num: true, fmt: r => nf(r[m.key], Math.abs(r[m.key]) < 10 ? 2 : 0) }))], C.per_seed, { max: 420 });
+}
+
+function md(text) {   // tiny renderer for the provenance file (headings, lists, paragraphs, bold, code)
+  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
+  let out = '', list = 0;
+  for (const raw of text.split('\n')) { const l = raw.trimEnd(), m = l.match(/^(\s*)- (.*)$/);
+    if (m) { const lv = Math.floor(m[1].length / 2) + 1; while (list < lv) { out += '<ul>'; list++; } while (list > lv) { out += '</ul>'; list--; } out += `<li>${inl(m[2])}</li>`; continue; }
+    while (list) { out += '</ul>'; list--; }
+    if (/^### /.test(l)) out += `<h3>${inl(l.slice(4))}</h3>`; else if (/^## /.test(l)) out += `<h2>${inl(l.slice(3))}</h2>`;
+    else if (/^# /.test(l)) out += `<h2>${inl(l.slice(2))}</h2>`; else if (l.trim()) out += `<p>${inl(l)}</p>`; }
+  while (list) { out += '</ul>'; list--; }
+  return out;
+}
+function renderData(D) {
+  const ok = D.checks.filter(c => c.passed).length;
+  $('chkTitle').textContent = `Kiểm tra mô hình: ${ok}/${D.checks.length} đạt`;
+  $('chk').innerHTML = table([{ key: 'passed', label: 'Kết quả', html: true, fmt: c => c.passed ? '<span class="ok">✓ Đạt</span>' : '<span class="ko">✗ Không đạt</span>' },
+    { key: 'check', label: 'Kiểm tra' }, { key: 'detail', label: 'Chi tiết' }], D.checks, { max: 520 });
+  const sc = ST.scenarios.find(s => s.key === S.scenario);
+  $('dl').innerHTML = `<a href="map/${sc.slug}.html" target="_blank" rel="noopener">Bản đồ 3D (toàn màn hình)</a>` +
+    sc.csv.map(f => `<a href="data/csv/${f}" download>${f}</a>`).join('') +
+    (ST.compare ? '<a href="data/csv/scenario_summary.csv" download>scenario_summary.csv</a><a href="data/csv/per_seed_comparison.csv" download>per_seed_comparison.csv</a>' : '');
+  if (!$('asm').innerHTML) {
+    $('asm').innerHTML = table([{ key: 'id', label: 'Mã' }, { key: 'category', label: 'Nhóm' }, { key: 'parameter', label: 'Tham số' },
+      { key: 'value', label: 'Giá trị' }, { key: 'unit', label: 'Đơn vị' }, { key: 'basis', label: 'Cơ sở' }], ST.assumptions, { max: 520 });
+    const sts = [...new Set(ST.rules.map(r => r.status))];
+    sts.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; $('ruleFilter').appendChild(o); });
+    const drawRules = () => { const f = $('ruleFilter').value;
+      $('rules').innerHTML = table([{ key: 'rule_id', label: 'Mã' }, { key: 'sheet', label: 'Sheet' }, { key: 'row', label: 'Dòng', num: true },
+        { key: 'original_text', label: 'Nội dung gốc' }, { key: 'category', label: 'Loại' }, { key: 'interpretation', label: 'Diễn giải' },
+        { key: 'status', label: 'Trạng thái' }], ST.rules.filter(r => !f || r.status === f), { max: 520 }); };
+    $('ruleFilter').onchange = drawRules; drawRules();
+    $('facts').innerHTML = ST.verified_facts.length ? table(Object.keys(ST.verified_facts[0]).map(k => ({ key: k, label: k })), ST.verified_facts)
+      : '<div class="hint">Chưa có dữ kiện nào được xác minh.</div>';
+    $('prov').innerHTML = md(ST.provenance);
+  }
+}
+
+// ------------------------------------------------------------------ controls
+$('snap').oninput = () => { S.snap = +$('snap').value; renderRooms(S.data[S.scenario]); };
+$('mTemp').onclick = () => { S.mode = 'temp'; $('mTemp').setAttribute('aria-pressed', 'true'); $('mState').setAttribute('aria-pressed', 'false'); renderRooms(S.data[S.scenario]); };
+$('mState').onclick = () => { S.mode = 'state'; $('mState').setAttribute('aria-pressed', 'true'); $('mTemp').setAttribute('aria-pressed', 'false'); renderRooms(S.data[S.scenario]); };
+$('roomNo').onchange = () => { S.room = Math.max(0, Math.min(532, (+$('roomNo').value || 1) - 1)); renderRooms(S.data[S.scenario]); };
+$('gid').onchange = () => { S.gid = +$('gid').value || 0; renderGroups(S.data[S.scenario]); };
+$('gPrev').onclick = () => { S.gid--; renderGroups(S.data[S.scenario]); };
+$('gNext').onclick = () => { S.gid++; renderGroups(S.data[S.scenario]); };
+$('gPark').onclick = () => { const G = S.data[S.scenario].groups;   // next group (after the current one) that visited the park
+  for (let k = 1; k <= G.length; k++) { const g = G[(S.gid + k) % G.length]; if (g.itinerary.some(r => PARK_NODES.has(r[3]))) { S.gid = g.group_id; break; } }
+  renderGroups(S.data[S.scenario]); };
+
+// ------------------------------------------------------------------ render
+function render() {
+  const D = S.data[S.scenario], B = S.data.baseline;
+  renderHeader(D, B);
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === S.tab));
+  $('tabCur').textContent = TABS.find(t => t[0] === S.tab)[1];
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + S.tab));
+  ({ map: renderMap, rooms: renderRooms, groups: renderGroups, energy: renderEnergy, queues: renderQueues, compare: renderCompare, data: renderData })[S.tab](D);
+}
+await scen(S.scenario);
+render();
+})().catch(e => { document.getElementById('loading').style.display = 'block'; document.getElementById('loading').textContent = 'Lỗi tải dữ liệu: ' + e.message; console.error(e); });
+</script>
+</body>
+</html>

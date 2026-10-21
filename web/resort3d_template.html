@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virtual Hotel Monitoring · 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* UI style adapted from a cozy low-poly farm-game look (cream panels, wooden frames, chunky rounded type);
+     scene colours: tropical island resort palette */
+  :root {
+    --cream: #fff6e3; --cream-2: #fbe9c8; --wood: #8a4b1e; --wood-2: #6b3714; --wood-3: #c99a5b;
+    --ink: #4a2a12; --ink-2: #8a6a4a;
+    --leaf: #6cc040; --leaf-2: #3e9e2a; --teal: #2e8c9c;
+    --gold: #f6b800; --orange: #f08a24; --sea: #1e8bd0; --turq: #43c6db; --roof: #d8432e; --pink: #e85c9a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #a8dcf0; color: var(--ink);
+    font-family: "Nunito", system-ui, sans-serif; overflow: hidden; }
+  #app { position: fixed; inset: 0; }
+  canvas#scene { width: 100%; height: 100%; display: block; }
+  canvas#scene.px { image-rendering: pixelated; image-rendering: crisp-edges; }
+  .wood { background: var(--cream); border: 5px solid var(--wood); border-radius: 22px;
+    box-shadow: inset 0 0 0 2px #fffaf0, 0 6px 0 var(--wood-2), 0 14px 30px rgba(60,30,5,.28); }
+  .title { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; letter-spacing: .5px; line-height: .95;
+    -webkit-text-stroke: 1.6px #7a3e12; paint-order: stroke fill; text-shadow: 0 3px 0 #7a3e12; }
+  .t-gold { background: linear-gradient(#ffe066, #f08a24); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .t-leaf { background: linear-gradient(#b5ea6e, #3e9b35); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  #top { position: absolute; left: 16px; top: 14px; padding: 10px 18px 10px; pointer-events: none; }
+  #top .title { font-size: 26px; }
+  #top .sub { font-size: 12px; color: var(--ink-2); margin-top: 4px; font-weight: 600; }
+  #nav { display: none; gap: 10px; align-items: center; margin-top: 8px; pointer-events: auto; }
+  #nav select { font: 700 13px "Nunito", sans-serif; color: var(--ink); background: #fffdf6; border: 2px solid var(--wood-3);
+    border-radius: 10px; padding: 4px 8px; box-shadow: 0 2px 0 var(--wood-3); cursor: pointer; }
+  #nav a { font: 800 13px "Baloo 2", sans-serif; color: var(--leaf-2); text-decoration: none; }
+  #nav a:hover { text-decoration: underline; }
+
+  #toolbar { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column;
+    gap: 10px; padding: 10px 8px; }
+  #toolbar button { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--wood); color: var(--ink);
+    background: linear-gradient(#fffaf0, var(--cream-2)); box-shadow: 0 3px 0 var(--wood-3); display: grid; place-items: center;
+    cursor: pointer; transition: transform .1s, box-shadow .1s; }
+  #toolbar button:hover { background: #fff; }
+  #toolbar button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--wood-3); }
+  #toolbar button.on { background: linear-gradient(var(--leaf), var(--leaf-2)); color: #fff; border-color: #2c6e1d;
+    box-shadow: 0 3px 0 #2c6e1d; }
+  #toolbar svg { width: 20px; height: 20px; }
+  #toolbar .tag { font: 800 12px "Baloo 2", sans-serif; }
+
+  #panel { position: absolute; right: 16px; top: 14px; width: 330px; max-height: calc(100% - 130px); overflow: auto; padding: 16px 18px; }
+  #panel h2 { margin: 0 0 10px; font-size: 24px; text-align: center; }
+  #clock { position: relative; height: 60px; border-radius: 999px; padding: 4px; margin-bottom: 12px;
+    background: linear-gradient(90deg, var(--leaf), var(--gold), var(--orange)); box-shadow: 0 3px 0 var(--wood-3); }
+  #clock .inner { height: 100%; border-radius: 999px; background: var(--cream); display: flex; align-items: center;
+    justify-content: center; gap: 10px; font: 800 26px "Baloo 2", sans-serif; color: var(--ink); }
+  #clock .day { font-size: 13px; color: var(--ink-2); font-weight: 700; }
+  .big { text-align: center; margin: 2px 0 10px; }
+  .big .v { font: 800 30px "Baloo 2", sans-serif; color: var(--leaf-2); line-height: 1; }
+  .big .l { font-size: 11px; letter-spacing: 1.2px; color: var(--ink-2); text-transform: uppercase; font-weight: 700; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat { text-align: center; background: #fffdf6; border: 2px solid #ecd3a6; border-radius: 14px; padding: 6px 4px; }
+  .stat .v { font: 800 19px "Baloo 2", sans-serif; color: var(--ink); line-height: 1.1; }
+  .stat .l { font-size: 10px; letter-spacing: .6px; color: var(--ink-2); text-transform: uppercase; line-height: 1.25; font-weight: 700; }
+  .stat .u { font-size: 10px; color: var(--ink-2); text-transform: none; }
+  #spark { width: 100%; height: 70px; margin-top: 10px; display: block; background: #fffdf6; border: 2px solid #ecd3a6; border-radius: 14px; }
+  .row { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .btn { width: 100%; padding: 9px 6px; border-radius: 14px; border: 2px solid var(--wood-3); color: var(--ink);
+    background: linear-gradient(#fffaf0, var(--cream-2)); box-shadow: 0 3px 0 var(--wood-3);
+    font: 800 14px "Baloo 2", sans-serif; cursor: pointer; transition: transform .1s, box-shadow .1s; }
+  .btn:hover { background: #fff; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--wood-3); }
+  .btn.primary { color: #fff; border: 2px solid #2c6e1d; background: linear-gradient(#86d94f, var(--leaf-2));
+    box-shadow: 0 0 0 3px var(--teal), 0 4px 0 3px #1f5f6a; text-shadow: 0 1px 0 #2c6e1d; margin: 3px 0 6px; }
+  #follow { margin-top: 12px; border-top: 2px dashed #ecd3a6; padding-top: 10px; display: none; }
+  #follow h3 { margin: 0 0 4px; font: 800 16px "Baloo 2", sans-serif; color: var(--leaf-2); }
+  #follow .meta { font-size: 12px; color: var(--ink-2); margin-bottom: 6px; font-weight: 600; }
+  #follow ol { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.55; max-height: 180px; overflow: auto; }
+  #follow li.now { color: var(--orange); font-weight: 800; }
+  #zoneinfo { margin-top: 12px; border-top: 2px dashed #ecd3a6; padding-top: 10px; font-size: 12px; display: none; }
+  #zoneinfo h3 { margin: 0 0 4px; font: 800 16px "Baloo 2", sans-serif; color: var(--sea); }
+
+  #timeline { position: absolute; left: 76px; right: 362px; bottom: 14px; padding: 8px 18px 10px; }
+  #timeline .head { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-2); margin-bottom: 4px;
+    gap: 10px; flex-wrap: wrap; font-weight: 600; }
+  #slider { width: 100%; accent-color: var(--leaf-2); }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: -1px; border-radius: 3px; border: 1px solid rgba(74,42,18,.4); }
+
+  #labels { position: absolute; inset: 0; pointer-events: none; }
+  .zl { position: absolute; transform: translate(-50%, -100%); padding: 3px 10px 4px; border-radius: 12px; font-size: 12px;
+    background: var(--cream); border: 2.5px solid var(--wood); color: var(--ink); white-space: nowrap; pointer-events: auto;
+    cursor: pointer; box-shadow: 0 3px 0 var(--wood-2); font-weight: 700; }
+  .zl b { font-family: "Baloo 2", sans-serif; font-weight: 800; color: var(--leaf-2); }
+  .zl .c { font-size: 11px; color: var(--ink-2); font-weight: 600; }
+  .zl .c em { font-style: normal; color: var(--sea); font-weight: 800; }
+  .zl .c strong { color: var(--roof); font-weight: 800; }
+  .zl.hot { border-color: var(--roof); }
+  .zl.fl { transform: translate(0, -50%); font-size: 10.5px; padding: 1px 7px; border-width: 2px; box-shadow: 0 2px 0 var(--wood-2); }
+  .zl.fl .c { font-size: 10px; }
+  #nodata { position: absolute; inset: 0; display: none; place-items: center; text-align: center; padding: 30px; }
+  #note { position: absolute; left: 76px; bottom: 104px; font-size: 10.5px; color: #24461a; max-width: 540px; font-weight: 600;
+    text-shadow: 0 1px 0 rgba(255,255,255,.6); }
+  /* no visible scrollbar on the panel (still wheel/touch scrollable on very short screens); tighter spacing */
+  #panel { scrollbar-width: none; padding: 14px 16px; }
+  #panel::-webkit-scrollbar { display: none; }
+  #panel #clock { height: 54px; margin-bottom: 10px; }
+  #panel .big { margin: 0 0 8px; }
+  #panel .big .v { font-size: 26px; }
+  #panel .grid { gap: 6px; }
+  #panel .stat { padding: 4px 4px; }
+  #panel #spark { height: 60px; margin-top: 8px; }
+  #panel .row { margin-top: 10px; gap: 6px; }
+  /* collapsible panel, hide-UI mode, legend toggle */
+  .phead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  #panel .phead h2 { margin: 0; text-align: left; }
+  .fold { width: 34px; height: 34px; flex: none; border-radius: 50%; border: 2px solid var(--wood); color: var(--ink); cursor: pointer;
+    background: linear-gradient(#fffaf0, var(--cream-2)); box-shadow: 0 2px 0 var(--wood-3); display: grid; place-items: center; }
+  .fold svg { width: 18px; height: 18px; transition: transform .2s; }
+  #panel.collapsed .fold svg { transform: rotate(180deg); }
+  #panel.collapsed > :not(.phead):not(#clock) { display: none !important; }
+  #panel.collapsed #clock { margin-bottom: 0; }
+  .legbtn { display: none; font: 800 12px "Baloo 2", sans-serif; color: var(--ink); background: linear-gradient(#fffaf0, var(--cream-2));
+    border: 2px solid var(--wood-3); border-radius: 10px; padding: 2px 10px; cursor: pointer; }
+  body.hide-ui #top, body.hide-ui #panel, body.hide-ui #labels, body.hide-ui #ilabels, body.hide-ui #timeline .head { display: none !important; }
+  /* phones / small tablets: only the left toolbar is open; title, progress panel and timeline are
+     round buttons (bottom-right) that open one bottom sheet at a time */
+  #fabs { display: none; }
+  @media (max-width: 900px) {
+    #top, #panel, #timeline { display: none; z-index: 5; }
+    body[data-sheet="top"] #top, body[data-sheet="panel"] #panel, body[data-sheet="timeline"] #timeline { display: block; }
+    #top { left: 10px; right: 10px; top: auto; bottom: 80px; padding: 10px 14px; pointer-events: auto; }
+    #top .title { font-size: 20px; }
+    #toolbar { top: 12px; left: 10px; transform: none; gap: 5px; padding: 6px 4px; max-height: calc(100% - 96px);
+      overflow-y: auto; scrollbar-width: none; }
+    #toolbar::-webkit-scrollbar { display: none; }
+    #toolbar button { width: 36px; height: 36px; flex: none; }
+    #toolbar svg { width: 17px; height: 17px; }
+    #panel { width: auto; left: 10px; right: 10px; top: auto; bottom: 80px; max-height: calc(100% - 96px); padding: 10px 14px; }
+    #panel h2 { font-size: 20px; }
+    #timeline { left: 10px; right: 10px; bottom: 80px; padding: 8px 12px 10px; }
+    .legbtn { display: inline-block; }
+    #timeline .legend { display: none; }
+    #timeline.showleg .legend { display: flex; }
+    #fabs { display: flex; position: absolute; right: 12px; bottom: 14px; gap: 10px; z-index: 6; }
+    .fab { width: 52px; height: 52px; border-radius: 50%; border: 3px solid var(--wood); color: var(--ink); cursor: pointer;
+      background: linear-gradient(#fffaf0, var(--cream-2)); box-shadow: 0 4px 0 var(--wood-2); display: grid; place-items: center; }
+    .fab svg { width: 24px; height: 24px; }
+    .fab:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--wood-2); }
+    .fab.on { color: #fff; border-color: #2c6e1d; background: linear-gradient(var(--leaf), var(--leaf-2)); box-shadow: 0 4px 0 #2c6e1d; }
+    .zl { font-size: 10.5px; padding: 2px 7px; }
+    #note { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="scene"></canvas>
+  <div id="labels"></div>
+  <div id="top" class="wood"><div class="title"><span class="t-gold">Virtual Hotel</span> <span class="t-leaf">Monitoring</span></div>
+    <div class="sub" id="subtitle"></div><div id="nav"></div></div>
+  <div id="toolbar" class="wood">
+    <button id="bPlay" title="Phát / tạm dừng"><svg viewBox="0 0 24 24" fill="currentColor"><path id="playIcon" d="M8 5v14l11-7z"/></svg></button>
+    <button id="bSpeed" title="Tốc độ phát"><span class="tag" id="speedTag">1×</span></button>
+    <button id="bCam" title="Đặt lại góc nhìn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+    <button id="bPixel" title="Chế độ pixel / HD"><span class="tag" id="pixTag">HD</span></button>
+    <button id="bLabels" class="on" title="Nhãn khu vực"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></button>
+    <button id="bQueue" title="Bay tới hàng chờ dài nhất"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+    <button id="bZoomIn" title="Phóng to" aria-label="Phóng to"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button id="bZoomOut" title="Thu nhỏ" aria-label="Thu nhỏ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/></svg></button>
+    <button id="bInside" title="Bên trong khách sạn" aria-label="Bên trong khách sạn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V5l8-3 8 3v16"/><path d="M4 9h16M4 13h16M4 17h16"/></svg></button>
+    <button id="bHide" title="Ẩn / hiện giao diện" aria-pressed="false"></button>
+  </div>
+  <div id="fabs">
+    <button class="fab" data-sheet="panel" aria-label="Tiến trình mô phỏng" aria-expanded="false" title="Tiến trình mô phỏng">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-6"/></svg></button>
+    <button class="fab" data-sheet="timeline" aria-label="Thời gian mô phỏng" aria-expanded="false" title="Thời gian">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+    <button class="fab" data-sheet="top" aria-label="Thông tin" aria-expanded="false" title="Thông tin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button>
+  </div>
+  <div id="panel" class="wood">
+    <div class="phead"><h2 class="title t-gold">Tiến trình mô phỏng</h2>
+      <button class="fold" id="bFold" aria-expanded="true" aria-controls="panel" title="Thu gọn / mở rộng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 15 6-6 6 6"/></svg></button></div>
+    <div id="clock"><div class="inner"><span id="clockDay" class="day">Ngày 1</span><span id="clockTime">00:00</span></div></div>
+    <div class="big"><div class="v" id="sPark">0</div><div class="l">khách trong công viên</div></div>
+    <div class="grid">
+      <div class="stat"><div class="v" id="sQueue">0</div><div class="l">đang xếp hàng</div></div>
+      <div class="stat"><div class="v" id="sMove">0</div><div class="l">đang di chuyển</div></div>
+      <div class="stat"><div class="v" id="sOcc">0</div><div class="l">phòng có người<br><span class="u" id="sOccOf"></span></div></div>
+      <div class="stat"><div class="v" id="sHvac">0</div><div class="l">phòng đang chạy máy nén</div></div>
+      <div class="stat"><div class="v" id="sKw">0</div><div class="l">công suất <span class="u">(kW)</span></div></div>
+      <div class="stat"><div class="v" id="sCo2">0</div><div class="l">phát thải lũy kế<br><span class="u">(kg CO2e)</span></div></div>
+    </div>
+    <canvas id="spark"></canvas>
+    <div class="row">
+      <button class="btn primary" id="bFollow">Theo dõi một nhóm</button>
+      <button class="btn" id="bLucky">Đổi nhóm khác</button>
+    </div>
+    <div id="follow"><h3 id="fTitle"></h3><div class="meta" id="fMeta"></div><ol id="fList"></ol></div>
+    <div id="zoneinfo"></div>
+  </div>
+  <div id="timeline" class="wood">
+    <div class="head">
+      <span id="tlLeft"></span>
+      <button class="legbtn" id="bLegend" aria-expanded="false">Chú thích</button>
+      <span class="legend">
+        <span><i style="background:#e8418f"></i>Khách</span><span><i style="background:#ff4b1f"></i>Hàng chờ</span><span><i style="background:#f6b800"></i>Nhóm đang về KS</span><span>· Phòng:</span><span><i style="background:#f6d365"></i>Có khách, thức</span>
+        <span><i style="background:#8e7cc3"></i>Có khách, ngủ</span>
+        <span><i style="background:#43c6db"></i>Vắng, HVAC chạy</span>
+        <span><i style="background:#4a5a86"></i>Vắng, HVAC tắt</span>
+        <span><i style="background:#6cbf3f"></i>Đang dọn</span>
+        <span><i style="background:#e8553a"></i>Có khách &gt; ngưỡng nóng</span>
+        <span><i style="background:#2b3555"></i>Phòng trống (không bán)</span>
+      </span>
+    </div>
+    <input id="slider" aria-label="Thời gian mô phỏng" type="range" min="0" max="1439" step="1" value="0">
+  </div>
+  <div id="nodata" class="wood">Chưa có dữ liệu mô phỏng. Hãy chạy <code>python run_simulation.py</code> hoặc mở dashboard.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+const D = /*__SIM_DATA__*/null;
+(function () {
+if (!D) { document.getElementById('nodata').style.display = 'grid'; return; }
+
+// ------------------------------------------------------------------ constants
+const W = 86, H = 64, YS = 0.55;                 // grid size (tiles) and vertical scale
+const C = {                                      // tropical resort palette
+  deep: 0x1257a8, sea: 0x1e8bd0, shallow: 0x43c6db, foam: 0x9fe6ee, sand: 0xf4dfa4, sand2: 0xead08a,
+  grass: 0x6cbf3f, grass2: 0x5cb23a, green: 0x3e9b35, jungle: 0x2c7a2e, dark: 0x1f5f25,
+  path: 0xf1d98a, plaza: 0xeedcb0, road: 0xe2c06a, roof: 0xd8432e, orange: 0xf0892b, white: 0xf5f1e6,
+  navy: 0x13235b, gold: 0xf6b800, blue: 0x3b66c4, purple: 0x8e5bc9, pink: 0xe85c9a, cyan: 0x7fe3f0, wood: 0x9b6a3c
+};
+// schematic layout (tile coords): sea W/S, hotel hill NE
+const POS = {
+  ROOMS: [67, 8], LOBBY: [62, 16], HOTEL_RESTAURANT: [72, 17], POOL: [76, 25], HOTEL_STOP: [61, 26],
+  PARK_STOP: [52, 22], PARK_RESTAURANT: [47, 44], FAMILY: [37, 45], THRILL: [51, 34], INDOOR: [23, 38],
+  REST_A: [30, 9], WATER: [18, 21], REST_B: [39, 18], SHOW: [32, 35],
+  SPA: [60, 10], GYM: [64, 11], KIDS_CLUB: [71, 11]          // inside the hotel block (shown in the interior view)
+};
+const FOOT = { ROOMS: 0, LOBBY: 2.2, HOTEL_RESTAURANT: 2.5, POOL: 3.2, HOTEL_STOP: 1.4, PARK_STOP: 1.8,
+  PARK_RESTAURANT: 2.8, FAMILY: 3.2, THRILL: 4.2, INDOOR: 3.6, REST_A: 3.4, WATER: 4, REST_B: 2.8, SHOW: 3.6,
+  SPA: 1, GYM: 1, KIDS_CLUB: 1 };
+const INSIDE_NODES = new Set(['ROOMS', 'SPA', 'GYM', 'KIDS_CLUB']);
+const ZONE_NAME = {
+  ROOMS: ['Khách sạn', '533 phòng'], LOBBY: ['Sảnh', 'lễ tân'], HOTEL_RESTAURANT: ['Nhà hàng KS', 'ăn uống'],
+  POOL: ['Hồ bơi', 'thư giãn'], HOTEL_STOP: ['Bến xe khách sạn', 'xe nội khu'], PARK_STOP: ['Cổng về khách sạn', 'xe nội khu'],
+  PARK_RESTAURANT: ['Phố ẩm thực', 'nhà hàng'], FAMILY: ['Làng Cổ Tích', 'trò gia đình'], THRILL: ['Đỉnh Phiêu Lưu', 'cảm giác mạnh'],
+  INDOOR: ['Mái Vòm Đại Dương', 'khu trong nhà'], REST_A: ['Vườn Kính', 'nghỉ có điều hòa'], WATER: ['Vịnh Sóng Xanh', 'trò chơi nước'],
+  REST_B: ['Vườn Cọ', 'nghỉ có mái che'], SHOW: ['Sân khấu', 'biểu diễn'],
+  SPA: ['Spa', 'thư giãn'], GYM: ['Phòng gym', 'thể thao'], KIDS_CLUB: ['CLB trẻ em', 'gia đình']
+};
+const ROAD = [[61, 26], [58, 28], [55, 27], [53, 24], [52, 22]];   // shuttle road HOTEL_STOP -> PARK_STOP
+const nodeIds = D.nodes.map(n => n.id);
+const facByNode = {}; D.facilities.forEach((f, i) => { facByNode[D.nodes[f.node].id] = i; });
+const T = D.meta.T, SNAP = D.meta.snapshot_min;
+
+// ------------------------------------------------------------------ terrain
+const hash = (x, z) => { const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return s - Math.floor(s); };
+function isLand(x, z) {
+  const shoreL = 10.5 + 3 * Math.sin(z * 0.2) + (z > 40 ? (z - 40) * 0.32 : 0) - (z < 10 ? (10 - z) * 0.25 : 0);
+  const shoreB = 55.5 - 2.2 * Math.sin(x * 0.16) - (x > 70 ? (x - 70) * 0.35 : 0);
+  const shoreR = 83 - 2.2 * Math.sin(z * 0.27) - (z > 38 ? (z - 38) * 0.25 : 0);
+  if (x >= 42 && x <= 45 && z >= 50 && z <= 61) return true;      // speedboat pier
+  return x > shoreL && z < shoreB && x < shoreR;
+}
+const land = [], dist = [], hgt = [], col = [], pathT = [];
+for (let x = 0; x < W; x++) { land[x] = []; dist[x] = []; hgt[x] = []; col[x] = []; pathT[x] = [];
+  for (let z = 0; z < H; z++) { land[x][z] = isLand(x, z); dist[x][z] = 99; hgt[x][z] = 0; col[x][z] = 0; pathT[x][z] = 0; } }
+// distance to the opposite medium (for beaches and shallow water)
+(function () {
+  const q = [];
+  for (let x = 0; x < W; x++) for (let z = 0; z < H; z++) {
+    for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = x + dx, nz = z + dz;
+      if (nx >= 0 && nz >= 0 && nx < W && nz < H && land[nx][nz] !== land[x][z]) { dist[x][z] = 1; q.push([x, z]); break; }
+    }
+  }
+  while (q.length) { const [x, z] = q.shift();
+    for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, nz = z + dz;
+      if (nx >= 0 && nz >= 0 && nx < W && nz < H && land[nx][nz] === land[x][z] && dist[nx][nz] > dist[x][z] + 1) {
+        dist[nx][nz] = dist[x][z] + 1; q.push([nx, nz]); } } }
+})();
+const bump = (x, z, cx, cz, r, a) => a * Math.exp(-((x - cx) ** 2 + (z - cz) ** 2) / (r * r));
+for (let x = 0; x < W; x++) for (let z = 0; z < H; z++) {
+  if (!land[x][z]) continue;
+  let h = 1 + bump(x, z, 84, -2, 16, 7) + bump(x, z, 60, -4, 9, 4) + bump(x, z, 14, 2, 8, 4) + bump(x, z, 44, 4, 7, 2.5)
+        + bump(x, z, 82, 52, 7, 2) + (x > 56 && z < 32 ? 1.2 : 0);
+  if (dist[x][z] <= 2) h = 1;
+  hgt[x][z] = Math.max(1, Math.round(h));
+}
+function flatten(cx, cz, r, h, c) {
+  for (let x = Math.floor(cx - r); x <= Math.ceil(cx + r); x++) for (let z = Math.floor(cz - r); z <= Math.ceil(cz + r); z++) {
+    if (x < 0 || z < 0 || x >= W || z >= H || !land[x][z]) continue;
+    if ((x - cx) ** 2 + (z - cz) ** 2 <= r * r) { hgt[x][z] = h; if (c) col[x][z] = c; }
+  }
+}
+const padH = id => (D.nodes[nodeIds.indexOf(id)].zone === 'hotel' ? 2 : 1);
+flatten(67, 9, 7.5, 2); for (const id of nodeIds) flatten(POS[id][0], POS[id][1], FOOT[id] + 2.6, padH(id), C.plaza);
+flatten(44, 51, 4, 1, C.plaza);                  // central gate plaza by the pier
+function raster(a, b, color, w) {                // paint a path between two tiles
+  const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 2);
+  for (let i = 0; i <= n; i++) { const x = a[0] + (b[0] - a[0]) * i / n, z = a[1] + (b[1] - a[1]) * i / n;
+    for (let dx = -w; dx <= w; dx++) for (let dz = -w; dz <= w; dz++) { const tx = Math.round(x + dx * .5), tz = Math.round(z + dz * .5);
+      if (tx >= 0 && tz >= 0 && tx < W && tz < H && land[tx][tz]) { col[tx][tz] = color; pathT[tx][tz] = 1; } } }
+}
+D.edges.forEach(([i, j]) => raster(POS[nodeIds[i]], POS[nodeIds[j]], C.path, 1));
+for (let i = 0; i < ROAD.length - 1; i++) raster(ROAD[i], ROAD[i + 1], C.road, 1);
+raster(POS.PARK_RESTAURANT, [44, 51], C.path, 1); raster([44, 51], [43.5, 60], C.wood, 1);
+// smooth paths: tiles on a path take the lower neighbour height (walkable ramps)
+for (let x = 1; x < W - 1; x++) for (let z = 1; z < H - 1; z++) if (pathT[x][z]) hgt[x][z] = Math.min(hgt[x][z], Math.max(1, hgt[x][z]));
+const topY = (x, z) => { x = Math.max(0, Math.min(W - 1, Math.round(x))); z = Math.max(0, Math.min(H - 1, Math.round(z)));
+  return land[x][z] ? hgt[x][z] * YS : 0.35 * YS; };
+const wx = x => x - W / 2, wz = z => z - H / 2;
+
+// ------------------------------------------------------------------ three.js scene
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const HD = Math.min(window.devicePixelRatio || 1, 2);
+let PIX = HD; renderer.setPixelRatio(PIX);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xa8dcf0, 80, 170);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.5, 400);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.maxPolarAngle = 1.35; controls.minDistance = 12; controls.maxDistance = 130;
+const HOME = { pos: new THREE.Vector3(-4, 46, 66), target: new THREE.Vector3(4, 0, 2) };
+if (window.innerWidth / window.innerHeight < 0.8) HOME.pos.sub(HOME.target).multiplyScalar(1.55).add(HOME.target);   // portrait: frame the whole island
+camera.position.copy(HOME.pos); controls.target.copy(HOME.target);
+
+const hemi = new THREE.HemisphereLight(0xe8f6ff, 0x7a9a45, 0.85); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffe7b8, 1.0); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); sun.shadow.radius = 3; Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 50, bottom: -50, far: 220 });
+scene.add(sun); scene.add(sun.target);
+
+const box = new THREE.BoxGeometry(1, 1, 1);
+const lam = c => new THREE.MeshLambertMaterial({ color: c, flatShading: true });
+function add(geo, color, x, y, z, sx = 1, sy = 1, sz = 1, opts = {}) {
+  const m = new THREE.Mesh(geo, opts.mat || lam(color));
+  m.position.set(wx(x), y, wz(z)); m.scale.set(sx, sy, sz);
+  if (opts.ry) m.rotation.y = opts.ry;
+  m.castShadow = opts.shadow !== false; m.receiveShadow = true; scene.add(m); return m;
+}
+function block(color, x, z, w, h, d, y0) { const y = (y0 ?? topY(x, z)); return add(box, color, x, y + h / 2, z, w, h, d); }
+
+// open sea beyond the grid so the island does not float in a box
+(function () { const m = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), lam(C.deep)); m.rotation.x = -Math.PI / 2;
+  m.position.y = 0.12; m.receiveShadow = true; scene.add(m); })();
+// terrain columns (instanced)
+(function () {
+  const cols = []; for (let x = 0; x < W; x++) for (let z = 0; z < H; z++) cols.push([x, z]);
+  const inst = new THREE.InstancedMesh(box, new THREE.MeshLambertMaterial({ flatShading: true }), cols.length);
+  const m = new THREE.Matrix4(), c = new THREE.Color();
+  cols.forEach(([x, z], i) => {
+    let h, color;
+    if (!land[x][z]) { h = 0.35 * YS; const d = dist[x][z];
+      color = d <= 1 ? C.foam : d <= 3 ? C.shallow : d <= 8 ? C.sea : C.deep; }
+    else { h = hgt[x][z] * YS;
+      if (col[x][z]) color = col[x][z];
+      else if (dist[x][z] <= 2 && hgt[x][z] <= 1) color = (x + z) % 2 ? C.sand : C.sand2;
+      else { const hh = hgt[x][z]; color = hh <= 1 ? ((x + z) % 2 ? C.grass : C.grass2) : hh <= 3 ? C.green : hh <= 5 ? C.jungle : C.dark; } }
+    m.makeScale(1, h, 1); m.setPosition(wx(x), h / 2, wz(z)); inst.setMatrixAt(i, m);
+    c.setHex(color); if (land[x][z] && !col[x][z]) c.offsetHSL(0, 0, (hash(x, z) - .5) * .05); inst.setColorAt(i, c);
+  });
+  inst.receiveShadow = true; scene.add(inst);
+})();
+
+// trees and palms (static scenery, deterministic placement)
+(function () {
+  const spots = [];
+  for (let x = 0; x < W; x++) for (let z = 0; z < H; z++) {
+    if (!land[x][z] || col[x][z] || pathT[x][z]) continue;
+    const near = nodeIds.some(id => Math.hypot(x - POS[id][0], z - POS[id][1]) < FOOT[id] + 3.5) || (x > 56 && x < 78 && z > 3 && z < 13);
+    if (near) continue;
+    const beach = dist[x][z] <= 3, p = hgt[x][z] >= 3 ? 0.42 : beach ? 0.12 : 0.1;
+    if (hash(x + 3, z + 7) < p) spots.push([x, z, beach && hgt[x][z] <= 1]);
+  }
+  const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(.5, .6, 1, 5), lam(C.wood), spots.length);
+  const crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.62, 0), new THREE.MeshLambertMaterial({ flatShading: true }), spots.length);
+  const m = new THREE.Matrix4(), c = new THREE.Color();
+  spots.forEach(([x, z, palm], i) => {
+    const y = topY(x, z), th = palm ? 1.6 : 0.7, s = 0.6 + hash(x, z) * 0.5;
+    m.makeScale(0.22, th, 0.22); m.setPosition(wx(x), y + th / 2, wz(z)); trunk.setMatrixAt(i, m);
+    const blossom = !palm && hash(z + 11, x + 5) < .06;
+    m.makeScale(palm ? 1.5 : s + .55, palm ? 0.55 : s + .6, palm ? 1.5 : s + .55); m.setPosition(wx(x), y + th + (palm ? .15 : s * .55), wz(z));
+    crown.setMatrixAt(i, m); c.setHex(blossom ? 0xe7a1b0 : palm ? 0x8cc63f : (hash(z, x) > .5 ? 0x6daa2c : 0x4e8f2a)); crown.setColorAt(i, c);
+  });
+  trunk.castShadow = crown.castShadow = true; scene.add(trunk); scene.add(crown);
+})();
+
+// ------------------------------------------------------------------ buildings
+const dyn = {};
+// hotel block: 13 floors x 41 rooms, one window pixel per room (DataTexture)
+(function () {
+  const [x, z] = POS.ROOMS, y = topY(x, z), floors = D.meta.floors, per = Math.ceil(D.meta.rooms / floors);
+  const w = 24, d = 4.2, h = 8.5;
+  const tex = new THREE.DataTexture(new Uint8Array(per * floors * 4), per, floors, THREE.RGBAFormat);
+  tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.needsUpdate = true;
+  const wall = lam(C.white);
+  const mats = [wall, wall, lam(C.roof), wall, new THREE.MeshBasicMaterial({ map: tex }), wall];
+  const b = new THREE.Mesh(box, mats); b.position.set(wx(x), y + h / 2, wz(z)); b.scale.set(w, h, d);
+  b.castShadow = b.receiveShadow = true; scene.add(b);
+  dyn.hotelExt = [b, add(box, C.roof, x, y + h + .45, z, w + .8, .9, d + 1.2), add(box, C.orange, x, y + h + 1.1, z, w - 6, .5, 1.6),
+    add(box, C.gold, x - w / 2 - .6, y + h * .45, z + 2.2, .5, h * .9, .5)];
+  dyn.facade = { tex, per, floors };
+  for (const [vx, vz] of [[77, 5], [79, 11], [80, 31], [80, 36], [79, 41], [76, 45]]) {   // villas with red roofs
+    const vy = topY(vx, vz); add(box, C.white, vx, vy + .6, vz, 2.2, 1.2, 1.8);
+    add(new THREE.ConeGeometry(1.7, 1.1, 4), C.roof, vx, vy + 1.75, vz, 1, 1, 1, { ry: Math.PI / 4 });
+  }
+})();
+(function lobby() { const [x, z] = POS.LOBBY, y = topY(x, z);
+  add(box, C.white, x, y + 1, z, 4.2, 2, 3); add(new THREE.ConeGeometry(3.3, 1.4, 4), C.orange, x, y + 2.7, z, 1, 1, .8, { ry: Math.PI / 4 }); })();
+(function restaurant() { const [x, z] = POS.HOTEL_RESTAURANT, y = topY(x, z);
+  for (const [dx, dz] of [[-1.6, -1.2], [1.6, -1.2], [-1.6, 1.2], [1.6, 1.2]]) add(box, C.wood, x + dx, y + .8, z + dz, .3, 1.6, .3);
+  add(box, C.white, x, y + .3, z, 3.8, .6, 3); add(new THREE.ConeGeometry(3.4, 1.6, 4), C.roof, x, y + 2.4, z, 1, 1, 1, { ry: Math.PI / 4 }); })();
+(function pool() { const [x, z] = POS.POOL, y = topY(x, z);
+  add(box, C.shallow, x, y + .02, z, 6, .1, 3.6, { shadow: false }); add(box, C.shallow, x - 1.8, y + .02, z + 2.2, 2.4, .1, 1.6, { shadow: false });
+  for (let i = 0; i < 5; i++) add(box, C.white, x - 2.4 + i * 1.2, y + .15, z - 2.6, .6, .2, .9); })();
+function stop(id, color) { const [x, z] = POS[id], y = topY(x, z);
+  add(box, C.navy, x - 1, y + 1, z, .25, 2, .25); add(box, C.navy, x + 1, y + 1, z, .25, 2, .25);
+  add(box, color, x, y + 2.1, z, 2.8, .35, 1.2); }
+stop('HOTEL_STOP', C.gold);
+(function gate() { const [x, z] = POS.PARK_STOP, y = topY(x, z);
+  add(box, C.navy, x - 1.8, y + 1.6, z, .7, 3.2, .7); add(box, C.navy, x + 1.8, y + 1.6, z, .7, 3.2, .7);
+  add(box, C.gold, x, y + 3.4, z, 4.6, .6, .9); add(box, C.roof, x, y + 3.9, z, 2.4, .4, .6); })();
+(function centralGate() { const y = topY(44, 51);
+  add(box, C.navy, 42, y + 1.5, 51, .6, 3, .6); add(box, C.navy, 46, y + 1.5, 51, .6, 3, .6); add(box, C.gold, 44, y + 3.1, 51, 5, .7, .8);
+  add(box, C.wood, 43.5, .45, 61, 3, .3, 1.4); add(box, C.white, 40.5, .5, 60, 2.2, .5, .9); add(box, C.white, 47, .5, 59.5, 2.2, .5, .9); })();
+(function cableCar() {                           // static towers over the sea, as on the map
+  for (const [x, z] of [[30, 58], [22, 61], [14, 63]]) { add(box, C.white, x, 3, z, .5, 6, .5); add(box, C.roof, x, 6.1, z, 1.4, .3, .4); }
+})();
+// THRILL: roller coaster (red track like the map); car moves only while the model has riders on board
+(function coaster() { const [x, z] = POS.THRILL, y = topY(x, z);
+  const pts = []; for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2;
+    pts.push(new THREE.Vector3(wx(x) + Math.cos(a) * 4.2, y + 1.2 + 2.6 * Math.max(0, Math.sin(a * 2 + .6)) + (i < 6 ? 2.2 * Math.sin(i / 6 * Math.PI) : 0), wz(z) + Math.sin(a) * 2.6)); }
+  const curve = new THREE.CatmullRomCurve3(pts, true);
+  const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 120, .16, 5, true), lam(C.roof)); tube.castShadow = true; scene.add(tube);
+  for (let i = 0; i < 24; i += 2) { const p = curve.getPoint(i / 24); const m = add(box, C.white, 0, 0, 0, .14, p.y - y, .14);
+    m.position.set(p.x, y + (p.y - y) / 2, p.z); }
+  const car = add(box, C.gold, 0, 0, 0, .9, .45, .6); car.castShadow = true;
+  dyn.coaster = { curve, car, station: 0.02 };
+  add(box, C.navy, x + 3.4, y + .6, z + 3, 2.2, 1.2, 1.4);
+})();
+// FAMILY: Fairy Land castle + carousel (rotates only while riders are active)
+(function castle() { const [x, z] = POS.FAMILY, y = topY(x, z);
+  add(box, 0xe9e3f5, x, y + 1.3, z, 4, 2.6, 2.6);
+  for (const [dx, dz, hh] of [[-2, -1.3, 4], [2, -1.3, 4], [-2, 1.3, 3.2], [2, 1.3, 3.2], [0, 0, 5.2]]) {
+    add(new THREE.CylinderGeometry(.55, .55, hh, 6), C.blue, x + dx, y + hh / 2, z + dz);
+    add(new THREE.ConeGeometry(.8, 1.6, 6), hh > 4.5 ? C.pink : C.purple, x + dx, y + hh + .8, z + dz); }
+  const car = new THREE.Group(); car.position.set(wx(x + 3.4), y, wz(z + 2.2)); scene.add(car);
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, .3, 8), lam(C.gold)); base.position.y = .15; car.add(base);
+  const top = new THREE.Mesh(new THREE.ConeGeometry(1.5, .9, 8), lam(C.pink)); top.position.y = 1.7; car.add(top);
+  for (let i = 0; i < 6; i++) { const p = new THREE.Mesh(box, lam(i % 2 ? C.white : C.cyan)); const a = i / 6 * Math.PI * 2;
+    p.position.set(Math.cos(a), .7, Math.sin(a)); p.scale.set(.35, .5, .35); car.add(p); }
+  dyn.carousel = car;
+})();
+// INDOOR: Sea World dome + aquarium glass
+(function seaworld() { const [x, z] = POS.INDOOR, y = topY(x, z);
+  add(new THREE.SphereGeometry(3, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), C.white, x, y, z);
+  add(new THREE.CylinderGeometry(3.05, 3.05, .5, 10), C.sea, x, y + .5, z);
+  add(box, C.cyan, x + 2.6, y + .9, z + 2.2, 2.4, 1.8, 1.2, { mat: new THREE.MeshLambertMaterial({ color: C.cyan, transparent: true, opacity: .75 }) }); })();
+// WATER: Tropical Paradise slides + pools
+(function water() { const [x, z] = POS.WATER, y = topY(x, z);
+  add(box, C.shallow, x + .5, y + .03, z + 1.5, 6.5, .1, 3.5, { shadow: false });
+  add(box, C.orange, x - 2.5, y + 2, z - 2.2, 1.6, 4, 1.6); add(box, C.roof, x - 2.5, y + 4.3, z - 2.2, 2, .6, 2);
+  [[C.gold, 0], [C.pink, 1], [C.sea, 2], [C.grass, 3]].forEach(([c, k]) => {
+    const p = [new THREE.Vector3(wx(x - 2.5), y + 3.9 - k * .3, wz(z - 2.2)), new THREE.Vector3(wx(x - .5 + k), y + 2.6, wz(z - 1.2 - k * .4)),
+      new THREE.Vector3(wx(x + .5 + k * .8), y + 1.2, wz(z + .2)), new THREE.Vector3(wx(x + 1 + k * .9), y + .2, wz(z + 1.4))];
+    const t = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(p), 30, .22, 5), lam(c)); t.castShadow = true; scene.add(t); }); })();
+// SHOW: amphitheatre facing the sea
+(function show() { const [x, z] = POS.SHOW, y = topY(x, z);
+  for (let r = 0; r < 3; r++) for (let i = 0; i <= 8; i++) { const a = Math.PI * (i / 8); const rr = 2 + r * .8;
+    add(box, r % 2 ? C.white : 0xd9d2c0, x + Math.cos(a) * rr, y + .2 + r * .3, z - Math.sin(a) * rr, .9, .4 + r * .6, .7, { ry: -a }); }
+  add(box, C.navy, x, y + .4, z + .6, 3, .8, 1.4); add(box, C.gold, x, y + 2, z + 1.2, 3.2, .3, .2); })();
+(function food() { const [x, z] = POS.PARK_RESTAURANT, y = topY(x, z);
+  [C.roof, C.gold, C.sea, C.pink, C.orange].forEach((c, i) => { add(box, C.white, x - 3 + i * 1.5, y + .55, z - 1.2, 1.2, 1.1, 1.2);
+    add(box, c, x - 3 + i * 1.5, y + 1.25, z - 1.2, 1.4, .3, 1.4); }); })();
+(function garden() { const [x, z] = POS.REST_A, y = topY(x, z);
+  const glass = new THREE.MeshLambertMaterial({ color: C.cyan, transparent: true, opacity: .55 });
+  [[-1.6, 0, 1.6], [1.6, .6, 1.3], [0, -1.8, 1.1]].forEach(([dx, dz, r]) => add(new THREE.SphereGeometry(r, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2), 0, x + dx, y, z + dz, 1, 1, 1, { mat: glass }));
+  const wheel = new THREE.Mesh(new THREE.TorusGeometry(2.4, .12, 4, 18), lam(C.white)); wheel.position.set(wx(x - 4.6), y + 3, wz(z - 1)); scene.add(wheel);
+  add(box, C.navy, x - 4.6, y + 1.4, z - 1, .3, 2.8, .3); })();
+(function kings() { const [x, z] = POS.REST_B, y = topY(x, z);
+  for (const [dx, dz] of [[-1.4, -1], [1.4, -1], [-1.4, 1], [1.4, 1]]) add(box, C.white, x + dx, y + .9, z + dz, .25, 1.8, .25);
+  add(box, C.grass2, x, y + 1.9, z, 3.6, .3, 2.6);
+  for (let i = 0; i < 6; i++) add(box, i % 2 ? C.pink : C.gold, x - 2.5 + i, y + .15, z + 2.4, .8, .3, .6); })();
+
+// ------------------------------------------------------------------ hotel interior (exploded floors, toggled)
+// Levels bottom → top: B1 laundry · G lobby + restaurant · L2 spa / gym / kids club · room floors 1..13.
+// Every count and colour comes from the simulation frames (rooms: state string; amenities: active / queue).
+const INT = (function () {
+  const [x, z] = POS.ROOMS, y0 = topY(x, z), floors = D.meta.floors, per = Math.ceil(D.meta.rooms / floors);
+  const grp = new THREE.Group(); grp.position.set(wx(x), y0, wz(z)); grp.visible = false; scene.add(grp);
+  const W = 24, DEP = 6, LV = { laundry: .4, ground: 2.3, amen: 4.2, room0: 6.4 }, FH = 1.75;
+  const slab = (y, color) => { const m = new THREE.Mesh(box, lam(color)); m.position.set(0, y - .08, 0); m.scale.set(W, .16, DEP);
+    m.receiveShadow = true; grp.add(m); };
+  const zoneFloor = (x0, x1, y, color) => { const m = new THREE.Mesh(box, lam(color)); m.position.set((x0 + x1) / 2, y + .02, 0);
+    m.scale.set(x1 - x0 - .2, .05, DEP - .5); grp.add(m); };
+  slab(LV.laundry, 0xb9b2a3); slab(LV.ground, C.white); slab(LV.amen, C.white);
+  for (let f = 0; f < floors; f++) slab(LV.room0 + f * FH, 0xf2eadb);
+  // zones (x ranges in local units)
+  const Z = {
+    LOBBY: { lv: LV.ground, x0: -12, x1: -2, color: 0xe9dcc0 },
+    HOTEL_RESTAURANT: { lv: LV.ground, x0: -2, x1: 12, color: 0xf3c98b },
+    SPA: { lv: LV.amen, x0: -12, x1: -4, color: 0xbfe6dd },
+    GYM: { lv: LV.amen, x0: -4, x1: 4, color: 0xc9d6f2 },
+    KIDS_CLUB: { lv: LV.amen, x0: 4, x1: 12, color: 0xf6d2e3 },
+  };
+  for (const k in Z) zoneFloor(Z[k].x0, Z[k].x1, Z[k].lv, Z[k].color);
+  for (let i = 0; i < 6; i++) { const t = new THREE.Mesh(box, lam(C.wood)); t.position.set(1 + i * 1.8, LV.ground + .3, -1.6); t.scale.set(.9, .5, .9); grp.add(t); }
+  // laundry machines glow while a batch runs
+  const machines = []; const nM = D.meta.machines || 3;
+  for (let i = 0; i < nM; i++) { const m = new THREE.Mesh(box, new THREE.MeshLambertMaterial({ color: 0x8f97a8 }));
+    m.position.set(-8 + i * (16 / Math.max(1, nM - 1)), LV.laundry + .55, 0); m.scale.set(2.2, 1.1, 2); grp.add(m); machines.push(m); }
+  // room cells: two rows per floor along a corridor
+  const cells = new THREE.InstancedMesh(box, new THREE.MeshBasicMaterial(), D.meta.rooms);   // unlit: state colours stay readable at night
+  const front = Math.ceil(per / 2), cw = W / front, M4 = new THREE.Matrix4();
+  for (let r = 0; r < D.meta.rooms; r++) { const f = Math.floor(r / per), c = r % per, row = c < front ? 0 : 1, i = row ? c - front : c;
+    M4.compose(new THREE.Vector3(-W / 2 + cw * (i + .5), LV.room0 + f * FH + .25, row ? -1.6 : 1.6), new THREE.Quaternion(), new THREE.Vector3(cw - .12, .5, 2.4));
+    cells.setMatrixAt(r, M4); cells.setColorAt(r, new THREE.Color(0x2b3555)); }
+  grp.add(cells);
+  // people inside amenities (1 cube = 2 persons) and queues in front of each zone
+  const crowd = new THREE.InstancedMesh(box, new THREE.MeshBasicMaterial({ color: 0xffffff }), 900); crowd.count = 0; grp.add(crowd);
+  // labels
+  const el = document.createElement('div'); el.id = 'ilabels'; el.style.cssText = 'position:absolute;inset:0;pointer-events:none;display:none';
+  document.getElementById('app').insertBefore(el, document.getElementById('top'));
+  const mk = (html, v) => { const d = document.createElement('div'); d.className = 'zl'; d.innerHTML = html; el.appendChild(d); return { d, v, c: null }; };
+  const L = [];
+  const zLabel = (id, name) => { const z0 = Z[id]; const o = mk(`<b>${name}</b><div class="c"></div>`, new THREE.Vector3((z0.x0 + z0.x1) / 2, z0.lv + 1.1, DEP / 2));
+    o.c = o.d.querySelector('.c'); o.id = id; L.push(o); };
+  zLabel('LOBBY', 'Sảnh lễ tân'); zLabel('HOTEL_RESTAURANT', 'Nhà hàng'); zLabel('SPA', 'Spa'); zLabel('GYM', 'Gym'); zLabel('KIDS_CLUB', 'CLB trẻ em');
+  const lau = mk('<b>Giặt là</b><div class="c"></div>', new THREE.Vector3(-W / 2 + 2, LV.laundry + 1.4, DEP / 2)); lau.c = lau.d.querySelector('.c'); lau.id = 'LAUNDRY'; L.push(lau);
+  for (let f = 0; f < floors; f++) { const o = mk(`<b>Tầng ${f + 1}</b> <span class="c"></span>`, new THREE.Vector3(W / 2 + .6, LV.room0 + f * FH + .4, 0));
+    o.c = o.d.querySelector('.c'); o.floor = f; o.d.classList.add('fl'); L.push(o); }
+  return { grp, Z, cells, crowd, machines, labels: L, el, per, front, cw, top: LV.room0 + floors * FH, lastK: -1 };
+})();
+
+// ------------------------------------------------------------------ dynamic layers (all fed by simulation output)
+const nodeY = id => topY(POS[id][0], POS[id][1]) + .35;
+function nodeVec(i) { const id = nodeIds[i]; return new THREE.Vector3(wx(POS[id][0]), nodeY(id), wz(POS[id][1])); }
+// polyline per (from>to) route, cumulative lengths
+const routeCache = {};
+function routePts(a, b) {
+  const key = a + '>' + b; if (routeCache[key]) return routeCache[key];
+  const ids = D.routes[key] || [a, b]; const pts = ids.map(nodeVec);
+  const len = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + pts[i].distanceTo(pts[i - 1]));
+  return (routeCache[key] = { pts, len });
+}
+function along(r, s, out) {
+  const L = r.len[r.len.length - 1] * Math.min(1, Math.max(0, s));
+  let i = 1; while (i < r.len.length - 1 && r.len[i] < L) i++;
+  const seg = r.len[i] - r.len[i - 1] || 1, f = (L - r.len[i - 1]) / seg;
+  return out.copy(r.pts[i - 1]).lerp(r.pts[i], f);
+}
+const roadPts = ROAD.map(([x, z]) => new THREE.Vector3(wx(x), topY(x, z) + .5, wz(z)));
+const roadR = { pts: roadPts, len: [0] }; for (let i = 1; i < roadPts.length; i++) roadR.len.push(roadR.len[i - 1] + roadPts[i].distanceTo(roadPts[i - 1]));
+const roadRev = { pts: roadPts.slice().reverse(), len: [0] }; for (let i = 1; i < roadPts.length; i++) roadRev.len.push(roadRev.len[i - 1] + roadRev.pts[i].distanceTo(roadRev.pts[i - 1]));
+
+const glow = (c) => new THREE.MeshBasicMaterial({ color: c });
+const MAXW = 900, MAXC = 2600;
+const walkers = new THREE.InstancedMesh(box, glow(0xffffff), MAXW); walkers.count = 0; scene.add(walkers);
+const crowd = new THREE.InstancedMesh(box, glow(0xffffff), MAXC); crowd.count = 0; scene.add(crowd);
+const buses = new THREE.InstancedMesh(box, lam(C.white), 12); buses.count = 0; buses.castShadow = true; scene.add(buses);
+const busStripe = new THREE.InstancedMesh(box, glow(C.gold), 12); busStripe.count = 0; scene.add(busStripe);
+// light beams per facility: height ~ (queue + active) / capacity
+const beams = D.facilities.map(f => { const id = nodeIds[f.node];
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(.35, .6, 1, 6, 1, true),
+    new THREE.MeshBasicMaterial({ color: C.turq, transparent: true, opacity: .32, depthWrite: false, side: THREE.DoubleSide }));
+  m.position.set(wx(POS[id][0] + FOOT[id] * .55), 0, wz(POS[id][1] - FOOT[id] * .55)); scene.add(m); return m; });
+const marker = new THREE.Mesh(new THREE.OctahedronGeometry(.7, 0), glow(C.gold)); marker.visible = false; scene.add(marker);
+const markerBeam = new THREE.Mesh(new THREE.CylinderGeometry(.08, .08, 8, 4), new THREE.MeshBasicMaterial({ color: C.gold, transparent: true, opacity: .6 }));
+markerBeam.visible = false; scene.add(markerBeam);
+
+// crowd slots: rings around each node, queue lines toward the viewer (+z)
+const slots = nodeIds.map(id => { const [x, z] = POS[id], y = nodeY(id), r0 = (FOOT[id] || 1.5) + .9, ring = [];
+  for (let i = 0; i < 400; i++) { const k = Math.floor(i / 22), a = (i % 22) / 22 * Math.PI * 2 + k * .3, r = r0 + k * .6;
+    ring.push([wx(x + Math.cos(a) * r), y, wz(z + Math.sin(a) * r)]); }
+  const line = []; for (let i = 0; i < 400; i++) { const row = Math.floor(i / 30), c = i % 30;
+    line.push([wx(x - FOOT[id] - 1 - row * .6), y, wz(z + FOOT[id] * .3 + 1 + c * .55)]); }
+  return { ring, line }; });
+
+// room facade colours by state code
+const RS = { '0': [43, 53, 85], '1': [74, 90, 134], '2': [67, 198, 219], '3': [246, 211, 101], '4': [142, 124, 195], '5': [108, 191, 63], '6': [232, 85, 58] };
+function paintFacade(rs) {
+  const { tex, per, floors } = dyn.facade, d = tex.image.data;
+  for (let r = 0; r < per * floors; r++) {
+    const fl = Math.floor(r / per), c = r % per, p = ((fl) * per + c) * 4, code = r < rs.length ? rs[r] : '0', v = RS[code];
+    d[p] = v[0]; d[p + 1] = v[1]; d[p + 2] = v[2]; d[p + 3] = 255; }
+  tex.needsUpdate = true;
+}
+
+// ------------------------------------------------------------------ labels
+const labelsEl = document.getElementById('labels');
+const LABEL_NODES = ['ROOMS', 'HOTEL_RESTAURANT', 'POOL', 'HOTEL_STOP', 'PARK_STOP', 'THRILL', 'FAMILY', 'INDOOR', 'WATER', 'SHOW', 'PARK_RESTAURANT', 'REST_A', 'REST_B'];
+const labels = LABEL_NODES.map(id => { const el = document.createElement('div'); el.className = 'zl';
+  el.innerHTML = `<b>${ZONE_NAME[id][0]}</b> · ${ZONE_NAME[id][1]}<div class="c"></div>`; labelsEl.appendChild(el);
+  el.addEventListener('click', () => focusNode(id));
+  const hgtLbl = { ROOMS: 11, THRILL: 7, FAMILY: 7.5, HOTEL_STOP: 1.2, PARK_STOP: 6.5, HOTEL_RESTAURANT: 5.5, POOL: 2.5 }[id] ?? 4.5;
+  return { id, el, c: el.querySelector('.c'), v: new THREE.Vector3(wx(POS[id][0]), nodeY(id) + hgtLbl, wz(POS[id][1])) }; });
+let showLabels = true;
+
+// ------------------------------------------------------------------ playback state (GSAP-driven)
+const S = { t: 8 * 60, playing: true, speed: 1, follow: null, frameK: -1 };
+const SPEEDS = [1, 3, 8, 0.5];
+const MIN_PER_SEC = 6;                                  // simulated minutes per real second at 1x
+const slider = document.getElementById('slider'); slider.max = T - 1;
+const shown = { park: 0, queue: 0, move: 0, occ: 0, hv: 0, kw: 0, co2: 0 };
+const ids = { park: 'sPark', queue: 'sQueue', move: 'sMove', occ: 'sOcc', hv: 'sHvac', kw: 'sKw', co2: 'sCo2' };
+const nf = new Intl.NumberFormat('vi-VN');
+function tweenStats(target) {
+  gsap.to(shown, { ...target, duration: .45, ease: 'power2.out', overwrite: true, onUpdate: () => {
+    for (const k in ids) document.getElementById(ids[k]).textContent = nf.format(Math.round(shown[k])); } });
+}
+document.getElementById('sOccOf').textContent = `/ ${D.meta.occupied} phòng bán · ${D.meta.rooms} tổng`;
+document.getElementById('subtitle').textContent =
+  `${D.meta.scenario} · seed ${D.meta.seed} · ${D.meta.groups} nhóm / ${D.meta.guests} khách · ${D.meta.days} ngày`;
+if (D.nav) {                                     // static-site build: scenario switcher + comparison link
+  const nav = document.getElementById('nav'); nav.style.display = 'flex';
+  const sel = document.createElement('select'); sel.setAttribute('aria-label', 'Kịch bản');
+  D.nav.pages.forEach(p => { const o = document.createElement('option'); o.value = p.href; o.textContent = p.label;
+    o.selected = !!p.current; sel.appendChild(o); });
+  sel.onchange = () => { window.location.href = sel.value; };
+  const a = document.createElement('a'); a.href = D.nav.compare; a.textContent = 'So sánh 10 seed →';
+  nav.append(sel, a);
+}
+
+function frameAt(t) { return Math.max(0, Math.min(D.frames.length - 1, Math.floor(t / SNAP))); }
+const lerp = (a, b, f) => a + (b - a) * f;
+const v3 = new THREE.Vector3(), M = new THREE.Matrix4(), Q = new THREE.Quaternion(), SC = new THREE.Vector3(), CL = new THREE.Color();
+
+function update() {
+  const t = S.t, k = frameAt(t), F = D.frames[k], G = D.frames[Math.min(k + 1, D.frames.length - 1)];
+  const f = Math.min(1, (t - F.t) / SNAP);
+  // sky & light by time of day
+  const hr = (t % 1440) / 60, day = Math.max(0, Math.sin((hr - 6) / 12 * Math.PI));
+  const dusk = Math.max(0, 1 - Math.abs(hr - 18.2) / 1.2) + Math.max(0, 1 - Math.abs(hr - 5.8) / 1.0);
+  const sky = new THREE.Color(0x1b2550).lerp(new THREE.Color(0xa8dcf0), day).lerp(new THREE.Color(0xf5a65b), Math.min(.55, dusk * .55));
+  scene.background = sky; scene.fog.color.copy(sky);
+  hemi.intensity = .25 + .6 * day; sun.intensity = .1 + .9 * day;
+  const ang = (hr - 6) / 12 * Math.PI; sun.position.set(Math.cos(ang) * 60, 15 + Math.sin(Math.max(.15, ang)) * 60, 25); sun.target.position.set(0, 0, 0);
+  // frame-level updates
+  if (k !== S.frameK) { S.frameK = k; paintFacade(F.rs);
+    const queue = F.q.reduce((a, b) => a + b, 0) + F.sq[0] + F.sq[1];
+    const moving = (F.st.TRAVELING || 0) + (F.st.RETURNING || 0);
+    tweenStats({ park: F.ip, queue, move: moving, occ: F.occ, hv: F.hv, kw: F.kw, co2: F.co2 });
+    const d = Math.floor(t / 1440) + 1, m = Math.floor(t) % 1440;
+    document.getElementById('clockDay').textContent = `Ngày ${d}`;
+    document.getElementById('clockTime').textContent = `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+    document.getElementById('tlLeft').textContent = `Ngoài trời ${F.to}°C · nhiệt độ TB phòng có khách ${F.tm ?? '–'}°C · đang dọn ${F.cl} phòng`;
+    if (S.follow !== null) renderFollow();
+    drawSpark();
+  }
+  // crowds: persons at nodes (interpolated between 5-min snapshots), 1 cube = 2 persons
+  let ci = 0;
+  for (let i = 0; i < nodeIds.length; i++) {
+    const fi = facByNode[nodeIds[i]];
+    const qn = fi !== undefined ? lerp(F.q[fi], G.q[fi], f) : 0;
+    const stopQ = nodeIds[i] === 'HOTEL_STOP' ? lerp(F.sq[0], G.sq[0], f) : nodeIds[i] === 'PARK_STOP' ? lerp(F.sq[1], G.sq[1], f) : 0;
+    const total = lerp(F.n[i], G.n[i], f), inQueue = Math.min(total, qn + stopQ), present = Math.max(0, total - inQueue);
+    if (INSIDE_NODES.has(nodeIds[i])) continue;       // guests inside the hotel: facade / interior view
+    const nq = Math.min(399, Math.round(inQueue / 2)), np = Math.min(399, Math.round(present / 2));
+    for (let j = 0; j < np && ci < MAXC; j++, ci++) { const s = slots[i].ring[j];
+      M.compose(v3.set(s[0], s[1] + .18, s[2]), Q, SC.set(.42, .62, .42)); crowd.setMatrixAt(ci, M); crowd.setColorAt(ci, CL.setHex(0xe8418f)); }
+    for (let j = 0; j < nq && ci < MAXC; j++, ci++) { const s = slots[i].line[j];
+      M.compose(v3.set(s[0], s[1] + .18, s[2]), Q, SC.set(.42, .62, .42)); crowd.setMatrixAt(ci, M); crowd.setColorAt(ci, CL.setHex(0xff4b1f)); }
+  }
+  crowd.count = ci; crowd.instanceMatrix.needsUpdate = true; if (crowd.instanceColor) crowd.instanceColor.needsUpdate = true;
+  // walkers: exact walk segments from the event log
+  let wi = 0; let followPos = null;
+  for (const w of D.walks) {
+    if (w[3] > t || w[4] <= t) continue;
+    const r = routePts(w[1], w[2]); along(r, (t - w[3]) / (w[4] - w[3]), v3); v3.y += .3;
+    if (S.follow === w[0]) followPos = v3.clone();
+    if (wi < MAXW) { const s = .48 + .09 * w[5];
+      M.compose(v3, Q, SC.set(s, s, s)); walkers.setMatrixAt(wi, M);
+      walkers.setColorAt(wi, CL.setHex(w[6] ? C.gold : 0xff3d9a)); wi++; }
+  }
+  walkers.count = wi; walkers.instanceMatrix.needsUpdate = true; if (walkers.instanceColor) walkers.instanceColor.needsUpdate = true;
+  // shuttles: actual trips (depart/arrive, persons)
+  let bi = 0;
+  for (const tr of D.trips) { if (tr[0] > t || tr[1] <= t || bi >= 12) continue;
+    const r = tr[2] === 0 ? roadR : roadRev; along(r, (t - tr[0]) / (tr[1] - tr[0]), v3);
+    const p2 = along(r, Math.min(1, (t - tr[0]) / (tr[1] - tr[0]) + .02), new THREE.Vector3());
+    const yaw = Math.atan2(p2.x - v3.x, p2.z - v3.z); Q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+    M.compose(v3.clone().setY(v3.y + .1), Q, SC.set(1, .9, 2.2)); buses.setMatrixAt(bi, M);
+    M.compose(v3.clone().setY(v3.y + .25), Q, SC.set(1.05, .2 + .5 * Math.min(1, tr[3] / 45), 2.25)); busStripe.setMatrixAt(bi, M); bi++; }
+  Q.identity(); buses.count = busStripe.count = bi; buses.instanceMatrix.needsUpdate = busStripe.instanceMatrix.needsUpdate = true;
+  // facility beams (load = (queue + active) / capacity)
+  D.facilities.forEach((fac, i) => { const load = (lerp(F.q[i], G.q[i], f) + lerp(F.a[i], G.a[i], f)) / fac.cap;
+    const h = .2 + Math.min(14, load * 9); const b = beams[i];
+    b.scale.set(1, h, 1); b.position.y = nodeY(nodeIds[fac.node]) + h / 2;
+    b.material.color.setHex(load < .5 ? C.turq : load < 1.2 ? C.gold : 0xff5a3c); b.visible = load > 0.01; });
+  if (S.inside) updateInterior(F, G, f, t, k);
+  // rides move only when the model has riders on board
+  const thrill = D.facilities.findIndex(x => x.id === 'THRILL'), fam = D.facilities.findIndex(x => x.id === 'FAMILY');
+  const cyc = D.facilities[thrill].cycle || 4;
+  const u = F.a[thrill] > 0 ? ((t % cyc) / cyc) : dyn.coaster.station;
+  const p = dyn.coaster.curve.getPointAt(u), p2 = dyn.coaster.curve.getPointAt((u + .01) % 1);
+  dyn.coaster.car.position.copy(p).setY(p.y + .3); dyn.coaster.car.lookAt(p2.x, p2.y + .3, p2.z);
+  if (F.a[fam] > 0) dyn.carousel.rotation.y = t * 1.2;
+  // labels
+  if (showLabels) { const wv = canvas.clientWidth, hv = canvas.clientHeight;
+    labels.forEach(L => { const pr = L.v.clone().project(camera);
+      if (pr.z > 1) { L.el.style.display = 'none'; return; }
+      L.el.style.display = ''; L.el.style.left = ((pr.x + 1) / 2 * wv) + 'px'; L.el.style.top = ((1 - pr.y) / 2 * hv) + 'px';
+      const ni = nodeIds.indexOf(L.id), fi = facByNode[L.id];
+      if (L.id === 'ROOMS') L.c.innerHTML = `trong phòng <em>${F.n[ni]}</em> khách · HVAC chạy ${F.hv}`;
+      else if (fi !== undefined) { const fac = D.facilities[fi];
+        L.c.innerHTML = `đang dùng <em>${F.a[fi]}</em>/${fac.cap} · chờ <strong>${F.q[fi]}</strong>`;
+        L.el.classList.toggle('hot', F.q[fi] > fac.cap * .8); }
+      else if (L.id === 'HOTEL_STOP' || L.id === 'PARK_STOP') L.c.innerHTML = `chờ xe <strong>${F.sq[L.id === 'HOTEL_STOP' ? 0 : 1]}</strong> · trên xe <em>${F.iv}</em>`;
+      else L.c.innerHTML = `<em>${F.n[ni]}</em> khách`; }); }
+  // follow marker
+  if (S.follow !== null) {
+    let pos = followPos;
+    if (!pos) { const g = D.groups[S.follow]; let node = 'ROOMS';
+      for (const w of D.walks) if (w[0] === S.follow && w[4] <= t) node = nodeIds[w[2]];
+      pos = nodeVec(nodeIds.indexOf(node)); if (node === 'ROOMS') pos.y += 9; }
+    marker.visible = markerBeam.visible = true; marker.position.copy(pos).setY(pos.y + 2.2); marker.rotation.y = t * .2;
+    markerBeam.position.copy(pos).setY(pos.y + 5.5);
+    controls.target.lerp(pos, .06);
+  }
+}
+
+// ------------------------------------------------------------------ sparkline (15-min power)
+const spark = document.getElementById('spark');
+function drawSpark() {
+  const dpr = window.devicePixelRatio || 1, w = spark.clientWidth, h = spark.clientHeight;
+  spark.width = w * dpr; spark.height = h * dpr; const g = spark.getContext('2d'); g.scale(dpr, dpr);
+  const P = D.power15, mx = Math.max(...P) * 1.08;
+  g.fillStyle = 'rgba(108,192,64,.22)'; g.strokeStyle = '#3e9e2a'; g.lineWidth = 1.5; g.beginPath();
+  P.forEach((v, i) => { const x = i / (P.length - 1) * w, y = h - 14 - v / mx * (h - 20); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+  g.stroke(); g.lineTo(w, h - 14); g.lineTo(0, h - 14); g.closePath(); g.fill();
+  const x = S.t / T * w; g.strokeStyle = '#f08a24'; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h - 14); g.stroke();
+  g.fillStyle = '#8a6a4a'; g.font = '700 10px "Nunito"'; g.fillText(`Công suất 15 phút · đỉnh ${nf.format(Math.round(Math.max(...P)))} kW`, 0, h - 2);
+}
+
+// ------------------------------------------------------------------ follow a group
+function renderFollow() {
+  const g = D.groups[S.follow], box = document.getElementById('follow'); box.style.display = 'block';
+  document.getElementById('fTitle').textContent = `Nhóm #${g.id} · phòng ${g.room + 1}`;
+  document.getElementById('fMeta').textContent = `${g.size} người · ${({ solo: 'đi một mình', couple: 'cặp đôi', family: 'gia đình', friends: 'bạn bè' })[g.cat]}`;
+  const name = a => (ZONE_NAME[a] ? ZONE_NAME[a][0] : a === 'ROOM_REST' ? 'Nghỉ trong phòng' : a === 'END' ? 'Kết thúc ngày' : a);
+  const hm = x => { const m = Math.floor(x) % 1440; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
+  document.getElementById('fList').innerHTML = g.it.map(([a, b, act, wt]) =>
+    `<li class="${S.t >= a && S.t < Math.max(b, a + 1) ? 'now' : ''}">${hm(a)}–${hm(b)} ${name(act)}${wt ? ` <span style="color:#8a6a4a">(chờ ${wt}′)</span>` : ''}</li>`).join('');
+}
+function followGroup(id) { S.follow = id; S.frameK = -1; gsap.to(camera.position, { duration: 1.4, ease: 'power2.inOut',
+  x: camera.position.x * .6, y: 30, z: camera.position.z * .6 }); }
+document.getElementById('bFollow').onclick = () => {
+  if (S.follow !== null) { S.follow = null; marker.visible = markerBeam.visible = false; document.getElementById('follow').style.display = 'none';
+    document.getElementById('bFollow').textContent = 'Theo dõi một nhóm'; return; }
+  // no modal dialogs: start with the park-going group that has the longest itinerary
+  const pick = D.groups.reduce((best, g) => (g.it.some(x => ['THRILL', 'WATER', 'SHOW'].includes(x[2])) && (!best || g.it.length > best.it.length) ? g : best), null) || D.groups[0];
+  followGroup(pick.id); setFold(false); document.getElementById('bFollow').textContent = 'Bỏ theo dõi';
+};
+let luckyIdx = 0;
+document.getElementById('bLucky').onclick = () => {        // deterministic cycle through groups (no randomness)
+  luckyIdx = (luckyIdx * 7 + 13) % D.groups.length; followGroup(D.groups[luckyIdx].id);
+  document.getElementById('bFollow').textContent = 'Bỏ theo dõi'; };
+
+// ------------------------------------------------------------------ camera helpers & toolbar
+function focusNode(id) {
+  const p = new THREE.Vector3(wx(POS[id][0]), nodeY(id), wz(POS[id][1]));
+  gsap.to(controls.target, { x: p.x, y: p.y, z: p.z, duration: 1.2, ease: 'power2.inOut' });
+  gsap.to(camera.position, { x: p.x - 6, y: p.y + 16, z: p.z + 20, duration: 1.2, ease: 'power2.inOut' });
+  const F = D.frames[frameAt(S.t)], fi = facByNode[id], zi = document.getElementById('zoneinfo'); zi.style.display = 'block';
+  zi.innerHTML = `<h3>${ZONE_NAME[id][0]} · ${ZONE_NAME[id][1]}</h3>` + (fi !== undefined
+    ? `Loại mô hình: ${D.facilities[fi].label} (${D.facilities[fi].kind}) · sức chứa ${D.facilities[fi].cap} người${D.facilities[fi].cycle ? ' / chuyến ' + D.facilities[fi].cycle + ' phút' : ''}`
+    : 'Nút trung chuyển / khu vực không có hàng chờ.');
+}
+document.getElementById('bCam').onclick = () => { S.follow = null; marker.visible = markerBeam.visible = false;
+  gsap.to(camera.position, { ...HOME.pos, duration: 1.3, ease: 'power2.inOut' });
+  gsap.to(controls.target, { x: HOME.target.x, y: HOME.target.y, z: HOME.target.z, duration: 1.3, ease: 'power2.inOut' }); };
+document.getElementById('bQueue').onclick = () => { const F = D.frames[frameAt(S.t)]; let best = 0;
+  F.q.forEach((v, i) => { if (v > F.q[best]) best = i; }); focusNode(nodeIds[D.facilities[best].node]); };
+const playIcon = document.getElementById('playIcon');
+function setPlaying(p) { S.playing = p; playIcon.setAttribute('d', p ? 'M6 5h4v14H6zM14 5h4v14h-4z' : 'M8 5v14l11-7z');
+  document.getElementById('bPlay').classList.toggle('on', p); }
+document.getElementById('bPlay').onclick = () => setPlaying(!S.playing);
+let si = 0; document.getElementById('bSpeed').onclick = () => { si = (si + 1) % SPEEDS.length; S.speed = SPEEDS[si];
+  document.getElementById('speedTag').textContent = S.speed + '×'; };
+const PIXES = [HD, 0.42, 0.28, 0.7]; let pi = 0;
+document.getElementById('bPixel').onclick = () => { pi = (pi + 1) % PIXES.length; PIX = PIXES[pi]; renderer.setPixelRatio(PIX); canvas.classList.toggle('px', PIX < 1); resize();
+  document.getElementById('pixTag').textContent = PIX >= 1 ? 'HD' : 'PX'; document.getElementById('bPixel').classList.toggle('on', PIX < 1); };
+function setLabels(on) { showLabels = on; labelsEl.style.display = on ? '' : 'none'; document.getElementById('bLabels').classList.toggle('on', on); }
+document.getElementById('bLabels').onclick = () => setLabels(!showLabels);
+// collapsible panel, hide-all-UI toggle, legend toggle (mobile)
+const panelEl = document.getElementById('panel');
+function setFold(c) { panelEl.classList.toggle('collapsed', c); document.getElementById('bFold').setAttribute('aria-expanded', String(!c)); if (!c) drawSpark(); }
+const MOBILE = () => window.matchMedia('(max-width: 900px)').matches;
+// mobile bottom sheets: one open at a time, toggled by the round buttons
+function openSheet(name) {
+  const next = document.body.dataset.sheet === name ? '' : name;
+  document.body.dataset.sheet = next;
+  document.querySelectorAll('.fab').forEach(b => { const on = b.dataset.sheet === next; b.classList.toggle('on', on); b.setAttribute('aria-expanded', String(on)); });
+  if (next === 'panel') { panelEl.classList.remove('collapsed'); drawSpark(); }
+}
+document.querySelectorAll('.fab').forEach(b => { b.onclick = () => openSheet(b.dataset.sheet); });
+document.getElementById('bFold').onclick = () => MOBILE() ? openSheet('') : setFold(!panelEl.classList.contains('collapsed'));
+const EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+const bHide = document.getElementById('bHide'); bHide.innerHTML = EYE;
+bHide.onclick = () => { const h = document.body.classList.toggle('hide-ui'); bHide.classList.toggle('on', h);
+  bHide.setAttribute('aria-pressed', String(h)); bHide.innerHTML = h ? EYE_OFF : EYE; };
+document.getElementById('bLegend').onclick = () => { const o = document.getElementById('timeline').classList.toggle('showleg');
+  document.getElementById('bLegend').setAttribute('aria-expanded', String(o)); };
+if (MOBILE()) setLabels(false);   // phones: map first; panels open from the round buttons
+// zoom buttons: dolly the camera toward / away from the orbit target (GSAP tween, clamped to the controls' limits)
+function zoom(f) {
+  const off = camera.position.clone().sub(controls.target);
+  off.setLength(THREE.MathUtils.clamp(off.length() * f, controls.minDistance, controls.maxDistance));
+  const p = controls.target.clone().add(off);
+  gsap.to(camera.position, { x: p.x, y: p.y, z: p.z, duration: .5, ease: 'power2.out', overwrite: true });
+}
+document.getElementById('bZoomIn').onclick = () => zoom(0.75);
+document.getElementById('bZoomOut').onclick = () => zoom(1.33);
+
+// ------------------------------------------------------------------ hotel interior toggle + per-frame update
+S.inside = false;
+const IM = new THREE.Matrix4(), IQ = new THREE.Quaternion(), ISC = new THREE.Vector3(.34, .5, .34), IP = new THREE.Vector3();
+function updateInterior(F, G, f, t, k) {
+  const I = INT, nodeIdx = id => nodeIds.indexOf(id);
+  if (k !== I.lastK) {                                  // room colours + label texts once per frame
+    I.lastK = k;
+    for (let r = 0; r < D.meta.rooms; r++) { const v = RS[F.rs[r] || '0']; CL.setRGB(v[0] / 255, v[1] / 255, v[2] / 255); I.cells.setColorAt(r, CL); }
+    I.cells.instanceColor.needsUpdate = true;
+    I.labels.forEach(L => {
+      if (L.floor !== undefined) { let occ = 0, cl = 0; for (let c = 0; c < I.per; c++) { const ch = F.rs[L.floor * I.per + c]; if ('346'.includes(ch)) occ++; if (ch === '5') cl++; }
+        L.c.textContent = `· ${occ}/${I.per} có khách${cl ? ` · ${cl} đang dọn` : ''}`; }
+      else if (L.id === 'LAUNDRY') { const run = new Set(D.laundry.filter(b => b[0] <= t && t < b[1]).map(b => b[2]));
+        L.c.innerHTML = `máy đang chạy <em>${run.size}</em>/${I.machines.length}`; }
+      else if (L.id === 'LOBBY') L.c.innerHTML = `<em>${F.n[nodeIdx('LOBBY')]}</em> khách`;
+      else { const fi = facByNode[L.id], fac = D.facilities[fi];
+        L.c.innerHTML = `đang dùng <em>${F.a[fi]}</em>/${fac.cap} · chờ <strong>${F.q[fi]}</strong>`; }
+    });
+  }
+  // people in each zone (interpolated between snapshots), queues in front of the zone
+  let ci = 0;
+  const put = (x, y, z, color) => { if (ci >= 900) return; IM.compose(IP.set(x, y, z), IQ, ISC); I.crowd.setMatrixAt(ci, IM); I.crowd.setColorAt(ci, CL.setHex(color)); ci++; };
+  for (const id in I.Z) {
+    const z0 = I.Z[id], fi = facByNode[id];
+    const present = id === 'LOBBY' ? lerp(F.n[nodeIdx('LOBBY')], G.n[nodeIdx('LOBBY')], f) : lerp(F.a[fi], G.a[fi], f);
+    const queue = id === 'LOBBY' ? 0 : lerp(F.q[fi], G.q[fi], f);
+    const cols = Math.max(1, Math.floor((z0.x1 - z0.x0 - .6) / .45));
+    for (let j = 0, n = Math.round(present / 2); j < n && j < cols * 10; j++)
+      put(z0.x0 + .5 + (j % cols) * .45, z0.lv + .3, 2.2 - Math.floor(j / cols) * .45, 0xe8418f);
+    for (let j = 0, n = Math.round(queue / 2); j < n && j < cols * 3; j++)
+      put(z0.x0 + .5 + (j % cols) * .45, z0.lv + .3, 3.4 + Math.floor(j / cols) * .45, 0xff4b1f);
+  }
+  I.crowd.count = ci; I.crowd.instanceMatrix.needsUpdate = true; if (I.crowd.instanceColor) I.crowd.instanceColor.needsUpdate = true;
+  I.machines.forEach((m, i) => m.material.color.setHex(D.laundry.some(b => b[2] === i && b[0] <= t && t < b[1]) ? C.leaf || 0x6cc040 : 0x8f97a8));
+  if (I.el.style.display !== 'none') { const wv = canvas.clientWidth, hv = canvas.clientHeight;
+    I.labels.forEach(L => { const pr = I.grp.localToWorld(L.v.clone()).project(camera);
+      if (pr.z > 1) { L.d.style.display = 'none'; return; }
+      L.d.style.display = ''; L.d.style.left = ((pr.x + 1) / 2 * wv) + 'px'; L.d.style.top = ((1 - pr.y) / 2 * hv) + 'px'; }); }
+}
+const bInside = document.getElementById('bInside');
+function setInside(on) {
+  S.inside = on; INT.grp.visible = on; INT.lastK = -1;
+  dyn.hotelExt.forEach(m => { m.visible = !on; });
+  INT.el.style.display = on ? '' : 'none'; labelsEl.style.visibility = on ? 'hidden' : '';
+  bInside.classList.toggle('on', on); bInside.setAttribute('aria-pressed', String(on));
+  const c = new THREE.Vector3(); INT.grp.getWorldPosition(c);
+  const tgt = on ? { x: c.x, y: c.y + INT.top * .5, z: c.z } : HOME.target;
+  const pos = on ? { x: c.x - 16, y: c.y + INT.top * .62, z: c.z + (MOBILE() ? 66 : 48) } : HOME.pos;
+  gsap.to(controls.target, { x: tgt.x, y: tgt.y, z: tgt.z, duration: 1.3, ease: 'power2.inOut' });
+  gsap.to(camera.position, { x: pos.x, y: pos.y, z: pos.z, duration: 1.3, ease: 'power2.inOut' });
+}
+bInside.onclick = () => setInside(!S.inside);
+slider.addEventListener('input', () => { setPlaying(false); gsap.to(S, { t: +slider.value, duration: .35, ease: 'power1.out', overwrite: true }); });
+
+function resize() { const w = canvas.clientWidth, h = canvas.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); drawSpark(); }
+window.addEventListener('resize', resize); resize();
+setPlaying(true);
+
+// GSAP ticker drives the playhead and render loop
+gsap.ticker.add((time, dt) => {
+  if (S.playing) { S.t += dt / 1000 * MIN_PER_SEC * S.speed; if (S.t >= T - 1) S.t = 0; slider.value = Math.floor(S.t); }
+  update(); controls.update(); renderer.render(scene, camera);
+});
+// intro: fly in from above the bay
+camera.position.set(-40, 80, 90);
+gsap.to(camera.position, { ...HOME.pos, duration: 2.6, ease: 'power3.out' });
+})();
+</script>
+</body>
+</html>
