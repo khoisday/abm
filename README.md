@@ -1,5 +1,11 @@
 # Virtual Hotel Monitoring
 
+[![tests](https://github.com/khoisday/abm/actions/workflows/tests.yml/badge.svg)](https://github.com/khoisday/abm/actions/workflows/tests.yml)
+
+**Live demo:** https://virtual-hotel-monitoring.vercel.app
+
+![3D view of the simulated resort](web/og-image.jpg)
+
 Agent-based simulation of guest behaviour across an integrated **533-room hotel and amusement park** on a tropical
 island resort. It links guest choices to hotel and park operations, then to electricity, electricity-related
 emissions, queues and service outcomes. Three views replay the simulation:

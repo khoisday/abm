@@ -8,6 +8,7 @@ site/index.html is a static dashboard (same views as the Streamlit app, without 
 site/map/<scenario>.html are the 3D maps; site/data/ holds precomputed JSON + CSV downloads.
 """
 import base64
+import os
 import json
 import shutil
 
@@ -23,6 +24,7 @@ from simulation.scenarios import SCENARIOS, run_scenario
 from simulation.viewer import build_payload, render_html
 
 SITE = ROOT / "site"
+SITE_URL = os.environ.get("SITE_URL", "https://virtual-hotel-monitoring.vercel.app").rstrip("/")
 DATA = SITE / "data"
 SLUG = {"baseline": "baseline", "occupancy_hvac": "occupancy-hvac", "housekeeping": "housekeeping",
         "recommendations": "recommendations", "ride_dispatch": "ride-dispatch", "combined": "combined"}
@@ -208,12 +210,52 @@ def main():
     st["scenarios"] = index
     st["compare"] = compare_data()
     (DATA / "static.json").write_text(json.dumps(st, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    shutil.copy(ROOT / "web" / "dashboard.html", SITE / "index.html")
-    # old URLs from the first deployment → dashboard tabs
+    (SITE / "index.html").write_text((ROOT / "web" / "dashboard.html").read_text(encoding="utf-8")
+                                     .replace('content="og-image.jpg"', f'content="{SITE_URL}/og-image.jpg"'),
+                                     encoding="utf-8")
+    if (ROOT / "web" / "og-image.jpg").exists():
+        shutil.copy(ROOT / "web" / "og-image.jpg", SITE / "og-image.jpg")
+    write_host_files()
+    files = [f for f in SITE.rglob("*") if f.is_file()]
+    print(f"site/ built: {len(files)} files, {sum(f.stat().st_size for f in files) / 1e6:.1f} MB")
+
+
+def write_host_files():
+    """vercel.json (redirects, security + cache headers), robots.txt and sitemap.xml."""
     redirects = [{"source": "/compare", "destination": "/?s=baseline#compare", "permanent": False}]
     redirects += [{"source": f"/{slug}", "destination": f"/?s={key}#map", "permanent": False}
                   for key, slug in SLUG.items() if key != "baseline"]
-    (SITE / "vercel.json").write_text(json.dumps({"cleanUrls": True, "redirects": redirects}, indent=2))
+    csp = "; ".join([
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com data:",
+        "img-src 'self' data: blob:",
+        "connect-src 'self'",
+        "frame-src 'self'",
+        "frame-ancestors 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "object-src 'none'",
+    ])
+    security = [{"key": "Content-Security-Policy", "value": csp},
+                {"key": "X-Content-Type-Options", "value": "nosniff"},
+                {"key": "X-Frame-Options", "value": "SAMEORIGIN"},
+                {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
+                {"key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()"},
+                {"key": "Cross-Origin-Opener-Policy", "value": "same-origin"}]
+    cache = [{"key": "Cache-Control", "value": "public, max-age=600, stale-while-revalidate=86400"}]
+    headers = [{"source": "/(.*)", "headers": security},
+               {"source": "/data/(.*)", "headers": cache},
+               {"source": "/map/(.*)", "headers": cache},
+               {"source": "/og-image.jpg", "headers": [{"key": "Cache-Control", "value": "public, max-age=86400"}]}]
+    (SITE / "vercel.json").write_text(json.dumps({"cleanUrls": True, "redirects": redirects, "headers": headers},
+                                                 indent=2))
+    (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /data/\nSitemap: {SITE_URL}/sitemap.xml\n")
+    urls = [SITE_URL + "/"] + [f"{SITE_URL}/map/{slug}" for slug in SLUG.values()]
+    (SITE / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")
     files = [f for f in SITE.rglob("*") if f.is_file()]
     print(f"site/ built: {len(files)} files, {sum(f.stat().st_size for f in files) / 1e6:.1f} MB")
 
