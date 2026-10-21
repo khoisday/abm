@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/khoisday/abm/actions/workflows/tests.yml/badge.svg)](https://github.com/khoisday/abm/actions/workflows/tests.yml)
 
-**Live demo:** https://virtual-hotel-monitoring.vercel.app
+**Live demo:** https://abm.icclab.site (mirror: https://virtual-hotel-monitoring.vercel.app)
 
 ![3D view of the simulated resort](web/og-image.jpg)
 

@@ -24,7 +24,7 @@ from simulation.scenarios import SCENARIOS, run_scenario
 from simulation.viewer import build_payload, render_html
 
 SITE = ROOT / "site"
-SITE_URL = os.environ.get("SITE_URL", "https://virtual-hotel-monitoring.vercel.app").rstrip("/")
+SITE_URL = os.environ.get("SITE_URL", "https://abm.icclab.site").rstrip("/")
 DATA = SITE / "data"
 SLUG = {"baseline": "baseline", "occupancy_hvac": "occupancy-hvac", "housekeeping": "housekeeping",
         "recommendations": "recommendations", "ride_dispatch": "ride-dispatch", "combined": "combined"}
