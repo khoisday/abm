@@ -329,7 +329,7 @@ window.addEventListener('hashchange', () => { const h = location.hash.slice(1); 
 // ------------------------------------------------------------------ header + KPIs
 function renderHeader(D, B) {
   const k = D.kpi, b = B.kpi;
-  $('sub').textContent = `${D.meta.label} · seed ${D.meta.seed} · ${k.rooms} phòng · ${k.occupied_rooms} phòng có khách · ${k.guest_groups} nhóm · ${nf(k.guests)} khách`;
+  $('sub').textContent = `${D.meta.label} · ${k.rooms} phòng · ${k.occupied_rooms} phòng có khách · ${k.guest_groups} nhóm · ${nf(k.guests)} khách`;
   const T = [['total_kwh', 'Tổng điện', 'kWh', 0], ['peak_15min_kw', 'Đỉnh 15 phút', 'kW', 0], ['emissions_kgco2e', 'Phát thải', 'kg CO2e', 0],
     ['hotel_kwh_per_occupied_room_night', 'Điện KS / đêm phòng', 'kWh', 1], ['park_entries', 'Lượt vào công viên', 'nhóm', 0],
     ['attraction_mean_wait_min', 'Chờ TB trò chơi', 'phút', 1], ['occupied_room_hours_above_comfort', 'Giờ-phòng quá nóng', 'giờ', 1]];

@@ -104,7 +104,7 @@ c[3].metric("Điện KS / đêm phòng", f"{S['hotel_kwh_per_occupied_room_night
 c[4].metric("Lượt vào công viên (nhóm)", S["park_entries"])
 c[5].metric("Chờ TB trò chơi (phút)", f"{S['attraction_mean_wait_min']:.1f}")
 c[6].metric("Thời gian chạy (s)", f"{sim.runtime_s:.2f}")
-st.caption(f"Kịch bản: **{label}** · seed {cfg['seed']} · {S['rooms']} phòng · {S['occupied_rooms']} phòng có khách · "
+st.caption(f"Kịch bản: **{label}** · {S['rooms']} phòng · {S['occupied_rooms']} phòng có khách · "
            f"{S['guest_groups']} nhóm · {S['guests']} khách · ranh giới: điện mua từ lưới, "
            f"{'có' if S['transport_energy_included'] else 'KHÔNG'} gồm điện phương tiện kết nối.")
 

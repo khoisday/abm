@@ -625,7 +625,7 @@ function tweenStats(target) {
 }
 document.getElementById('sOccOf').textContent = `/ ${D.meta.occupied} phòng bán · ${D.meta.rooms} tổng`;
 document.getElementById('subtitle').textContent =
-  `${D.meta.scenario} · seed ${D.meta.seed} · ${D.meta.groups} nhóm / ${D.meta.guests} khách · ${D.meta.days} ngày`;
+  `${D.meta.scenario} · ${D.meta.groups} nhóm / ${D.meta.guests} khách · ${D.meta.days} ngày`;
 if (D.nav) {                                     // static-site build: scenario switcher + comparison link
   const nav = document.getElementById('nav'); nav.style.display = 'flex';
   const sel = document.createElement('select'); sel.setAttribute('aria-label', 'Kịch bản');
