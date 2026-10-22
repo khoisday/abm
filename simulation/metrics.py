@@ -35,8 +35,9 @@ def interval_df(sim):
         df[f"{k}_kwh"] = iv[k]
     cols = [f"{k}_kwh" for k in END_USES]
     df["total_kwh"] = df[cols].sum(axis=1)
-    df["hotel_kwh"] = df[[f"{k}_kwh" for k, v in END_USES.items() if v[1] == "hotel"]].sum(axis=1)
-    df["park_kwh"] = df[[f"{k}_kwh" for k, v in END_USES.items() if v[1] == "park"]].sum(axis=1)
+    for boundary in ("hotel", "park", "mainland"):
+        df[f"{boundary}_kwh"] = df[[f"{k}_kwh" for k, v in END_USES.items() if v[1] == boundary]].sum(axis=1)
+    df["links_kwh"] = df[[f"{k}_kwh" for k, v in END_USES.items() if v[1] == "transport"]].sum(axis=1)   # shuttle + cable car
     df["avg_power_kw"] = df["total_kwh"] / (step / 60.0)
     df["emission_factor_kg_per_kwh"] = emission_factors(sim, n, step)
     df["emissions_kgco2e"] = df["total_kwh"] * df["emission_factor_kg_per_kwh"]
@@ -62,7 +63,7 @@ def itinerary_df(sim):
 def groups_df(sim):
     rows = []
     for g in sim.groups:
-        rows.append(dict(group_id=g.gid, room=g.room, size=g.size, adults=g.adults, seniors=g.seniors,
+        rows.append(dict(group_id=g.gid, hotel=g.hotel, room=g.room, size=g.size, adults=g.adults, seniors=g.seniors,
                          children=g.children, young_children=g.young_children, category=g.category,
                          **{f"pref_{k}": round(v, 3) for k, v in g.pref.items()},
                          budget_vnd=round(g.budget_vnd), budget_left_vnd=round(g.budget_left),
@@ -100,7 +101,7 @@ def park_visitor_hours(sim):
     for t, gid, e, where, *_ in ev:
         if e == "enter_park":
             entry[gid] = t
-        elif e == "board" and where == "PARK_STOP" and gid in entry:
+        elif e == "leave_park" and gid in entry:
             hours += (t - entry.pop(gid)) * sim.groups[gid].size / 60.0
     for gid, t0 in entry.items():   # still in park at horizon
         hours += (sim.T - t0) * sim.groups[gid].size / 60.0
@@ -115,8 +116,15 @@ def summary(sim):
     total = float(iv["total_kwh"].sum())
     hotel = float(iv["hotel_kwh"].sum())
     park = float(iv["park_kwh"].sum())
+    mainland = float(iv["mainland_kwh"].sum())
     sold = int(sim.rooms.sold.sum())
     room_nights = sold * sim.days       # nightly census: every sold room is occupied each night (no check-in/out)
+    m_sold = int(sim.mrooms.sold.sum()) if sim.mrooms is not None else 0
+    m_room_nights = m_sold * sim.days
+    island = [g for g in sim.groups if g.hotel == "island"]
+    by_kind = {k: [g for g in sim.groups if g.hotel == k] for k in ("mainland", "day")}
+    line_trips = {lid: [tr for tr in sim.trips if tr["line"] == lid] for lid in sim.lines}
+    bc = cfg["boats"]
     q = queue_stats_df(sim).set_index("facility")
     hk_cleaned = sum(d["cleaned"] for d in sim.hk_daily)
     hk_pending = sum(d["pending"] for d in sim.hk_daily)
@@ -131,17 +139,35 @@ def summary(sim):
         lc["kwh_per_full_batch"] * (lc["fixed_energy_fraction"] + (1 - lc["fixed_energy_fraction"]) * rem / lc["capacity_kg"])
         if rem > 1e-9 else 0.0)
     park_groups = [g for g in sim.groups if any(e for e in g.history)]
-    returns = [t for t, gid, e, *_ in sim.events if e == "return_hotel"]
-    meals = int(q.loc[["HOTEL_RESTAURANT", "PARK_RESTAURANT"], "completed_persons"].sum())
+    island_ids = {g.gid for g in island}
+    returns, left = [], set()         # island groups back at the hotel after a park visit
+    for t, gid, e, *_ in sim.events:
+        if gid in island_ids and e == "leave_park":
+            left.add(gid)
+        elif gid in left and e == "return_hotel":
+            returns.append(t)
+            left.discard(gid)
+    meals = int(q.loc[[f for f in ("HOTEL_RESTAURANT", "PARK_RESTAURANT", "M_CAFE") if f in q.index],
+                      "completed_persons"].sum())
     attr = q.loc[PARK_ATTRACTIONS]
     batch = q[q["kind"] == "batch"]
-    persons = sum(g.size for g in sim.groups)
+    persons = sum(g.size for g in island)
     ef = iv["emission_factor_kg_per_kwh"]
     out = dict(
         scenario_policies=json.dumps(cfg["policies"]), seed=cfg["seed"], horizon_days=sim.days,
-        rooms=sim.rooms.n, occupied_rooms=sold, guest_groups=len(sim.groups), guests=persons,
-        total_kwh=total, hotel_kwh=hotel, park_kwh=park, transport_kwh=by_use["transport"],
+        rooms=sim.rooms.n, occupied_rooms=sold, guest_groups=len(island), guests=persons,
+        mainland_rooms=sim.mrooms.n if sim.mrooms is not None else 0, mainland_occupied_rooms=m_sold,
+        mainland_guest_groups=len(by_kind["mainland"]), mainland_guests=sum(g.size for g in by_kind["mainland"]),
+        day_visitor_groups=len(by_kind["day"]), day_visitors=sum(g.size for g in by_kind["day"]),
+        all_guests=sum(g.size for g in sim.groups),
+        total_kwh=total, hotel_kwh=hotel, park_kwh=park, mainland_kwh=mainland,
+        transport_kwh=by_use["transport"], cable_car_kwh=by_use["cable_car"],
         transport_energy_included=cfg["transport"]["include_transport_energy"],
+        cable_car_energy_included=cfg["cable_car"]["include_energy"],
+        shuttle_trips=len(line_trips["shuttle"]), shuttle_passengers=sum(t["persons"] for t in line_trips["shuttle"]),
+        cable_cabin_trips=len(line_trips["cable"]), cable_passengers=sum(t["persons"] for t in line_trips["cable"]),
+        boat_trips=sim.boat_trips, boat_passengers=sum(t["persons"] for t in line_trips["boat"]),
+        boat_fuel_l=sim.boat_fuel_l, boat_fuel_kgco2e=sim.boat_fuel_l * bc["fuel_kgco2e_per_l"],
         **{f"kwh_{k}": v for k, v in by_use.items()},
         peak_15min_kw=float(iv["avg_power_kw"].max()),
         emissions_kgco2e=float(iv["emissions_kgco2e"].sum()),
@@ -149,6 +175,7 @@ def summary(sim):
         emission_factor_mean=float(ef.mean()),
         occupied_room_nights=room_nights,
         hotel_kwh_per_occupied_room_night=hotel / room_nights if room_nights else None,
+        mainland_kwh_per_occupied_room_night=mainland / m_room_nights if m_room_nights else None,
         park_entries=sim.park_entries, park_visitor_hours=park_visitor_hours(sim),
         park_kwh_per_visitor_hour=(park / park_visitor_hours(sim)) if park_visitor_hours(sim) > 0 else None,
         completed_attraction_visits_persons=int(attr["completed_persons"].sum()),
@@ -160,8 +187,8 @@ def summary(sim):
         ride_cycle_utilization=float((batch["completed_persons"].sum() + 0) /
                                      max(1, (batch["cycles_or_shows"] * batch["capacity_persons"]).sum())),
         meals_served_persons=meals,
-        mean_walking_min_per_group=float(np.mean([g.walking_min for g in sim.groups])) if sim.groups else 0.0,
-        mean_transport_min_per_group=float(np.mean([g.transport_min for g in sim.groups])) if sim.groups else 0.0,
+        mean_walking_min_per_group=float(np.mean([g.walking_min for g in island])) if island else 0.0,
+        mean_transport_min_per_group=float(np.mean([g.transport_min for g in island])) if island else 0.0,
         median_return_to_hotel=fmt_min(int(np.median(returns))) if returns else "",
         rooms_cleaned=hk_cleaned, rooms_pending_cleaning=hk_pending,
         housekeeping_interruptions=sim.hk_interruptions,
@@ -173,6 +200,8 @@ def summary(sim):
         laundry_completion_kwh_estimate=completion_kwh,
         occupied_room_hours_above_comfort=float(sim.room_hot_minutes.sum() / 60.0),
         occupied_degree_hours_above_comfort=float(sim.room_degree_minutes.sum() / 60.0),
+        mainland_occupied_room_hours_above_comfort=float(sim.m_room_hot_minutes.sum() / 60.0)
+        if sim.mrooms is not None else 0.0,
         recommendations_offered=len(sim.rec_log),
         recommendations_accepted=sum(r["accepted"] for r in sim.rec_log),
         unfinished_demand_events=len(sim.unfinished_demand),
@@ -193,8 +222,18 @@ def verify(sim):
     add("Đúng 533 phòng sản xuất, mã phòng duy nhất", R.n == 533 or sim.cfg.get("diagnostic_config"), R.n)
     exp = int(round(R.n * sim.cfg["hotel"]["occupancy"]))
     add("Số phòng có khách khớp công suất", int(R.sold.sum()) == exp, f"{int(R.sold.sum())} / {exp}")
-    rooms = [g.room for g in sim.groups]
-    add("Mỗi nhóm có đúng một phòng hợp lệ", len(set(rooms)) == len(rooms) and all(R.sold[r] for r in rooms))
+    ok_rooms = True
+    for kind, bank in (("island", R), ("mainland", sim.mrooms)):
+        rooms = [g.room for g in sim.groups if g.hotel == kind]
+        ok_rooms &= len(set(rooms)) == len(rooms) and (not rooms or all(bank.sold[r] for r in rooms))
+    ok_rooms &= all(g.room == -1 for g in sim.groups if g.hotel == "day")
+    add("Mỗi nhóm có đúng một phòng hợp lệ (khách tham quan trong ngày không có phòng)", ok_rooms)
+    mc = sim.cfg["mainland_hotel"]
+    if sim.mrooms is not None:
+        m_exp = int(round(mc["rooms"] * mc["occupancy"]))
+        add("Khách sạn Bờ: số phòng và phòng có khách khớp cấu hình",
+            sim.mrooms.n == mc["rooms"] and int(sim.mrooms.sold.sum()) == m_exp,
+            f"{int(sim.mrooms.sold.sum())} / {m_exp} trên {sim.mrooms.n}")
     add("Thành phần nhóm hợp lệ (≥1 người lớn, tổng = quy mô)",
         all(g.adults >= 1 and g.adults + g.children == g.size and g.young_children <= g.children for g in sim.groups))
     persons = sum(g.size for g in sim.groups)
@@ -209,8 +248,10 @@ def verify(sim):
             if a > sim.fac[fid].capacity:
                 over.append((s["t"], fid, a))
     add("Không vượt sức chứa", not over, over[:3])
-    trips_over = [t for t in sim.trips if t["persons"] > sim.cfg["transport"]["capacity_persons"]]
-    add("Phương tiện không vượt sức chứa", not trips_over)
+    trips_over = [t for t in sim.trips if t["persons"] > sim.lines[t["line"]]["cap"]]
+    add("Phương tiện (xe, cabin cáp treo, tàu) không vượt sức chứa", not trips_over, trips_over[:3])
+    early = [t for t in sim.trips if t["depart_t"] % 1440 < sim.lines[t["line"]]["first"][t["origin"]]]
+    add("Xe, cáp treo và tàu không chạy trước giờ mở", not early, len(early))
     closed_adm = [e for e in sim.events if e[2] == "admit" and not (sim.fac[e[3]].is_open(e[0]) or sim.fac[e[3]].in_grace(e[0])
                                                                      or sim.fac[e[3]].kind == "show")]
     add("Điểm đã đóng cửa không nhận khách mới", not closed_adm, len(closed_adm))

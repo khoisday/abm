@@ -1,22 +1,30 @@
-"""Builds the data payload and standalone HTML for the 3D pixel resort map.
+"""Builds the data payload and standalone HTML for the 3D resort map.
 
 Everything the map animates comes from simulation output: 5-minute snapshots
-(counts, queues, room states), exact walk segments and shuttle trips.
+(counts, queues, room states of both hotels), 15-minute room temperatures, exact
+walk segments and the shuttle, cable-car and boat trips.
 """
+import base64
 import json
+import re
 from pathlib import Path
 
 import numpy as np
 
-from .config import ROOT, fmt_min
+from .config import ROOT, fmt_min, hhmm
 from .energy import END_USES
+from .layout import floor_plan
+
+LINES = ["shuttle", "cable", "boat"]
+HOTEL_CODE = {"island": 0, "mainland": 1, "day": 2}
 
 TEMPLATE = ROOT / "web" / "resort3d_template.html"
 
 
-def room_state_string(s, sold, thr):
-    occ, asleep, clean, ctrl = s["room_occ"], s["room_asleep"], s["room_clean"], s["room_control"]
-    hot = occ & (s["room_temp"] > thr)
+def room_state_string(s, sold, thr, prefix="room_"):
+    occ, asleep, ctrl = s[prefix + "occ"], s[prefix + "asleep"], s[prefix + "control"]
+    clean = s.get(prefix + "clean", np.zeros(len(sold), dtype=bool))
+    hot = occ & (s[prefix + "temp"] > thr)
     code = np.full(len(sold), "0")
     code[sold & ~occ & ~ctrl] = "1"
     code[sold & ~occ & ctrl] = "2"
@@ -25,6 +33,22 @@ def room_state_string(s, sold, thr):
     code[hot] = "6"
     code[clean] = "5"
     return "".join(code)
+
+
+def temps_b64(snaps, key, every):
+    """Room temperatures every `every` snapshots as uint8 ((degC - 15) * 10), base64 per row."""
+    out = []
+    for s in snaps[::every]:
+        v = np.clip(np.round((s[key] - 15.0) * 10.0), 0, 255).astype(np.uint8)
+        out.append(base64.b64encode(v.tobytes()).decode("ascii"))
+    return out
+
+
+def hotel_meta(hcfg, sold, n_groups, guests):
+    return dict(label=hcfg["label_vi"], rooms=int(hcfg["rooms"]), occupied=int(sold), groups=n_groups, guests=guests,
+                floors=floor_plan(hcfg), amen=[dict(n=a["floor"], title=a["title_vi"], fac=a["facilities"])
+                                              for a in hcfg.get("amenity_floors", [])],
+                rows=hcfg.get("row_labels_vi", ["", ""]))
 
 
 def build_payload(sim, scenario_label="Cơ sở (baseline)"):
@@ -37,6 +61,8 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
     ef = cfg["emissions"]["factor_kg_per_kwh"]
     thr = cfg["rooms"]["comfort_threshold_c"]
     sold = sim.rooms.sold
+    M = sim.mrooms
+    stops = [st for lid in LINES for st in sim.lines[lid]["stops"]]
     frames = []
     for s in sim.snapshots:
         t = s["t"]
@@ -46,10 +72,13 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
             n=[s["node_persons"].get(n, 0) for n in nodes],
             q=[s["queue"][f] for f in fac_ids],
             a=[s["active"][f] for f in fac_ids],
-            sq=[s["stop_queue"]["HOTEL_STOP"], s["stop_queue"]["PARK_STOP"]],
-            iv=s["in_vehicle"], ip=s["in_park"],
+            sq=[s["stop_queue"][st] for st in stops],
+            iv=s["in_vehicle"], ivl=[s["in_vehicle_by_line"][lid] for lid in LINES], ip=s["in_park"],
             st=s["state_persons"],
             rs=room_state_string(s, sold, thr),
+            mrs=room_state_string(s, M.sold, thr, "m_room_") if M is not None else "",
+            mhv=int((s["m_room_hvac"] & M.sold).sum()) if M is not None else 0,
+            mocc=int((s["m_room_occ"] & M.sold).sum()) if M is not None else 0,
             occ=int(occ.sum()), hv=int((s["room_hvac"] & sold).sum()), cl=int(s["room_clean"].sum()),
             tm=round(float(s["room_temp"][occ].mean()), 2) if occ.any() else None,
             kw=round(float(minute_kw[t]), 1), ck=round(float(cum_kwh[t]), 1),
@@ -60,14 +89,15 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
             if a != b and sim.net.zone(a) == sim.net.zone(b):
                 routes[f"{nidx[a]}>{nidx[b]}"] = [nidx[x] for x in sim.net.route(a, b)]
     walks = [[gid, nidx[a], nidx[b], s, e, p, r] for gid, a, b, s, e, p, r in sim.walk_segments if e > s]
-    trips = [[tr["depart_t"], tr["arrive_t"], 0 if tr["origin"] == "HOTEL_STOP" else 1, tr["persons"]]
-             for tr in sim.trips]
+    trips = [[tr["depart_t"], tr["arrive_t"], 0 if tr["origin"] == sim.lines[tr["line"]]["stops"][0] else 1,
+              tr["persons"], LINES.index(tr["line"])] for tr in sim.trips]
     step = cfg["reporting_interval_min"]
     iv = sim.meter.intervals(step)
     power15 = (sum(iv.values()) / (step / 60.0)).round(1).tolist()
     groups = []
     for g in sim.groups:
-        groups.append(dict(id=g.gid, room=int(g.room), size=g.size, cat=g.category,
+        groups.append(dict(id=g.gid, h=HOTEL_CODE[g.hotel], room=int(g.room), size=g.size, cat=g.category,
+                           ad=g.adults, ch=g.children, sp=g.guest_setpoint,
                            it=[[a, b, act, w] for a, b, act, node, w in g.history]))
     totals = {k: round(float(v[:sim.T].sum()), 1) for k, v in sim.meter.kwh.items()}
     return dict(
@@ -76,23 +106,51 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
                   scenario=scenario_label, policies=cfg["policies"], ef=ef, snapshot_min=5,
                   transport_included=cfg["transport"]["include_transport_energy"],
                   ride_min=cfg["transport"]["ride_min"], start_date=cfg["start_date"],
-                  machines=cfg["laundry"]["machines"]),
+                  machines=cfg["laundry"]["machines"],
+                  occupancy=int(round(cfg["hotel"]["occupancy"] * 100)),
+                  park_open=hhmm(cfg["park_common"]["park_open_hhmm"]),
+                  park_close=hhmm(cfg["park_common"]["park_close_hhmm"]),
+                  shuttle_interval=cfg["transport"]["interval_min"],
+                  shuttle_first=hhmm(cfg["transport"]["first_departure_hhmm"]),
+                  shuttle_last=hhmm(cfg["transport"]["last_departure_hhmm"]),
+                  comfort=cfg["rooms"]["comfort_threshold_c"],
+                  stops=stops, line_ids=LINES,
+                  lines={lid: dict(stops=list(L["stops"]), ride=L["ride"], interval=L["interval"], cap=L["cap"],
+                                   vehicles=L["vehicles"], first=min(L["first"].values()), last=max(L["last"].values()))
+                         for lid, L in sim.lines.items()},
+                  hotels=[hotel_meta(cfg["hotel"], int(sold.sum()), *_count(sim, "island")),
+                          hotel_meta(cfg["mainland_hotel"], int(M.sold.sum()) if M is not None else 0,
+                                     *_count(sim, "mainland"))],
+                  day_visitors=sum(g.size for g in sim.groups if g.hotel == "day"),
+                  boat_fuel_l=round(sim.boat_fuel_l, 1),
+                  boat_fuel_kgco2e=round(sim.boat_fuel_l * cfg["boats"]["fuel_kgco2e_per_l"], 1),
+                  temp_every=3 * 5),
         laundry=[[b["start"], b["end"], b["machine"], b["load_kg"]] for b in sim.laundry_batches],
         nodes=[dict(id=n, label=cfg["network"]["nodes"][n]["label_vi"], zone=cfg["network"]["nodes"][n]["zone"])
                for n in nodes],
         facilities=[dict(id=f, label=sim.fac[f].label, node=nidx[sim.fac[f].node], kind=sim.fac[f].kind,
-                         cap=sim.fac[f].capacity, cycle=sim.fac[f].cycle) for f in fac_ids],
+                         cap=sim.fac[f].capacity, cycle=sim.fac[f].cycle, win=[list(w) for w in sim.fac[f].windows],
+                         site=sim.fac[f].spec.get("site", "island"), amenity=bool(sim.fac[f].spec.get("hotel_amenity")))
+                    for f in fac_ids],
         edges=[[nidx[a], nidx[b]] for a, b, _ in cfg["network"]["walk_edges_min"]],
         frames=frames, routes=routes, walks=walks, trips=trips, power15=power15, step=step,
         end_uses={k: [END_USES[k][0], END_USES[k][1], totals[k]] for k in END_USES},
         groups=groups,
+        temps=dict(island=temps_b64(sim.snapshots, "room_temp", 3),
+                   mainland=temps_b64(sim.snapshots, "m_room_temp", 3) if M is not None else []),
     )
+
+
+def _count(sim, kind):
+    gs = [g for g in sim.groups if g.hotel == kind]
+    return len(gs), sum(g.size for g in gs)
 
 
 def render_html(payload):
     html = TEMPLATE.read_text(encoding="utf-8")
     data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    return html.replace("/*__SIM_DATA__*/null", data)
+    # tolerant of formatters that put a space before "null"
+    return re.sub(r"/\*__SIM_DATA__\*/\s*null", lambda m: data, html, count=1)
 
 
 def write_viewer(sim, path, scenario_label="Cơ sở (baseline)"):

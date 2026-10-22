@@ -1,9 +1,14 @@
 """Discrete-event simulation on a one-minute clock.
 
 Events (arrivals, admissions, ride dispatches, service completions, housekeeping,
-laundry, shuttle departures, guest decisions) sit in a heap; rooms, base loads and
-meters are updated every minute in vectorized form. Decisions are only evaluated
-for a group at its own decision points.
+laundry, shuttle / cable-car / boat departures, guest decisions) sit in a heap; rooms,
+base loads and meters are updated every minute in vectorized form. Decisions are only
+evaluated for a group at its own decision points.
+
+Three kinds of guest share the park: island-hotel guests (533 rooms), mainland-hotel
+guests and day visitors from the city. Island guests walk to the park along the promenade;
+the cable car (mainland <-> park) and speedboats (mainland <-> island hotel) link the zones, and
+the mainland hotel's shuttle runs between its car park and the cable-car station.
 """
 import heapq
 import math
@@ -12,7 +17,7 @@ from collections import deque
 
 import numpy as np
 
-from .agents import Housekeeper, draw_daily_plan, generate_population
+from .agents import HOME, Housekeeper, draw_daily_plan, generate_day_visitors, generate_mainland, generate_population
 from .config import hhmm
 from .decisions import choose
 from .energy import Meter, RoomBank
@@ -21,7 +26,9 @@ from .rng import stream
 
 SNAPSHOT_MIN = 5
 PARK_FACILITIES = ["THRILL", "FAMILY", "INDOOR", "WATER", "SHOW"]
-OTHER_ZONE_STOP = {"hotel": "HOTEL_STOP", "park": "PARK_STOP"}
+ZONE_LINE = {frozenset(("hotel", "park")): None, frozenset(("hotel", "mainland")): "boat",   # None = on foot
+             frozenset(("park", "mainland")): "cable"}
+M_HOTEL_SIDE = ("M_ROOMS", "M_LOBBY", "M_CAFE", "M_SPA", "M_GYM")
 
 
 class Simulation:
@@ -36,12 +43,21 @@ class Simulation:
         self.net = Network(cfg)
         self.weather = Weather(cfg, self.seed, self.days)
         self.fac = build_facilities(cfg)
-        self.hotel_amenities = [f for f in self.fac.values() if f.spec.get("hotel_amenity")]
-        self.groups, sold = generate_population(cfg, self.seed)
-        self.rooms = RoomBank(cfg, sold, self.groups, stream(self.seed, "rooms_init"))
+        self.amenities = {site: [f for f in self.fac.values() if f.spec.get("hotel_amenity")
+                                 and f.spec.get("site", "island") == site] for site in ("island", "mainland")}
+        self.hotel_amenities = self.amenities["island"]
+        island, sold = generate_population(cfg, self.seed)
+        mainland, m_sold = generate_mainland(cfg, self.seed, len(island))
+        day = generate_day_visitors(cfg, self.seed, len(island) + len(mainland), self.days)
+        self.groups = island + mainland + day
+        self.rooms = RoomBank(cfg, sold, island, stream(self.seed, "rooms_init"))
+        self.mrooms = (RoomBank(cfg, m_sold, mainland, stream(self.seed, "rooms_init_mainland"))
+                       if cfg["mainland_hotel"].get("enabled") else None)
         self.meter = Meter(self.T)
         self.heap, self._seq = [], 0
-        self.stop_queue = {"HOTEL_STOP": deque(), "PARK_STOP": deque()}
+        self.lines = self._build_lines()
+        self.stop_queue = {stop: deque() for L in self.lines.values() for stop in L["stops"]}
+        self.boat_fuel_l, self.boat_trips = 0.0, 0
         self.trips, self.events, self.decision_log, self.snapshots, self.rec_log = [], [], [], [], []
         self.walk_segments = []   # (gid, from, to, start, end, persons, returning) for replay
         self.rngs = {}
@@ -51,12 +67,17 @@ class Simulation:
         self._init_laundry()
         self._schedule_static_events()
         for g in self.groups:
-            draw_daily_plan(g, cfg, self.seed, 0)
+            draw_daily_plan(g, cfg, self.seed, (g.arrive_t // 1440) if g.hotel == "day" else 0)
             g.last_update = 0
             g.hunger, g.fatigue = 25.0, cfg["needs"]["overnight_fatigue_after_sleep"]
-            g.state, g.env = "FINISHED", "in"   # asleep in room at 00:00
-            self.rooms.persons[g.room] = g.size
-            self.push(g.wake_t, "wake", g.gid)
+            if g.hotel == "day":                 # still in the city at 00:00
+                g.state, g.env, g.node, g.zone, g.asleep = "OFFSITE", "in", "OFFSITE", "mainland", False
+                self.push(g.arrive_t, "visitor_arrive", g.gid)
+            else:
+                g.state, g.env = "FINISHED", "in"   # asleep in room at 00:00
+                g.node, g.zone = HOME[g.hotel]["rooms"], HOME[g.hotel]["zone"]
+                self.bank(g).persons[g.room] = g.size
+                self.push(g.wake_t, "wake", g.gid)
 
     # ------------------------------------------------------------------ utils
     def push(self, t, kind, *payload):
@@ -77,21 +98,81 @@ class Simulation:
     def tday(self, t):
         return t % 1440
 
+    def bank(self, g):
+        """Room bank of the group's hotel."""
+        return self.mrooms if g.hotel == "mainland" else self.rooms
+
+    def _build_lines(self):
+        tc, cc, bc = self.cfg["transport"], self.cfg["cable_car"], self.cfg["boats"]
+        both = lambda stops, v: {s: hhmm(v) for s in stops}
+        return {
+            "shuttle": dict(stops=tuple(tc["stops"]), ride=tc["ride_min"], vehicles=1,
+                            cap=tc["capacity_persons"], interval=tc["interval_min"], on_demand=False,
+                            first=both(tc["stops"], tc["first_departure_hhmm"]),
+                            last=both(tc["stops"], tc["last_departure_hhmm"])),
+            "cable": dict(stops=tuple(cc["stops"]), ride=cc["ride_min"], vehicles=cc["cabins_per_departure"],
+                          cap=cc["cabin_capacity_persons"], interval=cc["departure_interval_min"], on_demand=True,
+                          first=both(cc["stops"], cc["first_departure_hhmm"]),
+                          last=both(cc["stops"], cc["last_departure_hhmm"])),
+            "boat": dict(stops=tuple(bc["stops"]), ride=bc["ride_min"], vehicles=1, cap=bc["capacity_persons"],
+                         interval=bc["interval_min"], on_demand=True,
+                         first=both(bc["stops"], bc["first_departure_hhmm"]),
+                         last=both(bc["stops"], bc["last_departure_hhmm"])),
+        }
+
+    def next_line(self, here, there, t):
+        """Line for the next leg between two zones (None = walk); after the cable car's last departure
+        the park and the mainland are linked through the island (promenade + boat)."""
+        lid = ZONE_LINE[frozenset((here, there))]
+        if lid == "cable" and self.tday(t) >= self.lines["cable"]["last"][self.lines["cable"]["stops"][0]]:
+            lid = "boat"
+        return lid
+
+    def line_stop(self, lid, here, there=None):
+        """Boarding stop: the line's stop in this zone, else (boat from the park) the one away from the destination."""
+        stops = self.lines[lid]["stops"]
+        return next((s for s in stops if self.net.zone(s) == here), None) or next(s for s in stops if self.net.zone(s) != there)
+
+    def first_stop(self, g, dest, t):
+        """Node a group walks to first on its way to dest: dest itself, or the boarding stop of a line."""
+        here, there = self.net.zone(g.node), self.net.zone(dest)
+        lid = self.next_line(here, there, t) if here != there else None
+        return dest if lid is None else self.line_stop(lid, here, there)
+
+    def feeder_stop(self, g, dest, t):
+        """Mainland-hotel guests ride their hotel shuttle between the hotel and the cable-car station while it
+        runs; returns the stop to board at, or None to walk."""
+        L = self.lines["shuttle"]
+        if g.hotel != "mainland":
+            return None
+        a, b = L["stops"]
+        if g.node in M_HOTEL_SIDE and dest == "CABLE_MAIN":
+            stop = a
+        elif g.node == "CABLE_MAIN" and dest in M_HOTEL_SIDE:
+            stop = b
+        else:
+            return None
+        return stop if L["first"][stop] <= self.tday(t) <= L["last"][stop] else None
+
+    def return_target(self, g):
+        """Where a group heads when it goes home from the park or the city."""
+        if g.hotel == "day":
+            return "CITY", ("depart_site",)
+        return HOME[g.hotel]["arrive"], ("arrive_hotel",)
+
     # ------------------------------------------------------------ scheduling
     def _schedule_static_events(self):
-        tc, lc, hk = self.cfg["transport"], self.cfg["laundry"], self.cfg["housekeeping"]
+        lc, hk = self.cfg["laundry"], self.cfg["housekeeping"]
         for d in range(self.days):
             base = d * 1440
             if d > 0:
                 self.push(base, "day_start", d)
-            t = base + hhmm(tc["hotel_first_departure_hhmm"])
-            while t <= base + 1439:
-                self.push(t, "shuttle", "HOTEL_STOP", t <= base + hhmm(tc["hotel_last_departure_hhmm"]))
-                t += tc["interval_min"]
-            t = base + hhmm(tc["park_first_departure_hhmm"])
-            while t <= base + 1439:
-                self.push(t, "shuttle", "PARK_STOP", t <= base + hhmm(tc["park_last_departure_hhmm"]))
-                t += tc["interval_min"]
+            for lid, L in self.lines.items():     # after the last departure: sweeps only if someone waits
+                for stop in L["stops"]:
+                    t = base + L["first"][stop]
+                    while t <= base + 1439:
+                        self.push(t, "depart", lid, stop, t <= base + L["last"][stop])
+                        t += L["interval"]
             for f in self.fac.values():
                 for a, b in f.windows:
                     self.push(base + b + f.closing_grace, "close", f.id)
@@ -131,16 +212,26 @@ class Simulation:
 
     # ------------------------------------------------------------ movement
     def travel(self, g, dest, t, on_arrive):
-        if g.node == "ROOMS" and dest != "ROOMS":
+        home = HOME[g.hotel]["rooms"]
+        if home and g.node == home and dest != home:
             self.leave_room(g, t, on_arrive)
-        here_zone = self.net.zone(g.node)
-        if here_zone != self.net.zone(dest):
+        here_zone, there_zone = self.net.zone(g.node), self.net.zone(dest)
+        if here_zone != there_zone:
+            first = self.first_stop(g, dest, t)
+            if here_zone == "park" and self.net.zone(first) != "park":
+                self.log(t, g, "leave_park", g.node)          # walks out of the park
+            if first == dest:                                   # island hotel <-> park: on foot
+                return self.walk(g, dest, t, on_arrive)
             g.final = (dest, on_arrive)
-            self.walk(g, OTHER_ZONE_STOP[here_zone], t, ("board_wait",))
+            self.walk(g, first, t, ("board_wait",))
         else:
             self.walk(g, dest, t, on_arrive)
 
     def walk(self, g, dest, t, on_arrive):
+        stop = self.feeder_stop(g, dest, t)
+        if stop is not None:                                    # hotel shuttle for this leg
+            g.leg = (dest, on_arrive)
+            dest, on_arrive = stop, ("board_wait",)
         w = self.net.walk_min(g.node, dest)
         dur = int(math.ceil(w / g.walk_speed)) if w > 0 else 0
         self.set_state(g, "TRAVELING", t, "out" if self.cfg["network"]["outdoor_walking"] else "in")
@@ -171,43 +262,92 @@ class Simulation:
             self.log(t, g, "enter_park", g.node)
             self.decide(g, t)
         elif kind == "arrive_hotel":
-            g.zone, g.returning, g.returned_t = "hotel", False, t
+            g.zone, g.returning, g.returned_t = self.net.zone(g.node), False, t
             self.log(t, g, "return_hotel", g.node)
             self.decide(g, t)
+        elif kind == "depart_site":           # day visitor back in the city: leaves the model
+            g.returning, g.returned_t = False, t
+            self.set_state(g, "OFFSITE", t, "in")
+            g.node = "OFFSITE"
+            g.history.append((t, t, "LEAVE", "CITY", 0))
+            self.log(t, g, "leave_site", "CITY")
 
-    def shuttle(self, t, stop, scheduled):
-        tc = self.cfg["transport"]
+    def visitor_arrive(self, g, t):
+        n = self.cfg["needs"]
+        g.node, g.zone, g.last_update = "CITY", "mainland", t
+        g.hunger, g.fatigue, g.heat = 30.0, n["overnight_fatigue_after_sleep"], 0.0
+        g.visits, g.excluded_until, g.in_park_today, g.meals_today = {}, {}, False, 0
+        g.history.append((t, t, "ARRIVE", "CITY", 0))
+        self.log(t, g, "arrive_site", "CITY")
+        self.travel(g, "PARK_STOP", t, ("enter_park",))
+
+    def depart(self, t, lid, stop, scheduled):
+        """One departure of a line from a stop. FIFO with fill-in by smaller groups (documented);
+        groups never split. The cable car fills several cabins per departure; boats and cabins
+        only run (and are logged) when someone boards; the shuttle keeps its fixed timetable."""
+        L = self.lines[lid]
         q = self.stop_queue[stop]
-        if not scheduled and not q:
+        if not q and (L["on_demand"] or not scheduled):
             return
-        cap, boarded, remaining = tc["capacity_persons"], [], deque()
-        while q:
-            g = q.popleft()
-            if g.size <= cap:          # FIFO with fill-in by smaller groups (documented)
-                cap -= g.size
-                boarded.append(g)
-            else:
-                remaining.append(g)
+        dest = L["stops"][1] if stop == L["stops"][0] else L["stops"][0]
+        remaining, any_boarded = q, False
+        for v in range(L["vehicles"]):
+            cap, boarded, rest = L["cap"], [], deque()
+            while remaining:
+                g = remaining.popleft()
+                if g.size <= cap:
+                    cap -= g.size
+                    boarded.append(g)
+                else:
+                    rest.append(g)
+            remaining = rest
+            persons = sum(g.size for g in boarded)
+            if L["on_demand"] and not persons:
+                break
+            any_boarded |= persons > 0
+            self.trips.append(dict(line=lid, depart_t=t, arrive_t=t + L["ride"], origin=stop, dest=dest,
+                                   persons=persons, groups=len(boarded), scheduled=scheduled, vehicle=v))
+            self._trip_energy(lid, t, persons)
+            for g in boarded:
+                if self.net.zone(stop) == "park":
+                    self.log(t, g, "leave_park", stop)
+                self.set_state(g, "TRAVELING", t, "in")
+                g.transport_min += (t - g.wait_start) + L["ride"]
+                g.node, g.line = "VEHICLE", lid
+                g.walk_from, g.destination, g.walk_start, g.walk_end = stop, dest, t, t + L["ride"]
+                self.log(t, g, "board", stop, f"{g.size} người")
+                self.push(t + L["ride"], "alight", g.gid)
         self.stop_queue[stop] = remaining
-        dest = "PARK_STOP" if stop == "HOTEL_STOP" else "HOTEL_STOP"
-        persons = sum(g.size for g in boarded)
-        self.trips.append(dict(depart_t=t, arrive_t=t + tc["ride_min"], origin=stop, dest=dest,
-                               persons=persons, groups=len(boarded), scheduled=scheduled))
-        if tc["include_transport_energy"]:
-            self.meter.add_energy("transport", t, tc["kwh_per_trip"], tc["ride_min"])
-        for g in boarded:
-            self.set_state(g, "TRAVELING", t, "in")
-            g.transport_min += (t - g.wait_start) + tc["ride_min"]
-            g.node = "VEHICLE"
-            g.walk_from, g.destination, g.walk_start, g.walk_end = stop, dest, t, t + tc["ride_min"]
-            self.log(t, g, "board", stop, f"{g.size} người")
-            self.push(t + tc["ride_min"], "alight", g.gid)
+        cc = self.cfg["cable_car"]
+        if lid == "cable" and not scheduled and any_boarded and cc["include_energy"]:
+            self.meter.add_power("cable_car", t, cc["drive_kw_running"], L["ride"])   # after-hours sweep
+
+    def _trip_energy(self, lid, t, persons):
+        L = self.lines[lid]
+        if lid == "shuttle":
+            tc = self.cfg["transport"]
+            if tc["include_transport_energy"]:
+                self.meter.add_energy("transport", t, tc["kwh_per_trip"], L["ride"])
+        elif lid == "cable":
+            cc = self.cfg["cable_car"]
+            if cc["include_energy"]:
+                self.meter.add_energy("cable_car", t, cc["kw_per_passenger_on_line"] * persons * L["ride"] / 60.0, L["ride"])
+        elif lid == "boat":
+            self.boat_fuel_l += self.cfg["boats"]["fuel_l_per_trip"]   # fuel, not electricity
+            self.boat_trips += 1
 
     def alight(self, g, t):
-        g.node = g.destination
+        g.node, g.line = g.destination, None
+        g.zone = self.net.zone(g.node)
         self.log(t, g, "alight", g.node)
+        if g.leg:                             # off the hotel shuttle: on to where the leg was going
+            dest, action = g.leg
+            g.leg = None
+            return self.walk(g, dest, t, action)
         dest, action = g.final
         g.final = None
+        if self.net.zone(dest) != g.zone:     # next leg (e.g. boat, then on foot to the park)
+            return self.travel(g, dest, t, action)
         if dest == g.node:
             g.pending, g.destination = action, dest
             self.on_arrive(g, t)
@@ -216,34 +356,45 @@ class Simulation:
 
     # ------------------------------------------------------------ rooms
     def leave_room(self, g, t, on_arrive):
-        r = g.room
-        self.rooms.occupied[r] = False
-        self.rooms.asleep[r] = False
-        self.log(t, g, "room_leave", "ROOMS")
+        R, r = self.bank(g), g.room
+        R.occupied[r] = False
+        R.asleep[r] = False
+        self.log(t, g, "room_leave", HOME[g.hotel]["rooms"])
         if self.policies.get("occupancy_hvac"):
             p = self.pp["occupancy_hvac"]
             err = self.grng(g, "prediction").normal(0, p["prediction_error_sd_min"])
             if on_arrive and on_arrive[0] == "enter_park":
-                pred = g.intended_return + 2 * self.cfg["transport"]["ride_min"] + err
+                if g.hotel == "island":
+                    trip = self.net.walk_min(HOME["island"]["rooms"], "PARK_STOP")
+                else:
+                    trip = self.lines["cable"]["ride"] + self.lines["shuttle"]["ride"]
+                pred = g.intended_return + 2 * trip + err
+            elif on_arrive == ("join", "CITY"):
+                ride = self.lines["boat"]["ride"] if g.hotel == "island" else 0
+                pred = t + 2 * ride + self.fac["CITY"].spec["duration_min_mean"] + 40 + err
             else:
                 pred = t + p["hotel_trip_default_min"] + err
-            self.rooms.precool_from[r] = int(pred - p["precool_lead_min"])
+            R.precool_from[r] = int(pred - p["precool_lead_min"])
+
+    def _hot_water(self, g, t):
+        eu = "hotel_hot_water" if g.hotel == "island" else "mainland_common"
+        self.meter.add_energy(eu, t, g.size * self.cfg["rooms"]["hot_water_kwh_per_person_shower"], 15)
 
     def enter_room(self, g, t, mode):
-        r = g.room
-        g.node, g.zone = "ROOMS", "hotel"
-        self.rooms.occupied[r] = True
-        self.rooms.persons[r] = g.size
-        self.rooms.precool_from[r] = 10 ** 9
-        if self.rooms.cleaning[r]:
+        R, r, home = self.bank(g), g.room, HOME[g.hotel]["rooms"]
+        g.node, g.zone = home, HOME[g.hotel]["zone"]
+        R.occupied[r] = True
+        R.persons[r] = g.size
+        R.precool_from[r] = 10 ** 9
+        if R.cleaning[r] and R is self.rooms:
             self.interrupt_cleaning(r, t)
         if mode == "end":
             self.set_state(g, "FINISHED", t, "in")
             g.asleep = True
-            self.rooms.asleep[r] = True
-            self.meter.add_energy("hotel_hot_water", t, g.size * self.cfg["rooms"]["hot_water_kwh_per_person_shower"], 15)
-            self.log(t, g, "end_day", "ROOMS")
-            g.history.append((t, t, "END", "ROOMS", 0))
+            R.asleep[r] = True
+            self._hot_water(g, t)
+            self.log(t, g, "end_day", home)
+            g.history.append((t, t, "END", home, 0))
             next_day = (t - 360) // 1440 + 1
             if next_day < self.days:
                 draw_daily_plan(g, self.cfg, self.seed, next_day)
@@ -255,23 +406,25 @@ class Simulation:
             limit = min(force_end, g.bedtime) if t < g.bedtime else force_end
             if t < limit:
                 dur = min(dur, max(5, limit - t))   # re-decide at the group's own bedtime (or the forced end time)
-            g.history.append((t, t + dur, "ROOM_REST", "ROOMS", 0))
-            self.log(t, g, "room_rest", "ROOMS", f"{dur} phút")
+            g.history.append((t, t + dur, "ROOM_REST", home, 0))
+            self.log(t, g, "room_rest", home, f"{dur} phút")
             self.push(t + dur, "decide", g.gid)
 
     def wake(self, g, t):
         self.set_state(g, "IN_ROOM", t, "in")
         g.asleep = False
-        self.rooms.asleep[g.room] = False
+        home = HOME[g.hotel]["rooms"]
+        self.bank(g).asleep[g.room] = False
         g.hunger = self.cfg["needs"]["initial_hunger_at_wake"]
         g.fatigue = min(g.fatigue, self.cfg["needs"]["overnight_fatigue_after_sleep"])
         g.heat = 0.0
         g.visits, g.excluded_until, g.in_park_today, g.meals_today = {}, {}, False, 0
         g.park_entry_t = g.returned_t = None
-        self.meter.add_energy("hotel_hot_water", t, g.size * self.cfg["rooms"]["hot_water_kwh_per_person_shower"], 15)
-        self.log(t, g, "wake", "ROOMS")
-        rest = self.fac["HOTEL_RESTAURANT"]
-        arrive = t + self.net.walk_min("ROOMS", rest.node)
+        self._hot_water(g, t)
+        self.log(t, g, "wake", home)
+        g.history.append((t, t, "WAKE", home, 0))
+        rest = self.fac[HOME[g.hotel]["restaurant"]]
+        arrive = t + self.net.walk_min(home, rest.node)
         if not g.skip_breakfast and rest.is_open(arrive) and rest.minutes_to_close(arrive) > 20:
             self.log(t, g, "decision", rest.id, "Thói quen: ăn sáng")
             self.travel(g, rest.node, t, ("join", rest.id))
@@ -336,18 +489,21 @@ class Simulation:
         tp = w["time_pressure_per_hour"] * float(np.clip((t - g.intended_return) / 60.0, -2, 3))
         if self.tday(t) >= hhmm(park["park_close_hhmm"]) - 15:
             tp += 5.0
-        opts.append(dict(kind="return", label="Về khách sạn", travel_min=self._walk_time(g, "PARK_STOP"),
-                         rests=True, time_pressure=tp))
+        exit_stop = self.first_stop(g, self.return_target(g)[0], t)
+        opts.append(dict(kind="return", label="Rời công viên" if g.hotel == "day" else "Về khách sạn",
+                         travel_min=self._walk_time(g, exit_stop), rests=True, time_pressure=tp))
         return opts
 
     def hotel_options(self, g, t):
+        """Options at the group's own hotel (island or mainland)."""
         opts, w, dc = [], self.w, self.cfg["decision"]
         m = self.tday(t)
+        home = HOME[g.hotel]["rooms"]
         end_tp = w["time_pressure_per_hour"] * (t - g.bedtime) / 60.0 + 0.3
         if m >= hhmm(dc["force_end_day_hhmm"]) or m < 300:
             return [dict(kind="end_day", label="Kết thúc ngày (về phòng ngủ)", rests=True, time_pressure=5.0,
-                         travel_min=self._walk_time(g, "ROOMS"))]
-        rest = self.fac["HOTEL_RESTAURANT"]
+                         travel_min=self._walk_time(g, home))]
+        rest = self.fac[HOME[g.hotel]["restaurant"]]
         tr = self._walk_time(g, rest.node)
         arr = t + tr
         if rest.is_open(arr) and rest.minutes_to_close(arr) > 20:
@@ -357,11 +513,25 @@ class Simulation:
                 opts.append(dict(kind="restaurant", fid=rest.id, label=rest.label, travel_min=tr,
                                  est_wait=self._est_wait(g, rest, t), eats=True, price=price, heat_relief=1.0))
         pool = self.fac["POOL"]
-        tr = self._walk_time(g, pool.node)
-        if pool.is_open(t + tr) and pool.minutes_to_close(t + tr) > 20:
+        tr = self._walk_time(g, pool.node) if g.hotel == "island" else 0
+        if g.hotel == "island" and pool.is_open(t + tr) and pool.minutes_to_close(t + tr) > 20:
             opts.append(dict(kind="attraction", fid="POOL", activity="pool", label=pool.label, travel_min=tr,
                              est_wait=self._est_wait(g, pool, t), heat_relief=0.6))
-        for f in self.hotel_amenities:            # spa, gym, kids club inside the hotel
+        city = self.fac.get("CITY")
+        lo, hi = self.cfg["population"].get("city_outing_window", ["16:30", "20:00"])
+        if (city is not None and not g.visits.get("CITY") and hhmm(lo) <= m < hhmm(hi)
+                and m < hhmm(city.spec["latest_end_hhmm"]) - 90):
+            if g.hotel == "island":               # by speedboat: walk + expected wait + crossing + walk
+                B = self.lines["boat"]
+                tr = (self._walk_time(g, "PIER_ISLAND") + B["interval"] // 2 + B["ride"]
+                      + int(math.ceil(self.net.walk_min("PIER_MAIN", "CITY") / g.walk_speed)))
+            else:
+                tr = self._walk_time(g, "CITY")
+            price = city.spec["price_vnd_per_person"] * g.size
+            if price <= g.budget_left:
+                opts.append(dict(kind="attraction", fid="CITY", activity="city", label=city.label, travel_min=tr,
+                                 price=price, eats=True, interest_scale=city.spec.get("interest_scale", 1.0)))
+        for f in self.amenities[g.hotel]:         # spa, gym, kids club, bars inside the hotel
             if g.excluded_until.get(f.id, -1) > t or (f.spec.get("requires_children") and not g.children):
                 continue
             if f.spec.get("once_per_day") and g.visits.get(f.id):
@@ -369,6 +539,8 @@ class Simulation:
             tr = self._walk_time(g, f.node)
             if not f.is_open(t + tr) or f.minutes_to_close(t + tr) <= 20:
                 continue
+            if m + tr + f.spec["duration_min_mean"] > hhmm(dc["force_end_day_hhmm"]):
+                continue                          # would still be there at the end of the day
             price = f.spec.get("price_vnd_per_person", 0) * g.size
             if price > g.budget_left:
                 continue
@@ -376,25 +548,39 @@ class Simulation:
                              est_wait=self._est_wait(g, f, t), price=price, heat_relief=f.spec.get("heat_relief", 1.0),
                              rests=bool(f.spec.get("rests")), interest_scale=f.spec.get("interest_scale", 1.0)))
         if t < g.bedtime:                      # after the planned bedtime, going to the room means ending the day
-            opts.append(dict(kind="room_rest", label="Nghỉ trong phòng", travel_min=self._walk_time(g, "ROOMS"),
+            opts.append(dict(kind="room_rest", label="Nghỉ trong phòng", travel_min=self._walk_time(g, home),
                              rests=True, heat_relief=1.0, time_pressure=w["room_rest_base"]))
         if (g.park_intent and not g.in_park_today and m < hhmm(dc["latest_park_departure_hhmm"])):
             if t >= g.intended_departure:
                 tp = w["go_park_base"] + 0.8
             else:
                 tp = w["go_park_base"] - w["time_pressure_per_hour"] * 2 * (g.intended_departure - t) / 60.0
-            opts.append(dict(kind="go_park", label="Đi công viên", travel_min=self._walk_time(g, "HOTEL_STOP"),
+            stop = self.first_stop(g, "PARK_STOP", t)
+            opts.append(dict(kind="go_park", label="Đi công viên", travel_min=self._walk_time(g, stop),
                              time_pressure=tp))
         if t >= g.bedtime - 90:
             opts.append(dict(kind="end_day", label="Kết thúc ngày (về phòng ngủ)", rests=True,
-                             travel_min=self._walk_time(g, "ROOMS"), time_pressure=end_tp))
+                             travel_min=self._walk_time(g, home), time_pressure=end_tp))
         return opts
+
+    def away_options(self, g, t):
+        """Away from home and not in the park (e.g. island guests in the city): go back."""
+        dest, _ = self.return_target(g)
+        stop = self.first_stop(g, dest, t)
+        return [dict(kind="return", label="Rời khu" if g.hotel == "day" else "Về khách sạn", rests=True,
+                     travel_min=self._walk_time(g, stop), time_pressure=1.0)]
 
     def decide(self, g, t):
         self.update_needs(g, t)
-        if g.node in ("WALK", "VEHICLE"):
+        if g.node in ("WALK", "VEHICLE", "OFFSITE"):
             return
-        opts = self.park_options(g, t) if g.zone == "park" else self.hotel_options(g, t)
+        here = self.net.zone(g.node)
+        if here == "park":
+            opts = self.park_options(g, t)
+        elif g.hotel != "day" and here == HOME[g.hotel]["zone"]:
+            opts = self.hotel_options(g, t)
+        else:
+            opts = self.away_options(g, t)
         k, log = choose(g, opts, t, self.w, self.cfg["decision"]["temperature"], self.grng(g))
         opt = opts[k]
         rec_note = ""
@@ -438,14 +624,15 @@ class Simulation:
         if kind in ("attraction", "restaurant", "rest"):
             self.travel(g, self.fac[opt["fid"]].node, t, ("join", opt["fid"]))
         elif kind == "room_rest":
-            self.travel(g, "ROOMS", t, ("room", "rest"))
+            self.travel(g, HOME[g.hotel]["rooms"], t, ("room", "rest"))
         elif kind == "end_day":
-            self.travel(g, "ROOMS", t, ("room", "end"))
+            self.travel(g, HOME[g.hotel]["rooms"], t, ("room", "end"))
         elif kind == "go_park":
             self.travel(g, "PARK_STOP", t, ("enter_park",))
         elif kind == "return":
             g.returning = True
-            self.travel(g, "HOTEL_STOP", t, ("arrive_hotel",))
+            dest, action = self.return_target(g)
+            self.travel(g, dest, t, action)
 
     # ------------------------------------------------------------ queues & service
     def join_queue(self, g, f, t):
@@ -525,12 +712,14 @@ class Simulation:
             else:
                 mean = f.spec["duration_min_mean"]
             dur = max(10, int(self.grng(g, "service").normal(mean, sd)))
+            if "latest_end_hhmm" in f.spec:      # e.g. city trips end in time for the last boat
+                dur = max(10, min(dur, (t // 1440) * 1440 + hhmm(f.spec["latest_end_hhmm"]) - t))
             state = {"restaurant": "EATING", "rest": "RESTING"}.get(f.kind, "VISITING")
             if f.kind == "restaurant":
                 breakfast = self.tday(t) < hhmm("11:00") and "breakfast_price_vnd_per_person" in f.spec
                 pr = f.spec["breakfast_price_vnd_per_person"] if breakfast else f.spec["price_vnd_per_person"]
                 g.budget_left -= pr * g.size
-                eu = "hotel_restaurant" if f.id == "HOTEL_RESTAURANT" else "park_restaurant"
+                eu = {"HOTEL_RESTAURANT": "hotel_restaurant", "M_CAFE": "mainland_common"}.get(f.id, "park_restaurant")
                 self.meter.add_energy(eu, t, f.energy["kwh_per_cover"] * g.size, dur)
             elif f.spec.get("price_vnd_per_person"):   # paid amenities (spa)
                 g.budget_left -= f.spec["price_vnd_per_person"] * g.size
@@ -596,7 +785,7 @@ class Simulation:
         f.stats["completed_persons"] += g.size
         g.visits[f.id] = g.visits.get(f.id, 0) + 1
         self.update_needs(g, t)
-        if f.kind == "restaurant":
+        if f.kind == "restaurant" or f.spec.get("eats"):
             g.hunger = max(0.0, g.hunger - self.cfg["needs"]["meal_hunger_reduction"])
             g.meals_today += 1
         if f.spec.get("water_relief"):
@@ -658,8 +847,8 @@ class Simulation:
     def _predicted_absence_ok(self, r, t):
         gid = self.rooms.group_of[r]
         g = self.groups[gid]
-        if g.zone == "park" or g.node == "VEHICLE" or (g.node == "WALK" and g.destination == "HOTEL_STOP"
-                                                       and not g.returning):
+        if g.zone != "hotel" or g.node == "VEHICLE" or (g.node == "WALK" and g.destination in ("PARK_STOP", "PIER_ISLAND")
+                                                        and not g.returning):
             return True, 2
         return (self.rooms.precool_from[r] - t) >= self.pp["housekeeping_coordination"]["min_predicted_absence_min"], 0
 
@@ -676,7 +865,7 @@ class Simulation:
             cands = []
             for r in np.flatnonzero(eligible):
                 g = self.groups[R.group_of[r]]
-                in_park = g.zone == "park" or g.node == "VEHICLE"
+                in_park = g.zone != "hotel" or g.node == "VEHICLE"
                 cands.append((0 if in_park else 1, int(r)))
             cands.sort()
             order = [r for _, r in cands]
@@ -826,12 +1015,29 @@ class Simulation:
                 pk += self.fac[fid].energy["base_kw_open"]
         self.meter.add_power("park_common", t, pk)
         wk = 0.0
-        for f in self.hotel_amenities:
+        for f in self.amenities["island"]:
             if f.is_open(t) or f.in_grace(t):
                 wk += f.energy["base_kw_open"] + f.energy["kw_per_visitor"] * f.active_persons()
         self.meter.add_power("hotel_wellness", t, wk)
         if hhmm(lc["open_hhmm"]) <= m < hhmm(lc["close_hhmm"]):
             self.meter.add_power("laundry", t, lc["standby_kw"])
+        if self.mrooms is not None:
+            mc = self.cfg["mainland_hotel"]
+            day = hhmm(mc["day_start_hhmm"]) <= m < hhmm(mc["day_end_hhmm"])
+            mk = mc["public_kw_day"] if day else mc["public_kw_night"]
+            if m >= hhmm(mc["exterior_on_hhmm"]) or m < hhmm(mc["exterior_off_hhmm"]):
+                mk += mc["exterior_lighting_kw"]
+            e = self.fac["M_CAFE"].energy
+            mk += e["base_kw_open"] + e["kitchen_kw_open"] if self.fac["M_CAFE"].is_open(t) else e["base_kw_closed"]
+            for f in self.amenities["mainland"]:
+                if f.is_open(t) or f.in_grace(t):
+                    mk += f.energy["base_kw_open"] + f.energy["kw_per_visitor"] * f.active_persons()
+            self.meter.add_power("mainland_common", t, mk)
+        cc = self.cfg["cable_car"]
+        if cc["include_energy"]:
+            first, last = hhmm(cc["first_departure_hhmm"]), hhmm(cc["last_departure_hhmm"])
+            if first - cc["warmup_min"] <= m < last + cc["ride_min"]:
+                self.meter.add_power("cable_car", t, cc["drive_kw_running"] + cc["stations_kw"])
 
     # ------------------------------------------------------------ snapshots
     def snapshot(self, t):
@@ -849,11 +1055,19 @@ class Simulation:
             queue[f.id] = f.queue_persons()
             active[f.id] = f.active_persons()
         stop_q = {k: sum(g.size for g in q) for k, q in self.stop_queue.items()}
-        in_vehicle = sum(g.size for g in self.groups if g.node == "VEHICLE")
+        by_line = {lid: 0 for lid in self.lines}
+        for g in self.groups:
+            if g.node == "VEHICLE":
+                by_line[g.line] += g.size
+        in_vehicle = sum(by_line.values())
         in_park = sum(g.size for g in self.groups if g.zone == "park" and g.node != "VEHICLE")
+        M = self.mrooms
+        mainland = {} if M is None else dict(
+            m_room_temp=np.round(M.temp, 2).astype(np.float32), m_room_occ=M.occupied.copy(),
+            m_room_asleep=M.asleep.copy(), m_room_control=M.control.copy(), m_room_hvac=M.hvac_on.copy())
         self.snapshots.append(dict(t=t, node_persons=node_persons, queue=queue, active=active, stop_queue=stop_q,
-                                   walkers=walkers, in_vehicle=in_vehicle, in_park=in_park,
-                                   state_persons=state_persons,
+                                   walkers=walkers, in_vehicle=in_vehicle, in_vehicle_by_line=by_line, in_park=in_park,
+                                   state_persons=state_persons, **mainland,
                                    room_temp=np.round(self.rooms.temp, 2).astype(np.float32),
                                    room_occ=self.rooms.occupied.copy(), room_hvac=self.rooms.hvac_on.copy(),
                                    room_asleep=self.rooms.asleep.copy(), room_control=self.rooms.control.copy(),
@@ -870,6 +1084,10 @@ class Simulation:
         self.room_hot_minutes = np.zeros(R.n)
         self.room_degree_minutes = np.zeros(R.n)
         thr = self.cfg["rooms"]["comfort_threshold_c"]
+        M = self.mrooms
+        if M is not None:
+            self.m_room_occ_minutes = np.zeros(M.n)
+            self.m_room_hot_minutes = np.zeros(M.n)
         for f in self.fac.values():
             f.next_check = None
         for t in range(self.T):
@@ -886,6 +1104,13 @@ class Simulation:
             hot = occ & (R.temp > thr)
             self.room_hot_minutes += hot
             self.room_degree_minutes += np.where(occ, np.maximum(0.0, R.temp - thr), 0.0)
+            if M is not None:
+                hv, li = M.step(t, self.weather.temp[t], self.weather.solar[t], self.policies, self.pp)
+                self.meter.add_power("mainland_room_hvac", t, hv)
+                self.meter.add_power("mainland_room_lighting_plug", t, li)
+                mocc = M.occupied & M.sold
+                self.m_room_occ_minutes += mocc
+                self.m_room_hot_minutes += mocc & (M.temp > thr)
             if t % SNAPSHOT_MIN == 0:
                 self.snapshot(t)
             if progress and t % 60 == 0:
@@ -899,8 +1124,10 @@ class Simulation:
             self.wake(G[payload[0]], t)
         elif kind == "decide":
             g = G[payload[0]]
-            if g.state in ("IN_ROOM",) and g.node == "ROOMS":
+            if g.state in ("IN_ROOM",) and g.node == HOME[g.hotel]["rooms"]:
                 self.decide(g, t)
+        elif kind == "visitor_arrive":
+            self.visitor_arrive(G[payload[0]], t)
         elif kind == "arrive":
             self.on_arrive(G[payload[0]], t)
         elif kind == "alight":
@@ -918,8 +1145,8 @@ class Simulation:
             self.show_start(self.fac[payload[0]], t)
         elif kind == "close":
             self.close(self.fac[payload[0]], t)
-        elif kind == "shuttle":
-            self.shuttle(t, payload[0], payload[1])
+        elif kind == "depart":
+            self.depart(t, *payload)
         elif kind == "hk_tick":
             self.hk_tick(t)
         elif kind == "hk_done":

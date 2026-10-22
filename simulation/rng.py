@@ -17,6 +17,12 @@ STREAMS = {
     "policy": 12,
     "prediction": 13,
     "service": 14,
+    "population_extra": 20,
+    "population_mainland": 21,
+    "population_mainland_extra": 22,
+    "population_day": 23,
+    "population_day_extra": 24,
+    "rooms_init_mainland": 25,
 }
 
 

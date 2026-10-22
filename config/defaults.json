@@ -7,16 +7,82 @@
   "reporting_interval_min": 15,
 
   "hotel": {
+    "label_vi": "Khách sạn Đảo",
     "rooms": 533,
-    "floors": 13,
-    "occupancy": 0.80
+    "floors": 18,
+    "occupancy": 0.80,
+    "_floor_plan_note": "Room floors 3-20 (10x36 + 3x28 + 4x20 + 9 = 533). Floors 1-2 and 21 hold the amenities below.",
+    "floor_plan": [
+      {"floors": [3, 12], "rooms": 36, "class": "Deluxe"},
+      {"floors": [13, 15], "rooms": 28, "class": "Deluxe"},
+      {"floors": [16, 19], "rooms": 20, "class": "Premier"},
+      {"floors": [20, 20], "rooms": 9, "class": "Suite"}
+    ],
+    "row_labels_vi": ["Hướng biển", "Hướng núi"],
+    "amenity_floors": [
+      {"floor": 1, "title_vi": "Sảnh, nhà hàng", "facilities": ["HOTEL_RESTAURANT", "LOBBY_BAR"]},
+      {"floor": 2, "title_vi": "Spa, gym, kids club", "facilities": ["SPA", "GYM", "KIDS_CLUB"]},
+      {"floor": 21, "title_vi": "Sân thượng, sky bar", "facilities": ["SKY_BAR"]}
+    ]
+  },
+
+  "mainland_hotel": {
+    "_note": "Second synthetic property on the mainland shore. Its guests reach the park by cable car (or speedboat when the cable car is closed).",
+    "enabled": true,
+    "label_vi": "Khách sạn Bờ",
+    "rooms": 208,
+    "floors": 26,
+    "occupancy": 0.72,
+    "floor_plan": [{"floors": [3, 28], "rooms": 8, "class": "Superior"}],
+    "row_labels_vi": ["Hướng biển", "Hướng phố"],
+    "amenity_floors": [
+      {"floor": 1, "title_vi": "Sảnh, café", "facilities": ["M_CAFE"]},
+      {"floor": 2, "title_vi": "Spa, gym", "facilities": ["M_SPA", "M_GYM"]}
+    ],
+    "park_intention": 0.6,
+    "public_kw_day": 45, "public_kw_night": 30, "day_start_hhmm": "06:00", "day_end_hhmm": "23:00",
+    "exterior_lighting_kw": 8, "exterior_on_hhmm": "18:00", "exterior_off_hhmm": "06:00"
+  },
+
+  "cable_car": {
+    "_note": "Detachable gondola line between the mainland and the island station next to the park. Cabins leave every minute in both directions while the line runs.",
+    "stops": ["CABLE_MAIN", "CABLE_ISLAND"],
+    "first_departure_hhmm": "09:00",
+    "last_departure_hhmm": "22:00",
+    "departure_interval_min": 1,
+    "cabins_per_departure": 2,
+    "cabin_capacity_persons": 8,
+    "ride_min": 12,
+    "include_energy": true,
+    "drive_kw_running": 160,
+    "kw_per_passenger_on_line": 0.25,
+    "stations_kw": 25,
+    "warmup_min": 30
+  },
+
+  "boats": {
+    "_note": "Speedboats between the mainland pier and the island pier. A boat leaves on the schedule only when someone is waiting. Fuel is reported separately and is NOT part of electricity emissions.",
+    "stops": ["PIER_MAIN", "PIER_ISLAND"],
+    "first_departure_hhmm": "06:30",
+    "last_departure_hhmm": "23:30",
+    "interval_min": 20,
+    "capacity_persons": 20,
+    "boats": 2,
+    "ride_min": 7,
+    "fuel_l_per_trip": 9.0,
+    "fuel_kgco2e_per_l": 2.3,
+    "_fuel_note": "Illustrative petrol outboard values, not measured or official."
   },
 
   "population": {
     "group_sizes": [1, 2, 3, 4, 5],
     "group_size_probs": [0.10, 0.40, 0.25, 0.20, 0.05],
     "park_intention": 0.75,
-    "external_day_visitors": 0,
+    "external_day_visitors": 300,
+    "_day_visitor_note": "Persons per day who come from the city by cable car (synthetic). 0 disables them.",
+    "day_visitor_arrival_mean_hhmm": "10:15", "day_visitor_arrival_sd_min": 60,
+    "day_visitor_leave_mean_hhmm": "17:30", "day_visitor_leave_sd_min": 90,
+    "city_outing_window": ["16:30", "20:00"],
     "couple_share_of_size2": 0.80,
     "family_share_of_size3plus": 0.75,
     "senior_share_of_adults": 0.10,
@@ -37,6 +103,13 @@
       "couple":  {"thrill": 0.50, "family": 0.30, "indoor": 0.50, "water": 0.50, "show": 0.60, "pool": 0.60, "spa": 0.40, "gym": 0.15, "kids": 0.00},
       "family":  {"thrill": 0.30, "family": 0.80, "indoor": 0.60, "water": 0.60, "show": 0.60, "pool": 0.60, "spa": 0.20, "gym": 0.10, "kids": 0.70},
       "friends": {"thrill": 0.70, "family": 0.30, "indoor": 0.50, "water": 0.70, "show": 0.50, "pool": 0.50, "spa": 0.30, "gym": 0.20, "kids": 0.00}
+    },
+    "_extra_preference_note": "Drawn from a separate stream so the original preference draws stay unchanged.",
+    "extra_preference_means": {
+      "solo":    {"bar": 0.40, "city": 0.40},
+      "couple":  {"bar": 0.55, "city": 0.45},
+      "family":  {"bar": 0.15, "city": 0.30},
+      "friends": {"bar": 0.60, "city": 0.50}
     }
   },
 
@@ -82,15 +155,15 @@
   },
 
   "transport": {
-    "capacity_persons": 45,
-    "interval_min": 15,
-    "ride_min": 15,
-    "hotel_first_departure_hhmm": "08:00",
-    "hotel_last_departure_hhmm": "20:30",
-    "park_first_departure_hhmm": "08:30",
-    "park_last_departure_hhmm": "22:00",
+    "_note": "Hotel shuttle of the mainland hotel: a minibus between its car park and the cable-car station. Mainland-hotel guests ride it while it runs; island guests walk to the park along the promenade (no shuttle on the island).",
+    "stops": ["M_STOP", "C_STOP"],
+    "capacity_persons": 25,
+    "interval_min": 10,
+    "ride_min": 4,
+    "first_departure_hhmm": "08:00",
+    "last_departure_hhmm": "22:30",
     "include_transport_energy": false,
-    "kwh_per_trip": 6.0
+    "kwh_per_trip": 1.5
   },
 
   "network": {
@@ -99,7 +172,6 @@
       "LOBBY":            {"label_vi": "Sảnh & lễ tân",         "zone": "hotel", "x": 20, "y": 62},
       "HOTEL_RESTAURANT": {"label_vi": "Nhà hàng khách sạn",    "zone": "hotel", "x": 6,  "y": 44},
       "POOL":             {"label_vi": "Hồ bơi / thư giãn",     "zone": "hotel", "x": 24, "y": 32},
-      "HOTEL_STOP":       {"label_vi": "Điểm đón KS",           "zone": "hotel", "x": 36, "y": 60},
       "SPA":              {"label_vi": "Spa",                   "zone": "hotel", "x": 14, "y": 72},
       "GYM":              {"label_vi": "Phòng gym",             "zone": "hotel", "x": 20, "y": 76},
       "KIDS_CLUB":        {"label_vi": "Câu lạc bộ trẻ em",     "zone": "hotel", "x": 26, "y": 72},
@@ -111,16 +183,35 @@
       "REST_A":           {"label_vi": "Khu nghỉ có điều hòa",  "zone": "park",  "x": 94, "y": 40},
       "WATER":            {"label_vi": "Trò chơi nước",         "zone": "park",  "x": 82, "y": 30},
       "REST_B":           {"label_vi": "Khu nghỉ có mái che",   "zone": "park",  "x": 70, "y": 42},
-      "SHOW":             {"label_vi": "Sân khấu biểu diễn",    "zone": "park",  "x": 62, "y": 26}
+      "SHOW":             {"label_vi": "Sân khấu biểu diễn",    "zone": "park",  "x": 62, "y": 26},
+      "LOBBY_BAR":        {"label_vi": "Lobby bar",             "zone": "hotel", "x": 14, "y": 62},
+      "SKY_BAR":          {"label_vi": "Sky bar (sân thượng)",  "zone": "hotel", "x": 4,  "y": 92},
+      "PIER_ISLAND":      {"label_vi": "Bến tàu trên đảo",      "zone": "hotel", "x": 40, "y": 40},
+      "CABLE_ISLAND":     {"label_vi": "Ga cáp treo trên đảo",  "zone": "park",  "x": 52, "y": 46},
+      "M_ROOMS":          {"label_vi": "Khối phòng KS Bờ (208)", "zone": "mainland", "x": 6,  "y": 8},
+      "M_LOBBY":          {"label_vi": "Sảnh KS Bờ",            "zone": "mainland", "x": 14, "y": 10},
+      "M_CAFE":           {"label_vi": "Café Bờ",               "zone": "mainland", "x": 8,  "y": 16},
+      "M_SPA":            {"label_vi": "Spa KS Bờ",             "zone": "mainland", "x": 20, "y": 5},
+      "M_GYM":            {"label_vi": "Gym KS Bờ",             "zone": "mainland", "x": 24, "y": 9},
+      "CABLE_MAIN":       {"label_vi": "Ga cáp treo đất liền",  "zone": "mainland", "x": 40, "y": 12},
+      "M_STOP":           {"label_vi": "Bãi xe nội khu KS Bờ",  "zone": "mainland", "x": 18, "y": 14},
+      "C_STOP":           {"label_vi": "Điểm xe ga cáp treo",   "zone": "mainland", "x": 36, "y": 15},
+      "PIER_MAIN":        {"label_vi": "Bến tàu đất liền",      "zone": "mainland", "x": 30, "y": 18},
+      "CITY":             {"label_vi": "Thành phố (ngoài mô hình)", "zone": "mainland", "x": 2, "y": 2}
     },
     "walk_edges_min": [
       ["ROOMS", "LOBBY", 4], ["LOBBY", "HOTEL_RESTAURANT", 3], ["LOBBY", "POOL", 4],
-      ["LOBBY", "HOTEL_STOP", 3], ["HOTEL_RESTAURANT", "POOL", 3],
+      ["LOBBY", "PARK_STOP", 14], ["HOTEL_RESTAURANT", "POOL", 3],
       ["LOBBY", "SPA", 2], ["LOBBY", "GYM", 2], ["LOBBY", "KIDS_CLUB", 2],
       ["PARK_STOP", "PARK_RESTAURANT", 5], ["PARK_RESTAURANT", "FAMILY", 5], ["PARK_RESTAURANT", "INDOOR", 4],
       ["PARK_RESTAURANT", "REST_B", 3], ["FAMILY", "THRILL", 6], ["INDOOR", "THRILL", 7],
       ["INDOOR", "REST_A", 3], ["REST_A", "WATER", 5], ["WATER", "REST_B", 4],
-      ["REST_B", "SHOW", 3], ["SHOW", "PARK_STOP", 6], ["WATER", "SHOW", 5]
+      ["REST_B", "SHOW", 3], ["SHOW", "PARK_STOP", 6], ["WATER", "SHOW", 5],
+      ["LOBBY", "LOBBY_BAR", 1], ["ROOMS", "SKY_BAR", 3], ["LOBBY", "PIER_ISLAND", 6], ["POOL", "PIER_ISLAND", 4],
+      ["CABLE_ISLAND", "PARK_STOP", 3], ["CABLE_ISLAND", "REST_B", 4],
+      ["M_ROOMS", "M_LOBBY", 3], ["M_LOBBY", "M_CAFE", 2], ["M_LOBBY", "M_SPA", 2], ["M_LOBBY", "M_GYM", 2],
+      ["M_LOBBY", "CABLE_MAIN", 9], ["M_LOBBY", "M_STOP", 1], ["C_STOP", "CABLE_MAIN", 1], ["M_LOBBY", "PIER_MAIN", 6], ["CABLE_MAIN", "PIER_MAIN", 7],
+      ["M_LOBBY", "CITY", 12], ["CABLE_MAIN", "CITY", 10]
     ],
     "outdoor_walking": true
   },
@@ -149,10 +240,10 @@
       "capacity_persons": 24, "cycle_min": 4, "windows": [["09:00", "21:00"]], "no_young_children": true,
       "indoor": false, "energy": {"standby_kw": 18, "kwh_per_cycle": 5.0, "kwh_per_rider": 0.02}},
     "FAMILY": {"kind": "batch", "node": "FAMILY", "label_vi": "Trò chơi gia đình", "activity": "family",
-      "capacity_persons": 32, "cycle_min": 6, "windows": [["09:00", "21:00"]],
+      "capacity_persons": 200, "cycle_min": 6, "windows": [["09:00", "21:00"]],
       "indoor": false, "energy": {"standby_kw": 6, "kwh_per_cycle": 1.2, "kwh_per_rider": 0.01}},
     "WATER": {"kind": "batch", "node": "WATER", "label_vi": "Trò chơi nước", "activity": "water",
-      "capacity_persons": 16, "cycle_min": 3, "windows": [["09:30", "18:30"]],
+      "capacity_persons": 100, "cycle_min": 3, "windows": [["09:30", "18:30"]],
       "indoor": false, "water_relief": true, "energy": {"standby_kw": 40, "kwh_per_cycle": 0.8, "kwh_per_rider": 0.01}},
     "INDOOR": {"kind": "continuous", "node": "INDOOR", "label_vi": "Khu trải nghiệm trong nhà", "activity": "indoor",
       "capacity_persons": 120, "windows": [["09:00", "21:00"]], "duration_min_mean": 20, "duration_min_sd": 4,
@@ -172,7 +263,37 @@
       "energy": {"base_kw_open": 12}},
     "REST_B": {"kind": "rest", "node": "REST_B", "label_vi": "Khu nghỉ có mái che", "capacity_persons": 100,
       "windows": [["09:00", "21:00"]], "duration_min_mean": 25, "duration_min_sd": 8, "indoor": false, "shaded": true,
-      "energy": {"base_kw_open": 2}}
+      "energy": {"base_kw_open": 2}},
+    "LOBBY_BAR": {"kind": "continuous", "node": "LOBBY_BAR", "label_vi": "Lobby bar", "activity": "bar",
+      "hotel_amenity": true, "once_per_day": true, "interest_scale": 0.5,
+      "capacity_persons": 48, "windows": [["10:00", "24:00"]], "latest_end_hhmm": "23:45", "duration_min_mean": 50, "duration_min_sd": 15,
+      "price_vnd_per_person": 150000, "indoor": true, "rests": true,
+      "energy": {"base_kw_open": 6, "kw_per_visitor": 0.05}},
+    "SKY_BAR": {"kind": "continuous", "node": "SKY_BAR", "label_vi": "Sky bar Hoàng Hôn", "activity": "bar",
+      "hotel_amenity": true, "once_per_day": true, "interest_scale": 0.6,
+      "capacity_persons": 120, "windows": [["17:00", "24:00"]], "latest_end_hhmm": "23:45", "duration_min_mean": 70, "duration_min_sd": 20,
+      "price_vnd_per_person": 250000, "indoor": false, "shaded": true, "heat_relief": 0.3, "rests": true,
+      "energy": {"base_kw_open": 12, "kw_per_visitor": 0.05}},
+    "M_CAFE": {"kind": "restaurant", "node": "M_CAFE", "label_vi": "Café Bờ", "site": "mainland",
+      "capacity_persons": 120, "windows": [["06:00", "10:30"], ["11:00", "14:30"], ["17:30", "22:00"]],
+      "duration_min_mean": 45, "duration_min_sd": 12, "breakfast_duration_min_mean": 30,
+      "price_vnd_per_person": 200000, "breakfast_price_vnd_per_person": 0, "indoor": true,
+      "energy": {"base_kw_open": 12, "kitchen_kw_open": 18, "base_kw_closed": 3, "kwh_per_cover": 0.25}},
+    "M_SPA": {"kind": "continuous", "node": "M_SPA", "label_vi": "Spa mini", "activity": "spa", "site": "mainland",
+      "hotel_amenity": true, "once_per_day": true, "interest_scale": 0.5,
+      "capacity_persons": 8, "windows": [["09:00", "21:00"]], "duration_min_mean": 75, "duration_min_sd": 15,
+      "price_vnd_per_person": 600000, "indoor": true, "rests": true,
+      "energy": {"base_kw_open": 5, "kw_per_visitor": 0.3}},
+    "M_GYM": {"kind": "continuous", "node": "M_GYM", "label_vi": "Phòng gym KS Bờ", "activity": "gym", "site": "mainland",
+      "hotel_amenity": true, "once_per_day": true, "interest_scale": 0.3,
+      "capacity_persons": 8, "windows": [["06:00", "22:00"]], "duration_min_mean": 45, "duration_min_sd": 10,
+      "indoor": true, "heat_relief": 0.0, "energy": {"base_kw_open": 3, "kw_per_visitor": 0.15}},
+    "CITY": {"kind": "continuous", "node": "CITY", "label_vi": "Dạo phố & ăn tối trong thành phố", "activity": "city",
+      "site": "mainland", "outside_boundary": true, "once_per_day": true, "interest_scale": 0.6,
+      "capacity_persons": 100000, "windows": [["08:00", "23:00"]], "duration_min_mean": 150, "duration_min_sd": 40,
+      "latest_end_hhmm": "22:30",
+      "price_vnd_per_person": 300000, "indoor": false, "shaded": true, "rests": false, "eats": true,
+      "energy": {}}
   },
   "closing_grace_min": 30,
   "fill_in_anti_starvation_min": 10,

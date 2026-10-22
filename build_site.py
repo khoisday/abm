@@ -4,8 +4,9 @@
   python build_site.py
   cd site && vercel deploy --prod
 
-site/index.html is a static dashboard (same views as the Streamlit app, without re-running);
-site/map/<scenario>.html are the 3D maps; site/data/ holds precomputed JSON + CSV downloads.
+site/index.html is the baseline 3D map (the home page); site/map/<scenario>.html are the 3D maps per scenario;
+site/dashboard.html is a static dashboard (same views as the Streamlit app, without re-running);
+site/data/ holds precomputed JSON + CSV downloads.
 """
 import base64
 import os
@@ -18,10 +19,11 @@ import pandas as pd
 from simulation.config import ROOT, fmt_min
 from simulation.energy import END_USES
 from simulation.inputs import reference_daily_profile, self_reported_monthly_grid_kwh
+from simulation.layout import room_layout
 from simulation.metrics import (COMPARE_METRICS, groups_df, interval_df, itinerary_df, queue_stats_df, summary,
                                 verify)
 from simulation.scenarios import SCENARIOS, run_scenario
-from simulation.viewer import build_payload, render_html
+from simulation.viewer import build_payload, render_html, room_state_string
 
 SITE = ROOT / "site"
 SITE_URL = os.environ.get("SITE_URL", "https://abm.icclab.site").rstrip("/")
@@ -30,6 +32,7 @@ SLUG = {"baseline": "baseline", "occupancy_hvac": "occupancy-hvac", "housekeepin
         "recommendations": "recommendations", "ride_dispatch": "ride-dispatch", "combined": "combined"}
 SEED = 42
 DEC_SHARD = 25
+OCC_STEPS = [40, 50, 60, 70, 80, 90, 100]     # occupancy slider on the 3D map: one real run per step
 # 8 end-use groups (fixed order = fixed colour slot), detail kept in the bar chart / tables
 GROUPS = [
     ("room_hvac", "Điều hòa phòng", ["room_hvac"]),
@@ -39,7 +42,9 @@ GROUPS = [
     ("restaurants", "Nhà hàng (KS + công viên)", ["hotel_restaurant", "park_restaurant"]),
     ("laundry", "Giặt là", ["laundry"]),
     ("attractions", "Trò chơi & khu trong nhà", ["attraction_standby", "attraction_cycles", "indoor_attraction_cooling"]),
-    ("park_other", "Khu chung công viên & giao thông", ["park_common", "transport"]),
+    ("park_other", "Khu chung công viên", ["park_common"]),
+    ("cable", "Cáp treo & xe nội khu", ["cable_car", "transport"]),
+    ("mainland", "Khách sạn Bờ", ["mainland_room_hvac", "mainland_room_lighting_plug", "mainland_common"]),
 ]
 KPI_KEYS = ["total_kwh", "hotel_kwh", "park_kwh", "peak_15min_kw", "emissions_kgco2e",
             "hotel_kwh_per_occupied_room_night", "park_entries", "park_visitor_hours",
@@ -49,7 +54,9 @@ KPI_KEYS = ["total_kwh", "hotel_kwh", "park_kwh", "peak_15min_kw", "emissions_kg
             "occupied_room_hours_above_comfort", "occupied_degree_hours_above_comfort",
             "mean_walking_min_per_group", "mean_transport_min_per_group", "median_return_to_hotel",
             "recommendations_offered", "recommendations_accepted", "ride_cycles", "ride_cycle_utilization",
-            "occupied_rooms", "guests", "guest_groups", "rooms", "emission_factor_mean", "transport_energy_included"]
+            "occupied_rooms", "guests", "guest_groups", "rooms", "emission_factor_mean", "transport_energy_included",
+            "mainland_kwh", "cable_car_kwh", "cable_passengers", "boat_passengers", "boat_fuel_l", "boat_fuel_kgco2e",
+            "mainland_guests", "day_visitors", "all_guests"]
 
 
 def b64(arr):
@@ -84,9 +91,12 @@ def room_arrays(sim):
         code[s["room_occ"]] = 3                                # guests in room
         code[s["room_clean"]] = 4                              # being cleaned
         states.append("".join(map(str, code)))
+    thr = sim.cfg["rooms"]["comfort_threshold_c"]
     return dict(t=[s["t"] for s in snaps], tout=[round(s["t_out"], 2) for s in snaps],
                 temp=b64(temp), sp=b64(sp), hvac=b64(hv), light=b64(li), state=states,
+                rs7=[room_state_string(s, sold, thr) for s in snaps],     # same 7 codes as the 3D map
                 group_of=sim.rooms.group_of.tolist(), bypass=sim.rooms.bypass.astype(int).tolist(),
+                layout=room_layout(sim.cfg["hotel"]),
                 comfort=sim.cfg["rooms"]["comfort_threshold_c"])
 
 
@@ -100,6 +110,8 @@ def scenario_data(name, sim):
     gdf = groups_df(sim)
     groups = []
     for g, row in zip(sim.groups, records(gdf)):
+        if g.hotel != "island":            # the dashboard's group tab covers the 533-room hotel
+            continue
         row["itinerary"] = [[a, b, act, node, w] for a, b, act, node, w in g.history]
         groups.append(row)
     return dict(
@@ -124,12 +136,73 @@ def scenario_data(name, sim):
         rooms=room_arrays(sim),
         groups=groups,
         checks=[{**c, "passed": bool(c["passed"])} for c in verify(sim)],
+        ops=operations(sim),
+    )
+
+
+def operations(sim):
+    """Transport, stop-queue, housekeeping and wait-percentile figures for the Queues page."""
+    cfg = sim.cfg
+    line_of = {stop: lid for lid, L in sim.lines.items() for stop in L["stops"]}
+    waits = {lid: [] for lid in sim.lines}
+    stop_waits = {stop: [] for stop in line_of}
+    pending = {}
+    for t, gid, e, where, *_ in sim.events:
+        if e == "wait_transport":
+            pending[gid] = t
+        elif e == "board" and gid in pending and where in line_of:
+            w = t - pending.pop(gid)
+            waits[line_of[where]].append(w)
+            stop_waits[where].append(w)
+    stop_stats = {}
+    for stop, ws in stop_waits.items():
+        persons = sum(tr["persons"] for tr in sim.trips if tr["origin"] == stop)
+        arr = np.array(ws) if ws else np.array([0.0])
+        stop_stats[stop] = dict(served=persons, wait_mean=round(float(arr.mean()), 2),
+                                wait_p95=round(float(np.percentile(arr, 95)), 1))
+    lines = {}
+    for lid, L in sim.lines.items():
+        trips = [tr for tr in sim.trips if tr["line"] == lid]
+        persons = sum(tr["persons"] for tr in trips)
+        w = np.array(waits[lid]) if waits[lid] else np.array([0.0])
+        lines[lid] = dict(trips=len(trips), persons=persons, wait_mean=round(float(w.mean()), 2),
+                          wait_p95=round(float(np.percentile(w, 95)), 1),
+                          util=round(persons / max(1, len(trips) * L["cap"]), 3),
+                          cap=L["cap"], vehicles=L["vehicles"], ride=L["ride"], interval=L["interval"],
+                          first=min(L["first"].values()), last=max(L["last"].values()))
+    hk = cfg["housekeeping"]
+    done = [0] * 24
+    eligible = [0] * 24
+    mins = []
+    for h in sim.hk_log:
+        if h["outcome"] != "done" or h["day"] != 0:
+            continue
+        done[min(23, int(h["end"] // 60))] += 1
+        eligible[min(23, int((h["start"] - h["delay_min"]) // 60))] += 1
+        mins.append(h["end"] - h["start"])
+    stops = list(line_of)
+    return dict(
+        lines=lines,
+        stopq={st: [int(s["stop_queue"][st]) for s in sim.snapshots] for st in stops},
+        p95={fid: round(float(np.percentile(f.waits, 95)), 1) if f.waits else 0.0 for fid, f in sim.fac.items()},
+        hk=dict(done=done, eligible=eligible, workers=hk["workers"], shift=[hk["shift_start_hhmm"], hk["shift_end_hhmm"]],
+                mean_min=round(float(np.mean(mins)), 1) if mins else 0.0,
+                pending_end=int(sim.hk_daily[0]["pending"]) if sim.hk_daily else 0),
+        stops=stop_stats,
+        amenity_floor={f: a["floor"] for a in cfg["hotel"].get("amenity_floors", []) for f in a["facilities"]},
+        laundry=dict(machines=cfg["laundry"]["machines"], capacity_kg=cfg["laundry"]["capacity_kg"],
+                     open=cfg["laundry"]["open_hhmm"], close=cfg["laundry"]["close_hhmm"]),
+        occupancy=int(round(cfg["hotel"]["occupancy"] * 100)), sold=int(sim.rooms.sold.sum()),
     )
 
 
 def decisions(sim):
+    """Decision logs of the island-hotel groups (the dashboard's group tab)."""
+    island = {g.gid for g in sim.groups if g.hotel == "island"}
     out = {}
     for d in sim.decision_log:
+        if d["gid"] not in island:
+            continue
         out.setdefault(str(d["gid"]), []).append(dict(t=d["t"], chosen=d["chosen"], hunger=d["hunger"],
                                                       fatigue=d["fatigue"], heat=d["heat"],
                                                       rec=d["recommendation"], options=d["options"][:5]))
@@ -158,7 +231,8 @@ def static_data():
         prof = None
     read = lambda f: records(pd.read_csv(ROOT / f).fillna("")) if (ROOT / f).exists() else []
     rules = read("rule_registry.csv")
-    keep = ["rule_id", "sheet", "row", "original_text", "category", "interpretation", "status", "model_link"]
+    keep = ["rule_id", "sheet", "row", "original_text", "category", "interpretation", "status", "model_link",
+            "agent_or_equipment", "required_parameters"]
     return dict(
         assumptions=read("assumptions.csv"), verified_facts=read("verified_facts.csv"),
         rules=[{k: r.get(k, "") for k in keep} for r in rules],
@@ -190,18 +264,38 @@ def main():
         shutil.rmtree(p) if p.is_dir() else p.unlink()
     (SITE / "map").mkdir(parents=True)
     (DATA / "csv").mkdir(parents=True)
+    (DATA / "occ").mkdir()
+    dump = lambda obj, f: (DATA / f).write_text(json.dumps(obj, ensure_ascii=False, separators=(",", ":")),
+                                                encoding="utf-8")
     index = []
     for name in SCENARIOS:
         sim = run_scenario(name, seed=SEED)
         slug = SLUG[name]
-        (SITE / "map" / f"{slug}.html").write_text(render_html(build_payload(sim, SCENARIOS[name]["label_vi"])),
-                                                   encoding="utf-8")
-        dump = lambda obj, f: (DATA / f).write_text(json.dumps(obj, ensure_ascii=False, separators=(",", ":")),
-                                                    encoding="utf-8")
+        payload = build_payload(sim, SCENARIOS[name]["label_vi"])
+        base_occ = payload["meta"]["occupancy"]
+        # "../" links resolve the same from /map/<slug>.html and from the home page copy at /index.html
+        payload["nav"] = dict(dashboard="../dashboard.html", scenario=name,
+                              pages=[dict(label=v["label_vi"], href=f"../map/{SLUG[k]}.html", current=k == name)
+                                     for k, v in SCENARIOS.items()])
+        payload["variants"] = {}
+        for occ in OCC_STEPS:
+            if occ == base_occ:
+                continue
+            v = build_payload(run_scenario(name, seed=SEED, overrides={"hotel": {"occupancy": occ / 100}}),
+                              SCENARIOS[name]["label_vi"])
+            for k in ("routes", "edges", "end_uses"):     # not used by the map
+                v.pop(k)
+            dump(v, f"occ/{slug}-{occ}.json")
+            payload["variants"][occ] = f"../data/occ/{slug}-{occ}.json"
+        html = render_html(payload)
+        (SITE / "map" / f"{slug}.html").write_text(html, encoding="utf-8")
+        if name == "baseline":
+            home = html
         dump(scenario_data(name, sim), f"{slug}.json")
         (DATA / "dec").mkdir(exist_ok=True)
         dec = decisions(sim)
-        for k in range(0, max(1, len(sim.groups)), DEC_SHARD):     # shards of 25 groups, loaded on demand
+        n_island = sum(g.hotel == "island" for g in sim.groups)
+        for k in range(0, max(1, n_island), DEC_SHARD):     # shards of 25 groups, loaded on demand
             dump({g: dec[g] for g in map(str, range(k, k + DEC_SHARD)) if g in dec}, f"dec/{slug}_{k // DEC_SHARD}.json")
         csvs = write_csvs(slug, sim)
         index.append(dict(key=name, slug=slug, label=SCENARIOS[name]["label_vi"], csv=csvs))
@@ -210,9 +304,15 @@ def main():
     st["scenarios"] = index
     st["compare"] = compare_data()
     (DATA / "static.json").write_text(json.dumps(st, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    (SITE / "index.html").write_text((ROOT / "web" / "dashboard.html").read_text(encoding="utf-8")
-                                     .replace('content="og-image.jpg"', f'content="{SITE_URL}/og-image.jpg"'),
-                                     encoding="utf-8")
+    head = [f'<meta property="og:{k}" content="{v}" />' for k, v in [
+        ("type", "website"), ("title", "Virtual Hotel Monitoring"), ("url", SITE_URL + "/"),
+        ("description", "Bản đồ 3D phát lại một ngày mô phỏng: khách, hàng chờ, xe nội khu và 533 phòng khách sạn."),
+        ("image", f"{SITE_URL}/og-image.jpg")]]
+    head.append(f'<link rel="canonical" href="{SITE_URL}/" />')
+    (SITE / "index.html").write_text(home.replace("<title>", "\n    ".join(head + ["<title>"]), 1), encoding="utf-8")
+    (SITE / "dashboard.html").write_text((ROOT / "web" / "dashboard.html").read_text(encoding="utf-8")
+                                         .replace('content="og-image.jpg"', f'content="{SITE_URL}/og-image.jpg"'),
+                                         encoding="utf-8")
     if (ROOT / "web" / "og-image.jpg").exists():
         shutil.copy(ROOT / "web" / "og-image.jpg", SITE / "og-image.jpg")
     write_host_files()
@@ -222,8 +322,8 @@ def main():
 
 def write_host_files():
     """vercel.json (redirects, security + cache headers), robots.txt and sitemap.xml."""
-    redirects = [{"source": "/compare", "destination": "/?s=baseline#compare", "permanent": False}]
-    redirects += [{"source": f"/{slug}", "destination": f"/?s={key}#map", "permanent": False}
+    redirects = [{"source": "/compare", "destination": "/dashboard?s=baseline#compare", "permanent": False}]
+    redirects += [{"source": f"/{slug}", "destination": f"/map/{slug}", "permanent": False}
                   for key, slug in SLUG.items() if key != "baseline"]
     csp = "; ".join([
         "default-src 'self'",
@@ -252,7 +352,7 @@ def write_host_files():
     (SITE / "vercel.json").write_text(json.dumps({"cleanUrls": True, "redirects": redirects, "headers": headers},
                                                  indent=2))
     (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /data/\nSitemap: {SITE_URL}/sitemap.xml\n")
-    urls = [SITE_URL + "/"] + [f"{SITE_URL}/map/{slug}" for slug in SLUG.values()]
+    urls = [SITE_URL + "/", SITE_URL + "/dashboard"] + [f"{SITE_URL}/map/{slug}" for slug in SLUG.values()]
     (SITE / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")

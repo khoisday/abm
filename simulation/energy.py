@@ -8,14 +8,18 @@ END_USES = {
     "hotel_hot_water": ("Nước nóng phòng (bơm nhiệt)", "hotel"),
     "hotel_common": ("Khu chung khách sạn", "hotel"),
     "hotel_restaurant": ("Nhà hàng khách sạn", "hotel"),
-    "hotel_wellness": ("Spa, gym & câu lạc bộ trẻ em", "hotel"),
+    "hotel_wellness": ("Spa, gym, CLB trẻ em & bar", "hotel"),
     "laundry": ("Giặt là", "hotel"),
     "park_restaurant": ("Nhà hàng công viên", "park"),
     "attraction_standby": ("Trò chơi – tải nền giờ mở cửa", "park"),
     "attraction_cycles": ("Trò chơi – chu kỳ vận hành / biểu diễn", "park"),
     "indoor_attraction_cooling": ("Làm mát khu trong nhà", "park"),
     "park_common": ("Khu chung công viên", "park"),
-    "transport": ("Phương tiện kết nối", "transport"),
+    "transport": ("Xe nội khu", "transport"),
+    "cable_car": ("Cáp treo (động cơ & nhà ga)", "transport"),
+    "mainland_room_hvac": ("Điều hòa phòng – KS Bờ", "mainland"),
+    "mainland_room_lighting_plug": ("Chiếu sáng & ổ cắm phòng – KS Bờ", "mainland"),
+    "mainland_common": ("Khu chung, café, tiện ích & nước nóng – KS Bờ", "mainland"),
 }
 
 
@@ -49,7 +53,8 @@ class Meter:
 
 
 class RoomBank:
-    """Vectorized state machine for all 533 rooms (sold and unsold).
+    """Vectorized state machine for all rooms of one hotel (sold and unsold): 533 on the island,
+    a second bank for the mainland hotel.
 
     First-order model per minute:
       T_next = T + dt/C * (UA*(T_out - T) + Q_internal - Q_cool),  Q_cool = COP * P_compressor

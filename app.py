@@ -13,6 +13,7 @@ import streamlit.components.v1 as components
 from simulation.config import ROOT, fmt_min, load_config
 from simulation.energy import END_USES
 from simulation.inputs import reference_daily_profile, self_reported_monthly_grid_kwh
+from simulation.layout import room_layout
 from simulation.metrics import (events_df, groups_df, interval_df, itinerary_df, paired_comparison, queue_stats_df,
                                 summary, verify)
 from simulation.scenarios import ALL_OFF, SCENARIOS
@@ -125,13 +126,21 @@ with tabs[1]:
                              format_func=lambda i: fmt_min(times[i]))
     mode = cc[1].radio("Tô màu theo", ["Nhiệt độ", "Trạng thái"], horizontal=True)
     snap = snaps[ti]
-    floors = cfg["hotel"]["floors"]
-    per = int(np.ceil(sim.rooms.n / floors))
-    pad = floors * per - sim.rooms.n
+    lay = room_layout(cfg["hotel"])
+    fl_list = sorted(set(lay["floor"]))
+    row_of = {f: i for i, f in enumerate(fl_list)}
+    per = max(lay["floor"].count(f) for f in fl_list)
+
+    def on_plan(values):
+        grid = np.full((len(fl_list), per), np.nan)
+        for r, v in enumerate(values):
+            grid[row_of[lay["floor"][r]], lay["slot"][r]] = v
+        return grid[::-1]
+
+    ylab = [f"Tầng {f}" for f in reversed(fl_list)]
     if mode == "Nhiệt độ":
-        z = np.append(snap["room_temp"], [np.nan] * pad).reshape(floors, per)
-        fig = px.imshow(z[::-1], color_continuous_scale="RdYlBu_r", zmin=22, zmax=31, aspect="auto",
-                        labels=dict(color="°C"), y=[f"Tầng {f}" for f in range(floors, 0, -1)])
+        fig = px.imshow(on_plan(snap["room_temp"]), color_continuous_scale="RdYlBu_r", zmin=22, zmax=31, aspect="auto",
+                        labels=dict(color="°C"), y=ylab)
     else:
         code = np.zeros(sim.rooms.n)
         sold = sim.rooms.sold
@@ -139,15 +148,14 @@ with tabs[1]:
         code[sold & ~snap["room_occ"] & snap["room_control"]] = 2
         code[snap["room_occ"]] = 3
         code[snap["room_clean"]] = 4
-        z = np.append(code, [np.nan] * pad).reshape(floors, per)
-        fig = px.imshow(z[::-1], color_continuous_scale=[[0, "#2b3555"], [.25, "#4a5a86"], [.5, "#43c6db"],
-                                                          [.75, "#f6d365"], [1, "#6cbf3f"]], aspect="auto", zmin=0, zmax=4,
-                        y=[f"Tầng {f}" for f in range(floors, 0, -1)])
+        fig = px.imshow(on_plan(code), color_continuous_scale=[[0, "#2b3555"], [.25, "#4a5a86"], [.5, "#43c6db"],
+                                                                [.75, "#f6d365"], [1, "#6cbf3f"]], aspect="auto", zmin=0, zmax=4,
+                        y=ylab)
         fig.update_coloraxes(colorbar=dict(tickvals=[0, 1, 2, 3, 4], ticktext=["Không bán", "Vắng, HVAC tắt",
                                                                               "Vắng, HVAC chạy", "Có khách", "Đang dọn"]))
     fig.update_layout(height=430, margin=dict(l=10, r=10, t=10, b=10))
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Lưới gồm đúng 533 phòng (13 tầng × 41 phòng, ô cuối trống nếu có). Ngoài trời: "
+    st.caption("Lưới gồm đúng 533 phòng theo mặt bằng: tầng 3–12 có 36 phòng, 13–15 có 28, 16–19 có 20, tầng 20 có 9. Ngoài trời: "
                f"{snap['t_out']:.1f} °C. Ngưỡng tiện nghi: {cfg['rooms']['comfort_threshold_c']} °C.")
     room = st.number_input("Chọn phòng (1–533)", 1, sim.rooms.n, 1) - 1
     gid = int(sim.rooms.group_of[room])
@@ -179,7 +187,7 @@ with tabs[2]:
         gsel = st.number_input("Mã nhóm", 0, len(sim.groups) - 1, 0)
         g = sim.groups[gsel]
         cols = st.columns(4)
-        cols[0].metric("Phòng", g.room + 1)
+        cols[0].metric("Phòng", {"island": f"KS Đảo {g.room + 1}", "mainland": f"KS Bờ {g.room + 1}"}.get(g.hotel, "Khách trong ngày"))
         cols[1].metric("Quy mô", f"{g.size} ({g.adults} NL, {g.children} TE)")
         cols[2].metric("Loại nhóm", {"solo": "Một mình", "couple": "Cặp đôi", "family": "Gia đình", "friends": "Bạn bè"}[g.category])
         cols[3].metric("Ngưỡng chịu chờ", f"{g.queue_tolerance:.0f} phút")

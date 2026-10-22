@@ -13,7 +13,7 @@ from .rng import stream
 
 
 class Network:
-    """Walking graph per zone plus a shuttle link between the two stops."""
+    """Walking graph (the promenade joins the island hotel and the park); other zones are linked by lines."""
 
     def __init__(self, cfg):
         net = cfg["network"]
