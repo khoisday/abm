@@ -2,7 +2,8 @@
 
 Everything the map animates comes from simulation output: 5-minute snapshots
 (counts, queues, room states of both hotels), 15-minute room temperatures, exact
-walk segments and the shuttle, cable-car and boat trips.
+walk segments and the shuttle, cable-car and boat trips. The map plays one day on a
+loop, so a multi-day run is cut to its first day here.
 """
 import base64
 import json
@@ -53,10 +54,13 @@ def hotel_meta(hcfg, sold, n_groups, guests):
 
 def build_payload(sim, scenario_label="Cơ sở (baseline)"):
     cfg = sim.cfg
+    T = min(sim.T, 1440)   # first day only
+    snaps = [s for s in sim.snapshots if s["t"] < T]
+    sim_groups = [g for g in sim.groups if not g.history or g.history[0][0] < T]
     nodes = list(cfg["network"]["nodes"])
     nidx = {n: i for i, n in enumerate(nodes)}
     fac_ids = list(sim.fac)
-    minute_kw = sum(v[:sim.T] for v in sim.meter.kwh.values()) * 60.0
+    minute_kw = sum(v[:T] for v in sim.meter.kwh.values()) * 60.0
     cum_kwh = np.cumsum(minute_kw / 60.0)
     ef = cfg["emissions"]["factor_kg_per_kwh"]
     thr = cfg["rooms"]["comfort_threshold_c"]
@@ -64,7 +68,7 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
     M = sim.mrooms
     stops = [st for lid in LINES for st in sim.lines[lid]["stops"]]
     frames = []
-    for s in sim.snapshots:
+    for s in snaps:
         t = s["t"]
         occ = s["room_occ"] & sold
         frames.append(dict(
@@ -88,21 +92,22 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
         for b in nodes:
             if a != b and sim.net.zone(a) == sim.net.zone(b):
                 routes[f"{nidx[a]}>{nidx[b]}"] = [nidx[x] for x in sim.net.route(a, b)]
-    walks = [[gid, nidx[a], nidx[b], s, e, p, r] for gid, a, b, s, e, p, r in sim.walk_segments if e > s]
+    walks = [[gid, nidx[a], nidx[b], s, e, p, r] for gid, a, b, s, e, p, r in sim.walk_segments if e > s and s < T]
     trips = [[tr["depart_t"], tr["arrive_t"], 0 if tr["origin"] == sim.lines[tr["line"]]["stops"][0] else 1,
-              tr["persons"], LINES.index(tr["line"])] for tr in sim.trips]
+              tr["persons"], LINES.index(tr["line"])] for tr in sim.trips if tr["depart_t"] < T]
+    boat_fuel_l = sum(1 for tr in sim.trips if tr["line"] == "boat" and tr["depart_t"] < T) * cfg["boats"]["fuel_l_per_trip"]
     step = cfg["reporting_interval_min"]
     iv = sim.meter.intervals(step)
-    power15 = (sum(iv.values()) / (step / 60.0)).round(1).tolist()
+    power15 = (sum(iv.values()) / (step / 60.0)).round(1).tolist()[:T // step]
     groups = []
-    for g in sim.groups:
+    for g in sim_groups:
         groups.append(dict(id=g.gid, h=HOTEL_CODE[g.hotel], room=int(g.room), size=g.size, cat=g.category,
                            ad=g.adults, ch=g.children, sp=g.guest_setpoint,
-                           it=[[a, b, act, w] for a, b, act, node, w in g.history]))
-    totals = {k: round(float(v[:sim.T].sum()), 1) for k, v in sim.meter.kwh.items()}
+                           it=[[a, min(b, T), act, w] for a, b, act, node, w in g.history if a < T]))
+    totals = {k: round(float(v[:T].sum()), 1) for k, v in sim.meter.kwh.items()}
     return dict(
-        meta=dict(seed=cfg["seed"], days=sim.days, T=sim.T, rooms=int(sim.rooms.n), floors=cfg["hotel"]["floors"],
-                  occupied=int(sold.sum()), guests=int(sum(g.size for g in sim.groups)), groups=len(sim.groups),
+        meta=dict(seed=cfg["seed"], days=1, run_days=sim.days, T=T, rooms=int(sim.rooms.n), floors=cfg["hotel"]["floors"],
+                  occupied=int(sold.sum()), guests=int(sum(g.size for g in sim_groups)), groups=len(sim_groups),
                   scenario=scenario_label, policies=cfg["policies"], ef=ef, snapshot_min=5,
                   transport_included=cfg["transport"]["include_transport_energy"],
                   ride_min=cfg["transport"]["ride_min"], start_date=cfg["start_date"],
@@ -118,14 +123,14 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
                   lines={lid: dict(stops=list(L["stops"]), ride=L["ride"], interval=L["interval"], cap=L["cap"],
                                    vehicles=L["vehicles"], first=min(L["first"].values()), last=max(L["last"].values()))
                          for lid, L in sim.lines.items()},
-                  hotels=[hotel_meta(cfg["hotel"], int(sold.sum()), *_count(sim, "island")),
+                  hotels=[hotel_meta(cfg["hotel"], int(sold.sum()), *_count(sim_groups, "island")),
                           hotel_meta(cfg["mainland_hotel"], int(M.sold.sum()) if M is not None else 0,
-                                     *_count(sim, "mainland"))],
-                  day_visitors=sum(g.size for g in sim.groups if g.hotel == "day"),
-                  boat_fuel_l=round(sim.boat_fuel_l, 1),
-                  boat_fuel_kgco2e=round(sim.boat_fuel_l * cfg["boats"]["fuel_kgco2e_per_l"], 1),
+                                     *_count(sim_groups, "mainland"))],
+                  day_visitors=sum(g.size for g in sim_groups if g.hotel == "day"),
+                  boat_fuel_l=round(boat_fuel_l, 1),
+                  boat_fuel_kgco2e=round(boat_fuel_l * cfg["boats"]["fuel_kgco2e_per_l"], 1),
                   temp_every=3 * 5),
-        laundry=[[b["start"], b["end"], b["machine"], b["load_kg"]] for b in sim.laundry_batches],
+        laundry=[[b["start"], b["end"], b["machine"], b["load_kg"]] for b in sim.laundry_batches if b["start"] < T],
         nodes=[dict(id=n, label=cfg["network"]["nodes"][n]["label_vi"], zone=cfg["network"]["nodes"][n]["zone"])
                for n in nodes],
         facilities=[dict(id=f, label=sim.fac[f].label, node=nidx[sim.fac[f].node], kind=sim.fac[f].kind,
@@ -136,13 +141,13 @@ def build_payload(sim, scenario_label="Cơ sở (baseline)"):
         frames=frames, routes=routes, walks=walks, trips=trips, power15=power15, step=step,
         end_uses={k: [END_USES[k][0], END_USES[k][1], totals[k]] for k in END_USES},
         groups=groups,
-        temps=dict(island=temps_b64(sim.snapshots, "room_temp", 3),
-                   mainland=temps_b64(sim.snapshots, "m_room_temp", 3) if M is not None else []),
+        temps=dict(island=temps_b64(snaps, "room_temp", 3),
+                   mainland=temps_b64(snaps, "m_room_temp", 3) if M is not None else []),
     )
 
 
-def _count(sim, kind):
-    gs = [g for g in sim.groups if g.hotel == kind]
+def _count(groups, kind):
+    gs = [g for g in groups if g.hotel == kind]
     return len(gs), sum(g.size for g in gs)
 
 

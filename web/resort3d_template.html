@@ -1719,7 +1719,7 @@ function updateHud() {
   const queue = F.q.reduce((x, y) => x + y, 0) + F.sq.reduce((x, y) => x + y, 0);
   const moving = (F.st.TRAVELING || 0) + (F.st.RETURNING || 0);
   tweenStats({ park: F.ip, moving, queue, over, occ: F.occ, hv: F.hv, kw: F.kw, co2: F.co2 });
-  $('subline').textContent = fmt(D.meta.groups) + ' nhóm. ' + fmt(D.meta.guests) + ' khách. ' + D.meta.days + ' ngày';
+  $('subline').textContent = fmt(D.meta.groups) + ' nhóm. ' + fmt(D.meta.guests) + ' khách. ' + (D.meta.run_days > 1 ? 'Ngày 1/' + D.meta.run_days + ', phát lặp' : '1 ngày');
   $('oOccL').textContent = 'Phòng có người / ' + D.meta.occupied + ' bán. ' + D.meta.rooms + ' tổng (KS Đảo)';
   $('tOut').textContent = String(F.to).replace('.', ',') + '°C'; $('tRoom').textContent = F.tm == null ? '–' : String(F.tm).replace('.', ',') + '°C'; $('cleanN').textContent = F.cl + ' phòng';
   // chips

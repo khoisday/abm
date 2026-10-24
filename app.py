@@ -114,7 +114,8 @@ tabs = st.tabs(["🗺️ Bản đồ 3D", "🏨 Lưới 533 phòng", "🧭 Hành
 
 # ------------------------------------------------------------------ 1. 3D map
 with tabs[0]:
-    st.caption("Kéo để xoay, cuộn để phóng to, bấm nhãn để bay tới khu vực.")
+    st.caption("Kéo để xoay, cuộn để phóng to, bấm nhãn để bay tới khu vực."
+               + (f" Bản đồ phát lặp ngày 1 trong {sim.days} ngày mô phỏng." if sim.days > 1 else ""))
     components.html(render_html(build_payload(sim, label)), height=760, scrolling=False)
 
 # ------------------------------------------------------------------ 2. room grid
