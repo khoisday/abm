@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://abm.icclab.site/</loc></url>
+  <url><loc>https://abm.icclab.site/dashboard</loc></url>
+  <url><loc>https://abm.icclab.site/map/baseline</loc></url>
+  <url><loc>https://abm.icclab.site/map/occupancy-hvac</loc></url>
+  <url><loc>https://abm.icclab.site/map/housekeeping</loc></url>
+  <url><loc>https://abm.icclab.site/map/recommendations</loc></url>
+  <url><loc>https://abm.icclab.site/map/ride-dispatch</loc></url>
+  <url><loc>https://abm.icclab.site/map/combined</loc></url>
+</urlset>

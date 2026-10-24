@@ -1,0 +1,20 @@
+﻿check,passed,detail
+"Đúng 533 phòng sản xuất, mã phòng duy nhất",True,533
+Số phòng có khách khớp công suất,True,426 / 426
+Mỗi nhóm có đúng một phòng hợp lệ (khách tham quan trong ngày không có phòng),True,
+Khách sạn Bờ: số phòng và phòng có khách khớp cấu hình,True,150 / 150 trên 208
+"Thành phần nhóm hợp lệ (≥1 người lớn, tổng = quy mô)",True,
+Bảo toàn số khách qua mọi ảnh chụp trạng thái,True,1830
+Di chuyển giữa hai nút khác nhau luôn tốn thời gian,True,0
+Không vượt sức chứa,True,[]
+"Phương tiện (xe, cabin cáp treo, tàu) không vượt sức chứa",True,[]
+"Xe, cáp treo và tàu không chạy trước giờ mở",True,0
+Điểm đã đóng cửa không nhận khách mới,True,0
+Không nhóm nào bị kẹt ở hàng chờ/bến cuối kỳ,True,[]
+Nhân viên buồng phòng không làm hai việc cùng lúc,True,
+Phòng trống vẫn được tính điện chờ,True,2.14 kW
+Tổng theo mục đích sử dụng = tổng điện,True,
+Điện năng = công suất trung bình × thời gian,True,22484.404
+Tổng theo khoảng 15 phút = tổng theo phút,True,
+Phát thải = điện × hệ số,True,
+Công việc tồn đọng được báo cáo,True,"{'day': 0, 'sold_rooms': 426, 'cleaned': 387, 'pending': 39, 'pending_dnd': 26, 'pending_never_vacant': 0, 'pending_capacity': 13, 'interruptions': 17}"

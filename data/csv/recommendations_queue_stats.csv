@@ -1,0 +1,20 @@
+﻿facility,label_vi,kind,capacity_persons,queue_arrivals_groups,queue_arrival_persons,admissions_groups,admitted_persons,completed_groups,completed_persons,abandonments_groups,abandoned_persons,balks_groups,rejected_groups,rejected_persons,mean_wait_min,p90_wait_min,max_wait_min,max_queue_persons,cycles_or_shows,cycle_utilization,still_queued_at_horizon,active_at_horizon
+HOTEL_RESTAURANT,Nhà hàng khách sạn,restaurant,260,563,1516,563,1516,563,1516,0,0,0,0,0,1.53,5.0,11,57,0,,0,0
+POOL,Hồ bơi,continuous,220,605,1587,582,1521,582,1521,23,66,14,0,0,8.24,26.0,35,107,0,,0,0
+SPA,Spa,continuous,24,28,65,27,62,27,62,1,3,0,0,0,0.18,0.0,11,5,0,,0,0
+GYM,Phòng gym,continuous,30,217,567,202,525,202,525,15,42,13,0,0,8.96,24.9,37,30,0,,0,0
+KIDS_CLUB,Câu lạc bộ trẻ em,continuous,40,113,374,93,304,93,304,20,70,23,0,0,11.46,28.8,48,38,0,,0,0
+THRILL,Trò chơi cảm giác mạnh,batch,24,1079,2563,1079,2563,1079,2563,0,0,1,0,0,6.0,12.0,18,112,159,0.672,0,0
+FAMILY,Trò chơi gia đình,batch,200,1644,4598,1644,4598,1644,4598,0,0,0,0,0,3.73,6.0,6,149,103,0.223,0,0
+WATER,Trò chơi nước,batch,100,1740,4709,1740,4709,1740,4709,0,0,0,0,0,2.06,3.0,4,120,175,0.269,0,0
+INDOOR,Khu trải nghiệm trong nhà,continuous,120,1291,3479,1269,3411,1269,3411,22,68,27,0,0,10.11,19.0,26,162,0,,0,0
+SHOW,Chương trình biểu diễn,show,500,589,1566,483,1282,483,1282,0,0,0,106,284,23.41,34.0,180,679,4,0.641,0,0
+PARK_RESTAURANT,Nhà hàng công viên,restaurant,220,688,1855,686,1846,686,1846,2,9,4,0,0,4.56,15.0,28,143,0,,0,0
+REST_A,Khu nghỉ có điều hòa,rest,80,630,1573,626,1562,626,1562,4,11,5,0,0,7.0,15.0,25,87,0,,0,0
+REST_B,Khu nghỉ có mái che,rest,100,760,2079,753,2055,753,2055,7,24,10,0,0,6.82,16.0,26,122,0,,0,0
+LOBBY_BAR,Lobby bar,continuous,48,239,611,232,593,232,593,7,18,0,0,0,5.57,17.0,32,26,0,,0,0
+SKY_BAR,Sky bar Hoàng Hôn,continuous,120,196,494,194,489,194,489,2,5,0,0,0,2.02,6.7,19,27,0,,0,0
+M_CAFE,Café Bờ,restaurant,120,264,704,264,704,264,704,0,0,0,0,0,1.07,4.0,10,26,0,,0,0
+M_SPA,Spa mini,continuous,8,31,71,26,56,26,56,5,15,3,0,0,8.0,27.5,50,5,0,,0,0
+M_GYM,Phòng gym KS Bờ,continuous,8,86,238,62,151,62,151,24,87,17,0,0,17.29,37.0,57,14,0,,0,0
+CITY,Dạo phố & ăn tối trong thành phố,continuous,100000,107,269,107,269,107,269,0,0,0,0,0,0.0,0.0,0,5,0,,0,0
