@@ -130,14 +130,15 @@
 
   aside.vhm-aside { position: absolute; right: 20px; top: 20px; width: 340px; max-width: calc(100% - 40px); max-height: calc(100% - 40px); overflow-y: auto;
     padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 16px; animation: vhm-rise .9s cubic-bezier(.2,.7,.2,1) .65s both; scrollbar-width: thin; }
-  aside.vhm-aside.collapsed > :not(.aside-head):not(.aside-clock) { display: none; }
+  aside.vhm-aside.collapsed > :not(.aside-head):not(.aside-clock), .vhm-intro-card.collapsed > :not(.aside-head) { display: none !important; }
+  .vhm-intro-card .aside-head button { flex: none; }
   .aside-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .aside-head h2 { margin: 0; display: flex; align-items: baseline; gap: 8px; font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
   .aside-head h2 .mono { font-size: 10.5px; font-weight: 500; color: var(--accent-text); }
   .aside-head button { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 7px;
     background: transparent; color: var(--ink); cursor: pointer; }
   .aside-head button svg { transition: transform .2s; }
-  aside.collapsed .aside-head button svg { transform: rotate(180deg); }
+  aside.collapsed .aside-head button svg, .vhm-intro-card.collapsed .aside-head button svg { transform: rotate(180deg); }
   .aside-clock { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--ink); }
   .bigclock { font-size: 56px; font-weight: 500; line-height: .95; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
   .num22 { font-size: 22px; font-weight: 600; line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
@@ -291,7 +292,10 @@
     <div class="vhm-hint">Kéo để xoay. +/− để thu phóng. Bấm vào khách sạn để xem từng tầng</div>
     <div class="vhm-left">
       <div class="vhm-hud vhm-intro-card">
-        <h1>Giám sát khách sạn ảo</h1>
+        <div class="aside-head">
+          <h1>Giám sát khách sạn ảo</h1>
+          <button type="button" id="bFoldIntro" aria-label="Thu gọn bảng" aria-expanded="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg></button>
+        </div>
         <div class="muted" style="font-size:13px;font-variant-numeric:tabular-nums" id="subline"></div>
         <div class="occ-box">
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
@@ -1468,7 +1472,8 @@ $('bZoomIn').onclick = () => scene3 && scene3.zoom(1);
 $('bZoomOut').onclick = () => scene3 && scene3.zoom(-1);
 $('bRecenter').onclick = () => { stopFollow(); closeInsp(); scene3 && scene3.recenter(); };
 $('bIntro').onclick = () => { if (scene3) scene3.holdIntro(); startIntro(); };
-$('bFold').onclick = () => { const c = $('aside').classList.toggle('collapsed'); $('bFold').setAttribute('aria-expanded', String(!c)); S.frameK = -1; };
+const fold = (btn, panel) => { $(btn).onclick = () => { const c = panel.classList.toggle('collapsed'); $(btn).setAttribute('aria-expanded', String(!c)); $(btn).setAttribute('aria-label', c ? 'Mở rộng bảng' : 'Thu gọn bảng'); S.frameK = -1; }; };
+fold('bFold', $('aside')); fold('bFoldIntro', document.querySelector('.vhm-intro-card'));
 window.addEventListener('resize', () => { S.frameK = -1; });
 
 // tabs + layers
