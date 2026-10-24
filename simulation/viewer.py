@@ -20,6 +20,8 @@ LINES = ["shuttle", "cable", "boat"]
 HOTEL_CODE = {"island": 0, "mainland": 1, "day": 2}
 
 TEMPLATE = ROOT / "web" / "resort3d_template.html"
+I18N_JS = ROOT / "web" / "i18n.js"
+I18N_DICT = ROOT / "web" / "i18n_dict.json"
 
 
 def room_state_string(s, sold, thr, prefix="room_"):
@@ -151,8 +153,19 @@ def _count(groups, kind):
     return len(gs), sum(g.size for g in gs)
 
 
+def i18n_script():
+    """The VI/EN/RU switch (web/i18n.js) with its translation table inlined, as one <script> element."""
+    table = json.loads(I18N_DICT.read_text(encoding="utf-8")) if I18N_DICT.exists() else {}
+    table = json.dumps(table, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    return "<script>\n" + I18N_JS.read_text(encoding="utf-8").replace("/*__I18N_DICT__*/{}", table, 1) + "</script>"
+
+
+def with_i18n(html):
+    return html.replace("<!--__I18N__-->", i18n_script(), 1)
+
+
 def render_html(payload):
-    html = TEMPLATE.read_text(encoding="utf-8")
+    html = with_i18n(TEMPLATE.read_text(encoding="utf-8"))
     data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     # tolerant of formatters that put a space before "null"
     return re.sub(r"/\*__SIM_DATA__\*/\s*null", lambda m: data, html, count=1)

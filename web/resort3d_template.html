@@ -52,6 +52,8 @@
   nav.vhm-nav a .mono { font-size: 10.5px; }
   nav.vhm-nav a[aria-current="page"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--ink); }
   nav.vhm-nav a[aria-current="page"] .mono { color: var(--accent-text); }
+  .lang-switch { --lang-on: var(--bg); --lang-ink: var(--ink); border-color: var(--line) !important; }
+  .lang-switch button + button { border-left-color: var(--line) !important; }
   .head-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; position: relative; }
   .btn-outline { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line);
     background: var(--panel); color: var(--ink); font-size: 13.5px; cursor: pointer; }
@@ -315,6 +317,10 @@
     nav.vhm-nav::-webkit-scrollbar { display: none; }
     nav.vhm-nav a { flex: none; white-space: nowrap; }
     section.vhm-stage { margin: 0 8px 8px; }
+    /* phone header: brand, scenario, language and theme on one line */
+    .head-tools { flex-wrap: nowrap; gap: 6px; }
+    #scenBtn .muted { display: none; }
+    .lang-switch button { min-width: 30px; padding: 0 4px; }
   }
 </style>
 </head>
@@ -330,6 +336,7 @@
       <button type="button" class="btn-outline" id="scenBtn" aria-haspopup="true" aria-expanded="false"><span class="muted">Kịch bản</span><span style="font-weight:600" id="scenName">Cơ sở</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
       <div class="scen-menu" id="scenMenu"></div>
       <button type="button" class="btn-ghost" id="hudBtn">Ẩn chỉ số</button>
+      <span data-lang-slot></span>
       <button type="button" class="btn-icon" id="themeBtn" aria-label="Chế độ tối" aria-pressed="false"></button>
     </div>
   </header>
@@ -1602,6 +1609,7 @@ setLabels(false);   // labels start hidden; the tag button shows them
 const fold = (btn, panel) => { $(btn).onclick = () => { const c = panel.classList.toggle('collapsed'); $(btn).setAttribute('aria-expanded', String(!c)); $(btn).setAttribute('aria-label', c ? 'Mở rộng bảng' : 'Thu gọn bảng'); S.frameK = -1; }; };
 fold('bFold', $('aside')); fold('bFoldIntro', document.querySelector('.vhm-intro-card'));
 window.addEventListener('resize', () => { S.frameK = -1; });
+document.addEventListener('i18n:changed', () => { if (S.labels) measureChips(); S.frameK = -1; });
 
 // tabs + layers
 function setTab(tab) { S.tab = tab; S.frameK = -1; $('tabCrowd').setAttribute('aria-selected', String(tab === 'crowd')); $('tabOver').setAttribute('aria-selected', String(tab === 'overview')); $('panelCrowd').classList.toggle('hidden', tab !== 'crowd'); $('panelOver').classList.toggle('hidden', tab !== 'overview'); }
@@ -1916,5 +1924,6 @@ setTimeout(() => {
 setT(S.t);
 })();
 </script>
+<!--__I18N__-->
 </body>
 </html>

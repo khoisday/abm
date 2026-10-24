@@ -1,0 +1,3202 @@
+{
+"% chi tiêu thực phẩm là sản phẩm hữu cơ: 26-50%": [
+"% of food spending on organic products: 26-50%",
+"% расходов на продукты питания — органические продукты: 26-50%"
+],
+"% chi tiêu thực phẩm từ NCC địa phương: 76-100%": [
+"% of food spending from local suppliers: 76-100%",
+"% расходов на продукты у местных поставщиков: 76-100%"
+],
+"% cây xanh cảnh quan có nguồn gốc địa phương: 76-100%": [
+"% local native landscape plants: 76-100%",
+"% местных растений в озеленении: 76-100%"
+],
+"% dịch vụ ăn uống farm-to-table: 76-100%": [
+"% of food service that is farm-to-table: 76-100%",
+"% фермерского питания (farm-to-table): 76-100%"
+],
+"% nhân viên là người địa phương: 76-100%": [
+"% local staff: 76-100%",
+"% местных сотрудников: 76-100%"
+],
+"% tổng năng lượng từ nguồn tái tạo: 26-50%": [
+"% of total energy from renewable sources: 26-50%",
+"% общей энергии из возобновляемых источников: 26-50%"
+],
+", dòng": [
+", row",
+", строка"
+],
+", nhóm cân nhắc": [
+", the group considered",
+", группа рассматривала"
+],
+", phát lặp": [
+", looping",
+", повтор"
+],
+", tầng": [
+", floor",
+", этаж"
+],
+". Công viên mở": [
+". Park opens",
+". Парк открывается"
+],
+". Kịch bản": [
+". Scenario",
+". Сценарий"
+],
+". Ngoài trời": [
+". Outdoor",
+". На улице"
+],
+". Vùng kem là dễ chịu": [
+". Cream zone is comfortable",
+". Кремовая зона комфортна"
+],
+". Xếp hàng": [
+". Queueing",
+". В очереди"
+],
+". Đóng": [
+". Closes",
+". Закрывается"
+],
+"/533 phòng bán": [
+"/533 rooms sold",
+"/533 проданных номеров"
+],
+"0 lỗi": [
+"0 errors",
+"0 ошибок"
+],
+"07. Kịch bản": [
+"07. Scenarios",
+"07. Сценарии"
+],
+"09. Mở cửa": [
+"09. Opening",
+"09. Открытие"
+],
+"1 g 05 ph": [
+"1 h 05 min",
+"1 ч 05 мин"
+],
+"1 ngày": [
+"1 day",
+"1 день"
+],
+"150 / 150 trên 208": [
+"150 / 150 of 208",
+"150 / 150 из 208"
+],
+"20 phút": [
+"20 min",
+"20 мин"
+],
+"208 rooms (floors 3-28 × 8), 72% occupancy, one group per sold room; café, spa mini and gym": [
+"208 rooms (floors 3-28 × 8), 72% occupancy, one group per sold room; café, spa mini and gym",
+"208 номеров (этажи 3-28 × 8), загрузка 72%, одна группа на проданный номер; кафе, мини-спа и тренажёрный зал"
+],
+"45 kW day / 30 kW night public areas + 8 kW exterior lighting + café and amenity loads": [
+"45 kW day / 30 kW night public areas + 8 kW exterior lighting + café and amenity loads",
+"45 kW днём / 30 kW ночью в общественных зонах + 8 kW наружное освещение + нагрузки кафе и удобств"
+],
+"5 ph": [
+"5 min",
+"5 мин"
+],
+"80% cơ sở": [
+"80% baseline",
+"80% базового"
+],
+": xem từng tầng, từng phòng": [
+": view each floor, each room",
+": просмотр по этажам и номерам"
+],
+"A. Thông tin chung CSLT": [
+"A. General accommodation information",
+"A. Общие сведения о средстве размещения"
+],
+"Ai đang xếp hàng ở đâu, bao lâu, và các dịch vụ phía sau: cáp treo, tàu, xe nội khu, buồng phòng và giặt là.": [
+"Who is queueing where and for how long, plus back-end services: cable car, boats, shuttle, housekeeping and laundry.",
+"Кто, где и как долго стоит в очереди, а также сопутствующие службы: канатная дорога, катера, шаттл, уборка номеров и прачечная."
+],
+"B. Điện & Năng lượng (bao gồm t": [
+"B. Electricity & Energy (including t",
+"B. Электроэнергия и энергия (включая т"
+],
+"Ban ngày": [
+"Daytime",
+"Днём"
+],
+"Ban đêm": [
+"Night",
+"Ночь"
+],
+"Baseline: thẻ từ ngắt HVAC; 25% phòng bị 'bypass' (giả định, nhất quán với 76–100%).": [
+"Baseline: key card cuts HVAC; 25% of rooms 'bypassed' (assumption, consistent with 76–100%).",
+"Baseline: ключ-карта отключает HVAC; 25% номеров в режиме 'bypass' (допущение, согласуется с 76–100%)."
+],
+"Biểu đồ công suất 15 phút trong ngày": [
+"15-min power profile over the day",
+"График мощности за день с шагом 15 мин"
+],
+"Biểu đồ cột phát thải CO2e mỗi 15 phút trong ngày": [
+"Bar chart of CO2e emissions per 15 minutes over the day",
+"Столбчатая диаграмма выбросов CO2e за каждые 15 минут в течение дня"
+],
+"Biểu đồ cột xếp chồng số phòng theo trạng thái cho 24 giờ trong ngày": [
+"Stacked bar chart of rooms by status for the 24 hours of the day",
+"Столбчатая диаграмма с накоплением: номера по состоянию за 24 часа суток"
+],
+"Biểu đồ phân tán điện năng cả ngày và thời gian chờ trung bình của 5 kịch bản, mỗi chấm nhỏ là một seed": [
+"Scatter plot of daily electricity and mean waiting time for 5 scenarios; each small dot is one seed",
+"Диаграмма рассеяния суточного потребления электроэнергии и среднего времени ожидания для 5 сценариев; каждая малая точка — один seed"
+],
+"Biểu đồ vùng xếp chồng công suất 15 phút theo 7 mục đích sử dụng trong ngày": [
+"Stacked area chart of 15-minute power by 7 end uses over the day",
+"Диаграмма областей с накоплением: 15-минутная мощность по 7 видам использования в течение дня"
+],
+"Biểu đồ đường số người xếp hàng theo thời gian tại các khu": [
+"Line chart of people queuing over time at each area",
+"Линейный график числа людей в очереди по времени в каждой зоне"
+],
+"Buồng phòng": [
+"Housekeeping",
+"Уборка номеров"
+],
+"Buồng phòng &": [
+"Housekeeping &",
+"Уборка номеров &"
+],
+"Báo cáo hàng năm về hoạt động MT-VH-XH: Có": [
+"Annual report on environmental, cultural and social activities: Yes",
+"Ежегодный отчёт об экологической, культурной и социальной деятельности: Да"
+],
+"Bãi xe nội khu KS Bờ": [
+"Mainland Hotel shuttle parking",
+"Стоянка шаттлов Отеля на материке"
+],
+"Bên phải vạch giữa là phần cộng vào hữu dụng, bên trái là phần bị trừ. Xác suất chọn tính theo logit đa thức.": [
+"Right of the centre line is what adds to utility; left is what is subtracted. Choice probabilities use a multinomial logit.",
+"Справа от центральной линии — вклад в полезность, слева — вычитаемое. Вероятности выбора рассчитываются по мультиномиальной логит-модели."
+],
+"Bình minh": [
+"Sunrise",
+"Рассвет"
+],
+"Bình thường": [
+"Normal",
+"Норма"
+],
+"Bản xuất này chỉ có kết quả ở": [
+"This export only contains results for",
+"Эта выгрузка содержит результаты только для"
+],
+"Bản đồ 3D": [
+"3D map",
+"3D-карта"
+],
+"Bản đồ 3D phát lại một ngày mô phỏng: khách, hàng chờ, cáp treo, tàu, xe nội khu và từng phòng của hai khách sạn.": [
+"3D map replaying one simulated day: guests, queues, cable car, boats, shuttles and every room of both hotels.",
+"3D-карта воспроизводит один день симуляции: гости, очереди, канатная дорога, катера, шаттлы и каждый номер обоих отелей."
+],
+"Bản đồ vận hành 3D": [
+"3D operations map",
+"3D-карта работы курорта"
+],
+"Bảng dữ liệu": [
+"Data table",
+"Таблица данных"
+],
+"Bảo toàn số khách qua mọi ảnh chụp trạng thái": [
+"Guest count conserved across all state snapshots",
+"Число гостей сохраняется во всех снимках состояния"
+],
+"Bấm một phòng để xem khách đang làm gì và lịch cả ngày của họ.": [
+"Click a room to see what its guests are doing and their full-day schedule.",
+"Нажмите на номер, чтобы увидеть, чем заняты гости, и их расписание на весь день."
+],
+"Bấm một ô trên lưới hoặc một dòng trong bảng bên dưới để xem chi tiết phòng.": [
+"Click a cell in the grid or a row in the table below to see room details.",
+"Нажмите на ячейку сетки или строку таблицы ниже, чтобы увидеть сведения о номере."
+],
+"Bấm để xem trên bản đồ": [
+"Click to view on the map",
+"Нажмите, чтобы показать на карте"
+],
+"Bật": [
+"On",
+"Вкл."
+],
+"Bật nhưng phòng vẫn nóng": [
+"On but room still hot",
+"Вкл., но в номере жарко"
+],
+"Bắt đầu": [
+"Start",
+"Начать"
+],
+"Bến tàu trên đảo": [
+"Island pier",
+"Причал на острове"
+],
+"Bến tàu đất liền": [
+"Mainland pier",
+"Причал на материке"
+],
+"Bến đất liền ↔ bến đảo": [
+"Mainland pier ↔ island pier",
+"Причал на материке ↔ причал на острове"
+],
+"Bỏ chọn phòng": [
+"Deselect room",
+"Снять выбор номера"
+],
+"Bỏ hàng": [
+"Abandoned queue",
+"Ушли из очереди"
+],
+"Bỏ hàng (nhóm)": [
+"Queue abandonments (groups)",
+"Уходы из очереди (группы)"
+],
+"Bộ lọc": [
+"Filter",
+"Фильтр"
+],
+"Bức xạ mặt trời vào phòng giả định thấp.": [
+"Solar gain into rooms is assumed low.",
+"Солнечное излучение в номера принято низким."
+],
+"C. Nhiên liệu hóa thạch": [
+"C. Fossil fuels",
+"C. Ископаемое топливо"
+],
+"CLB trẻ em": [
+"Kids' club",
+"Детский клуб"
+],
+"Café Bờ": [
+"Mainland Café",
+"Кафе на материке"
+],
+"Cam kết không bán sản phẩm từ ĐVHD: Có": [
+"Commitment not to sell wildlife products: Yes",
+"Обязательство не продавать изделия из диких животных: Да"
+],
+"Cam kết không bắt giữ động vật hoang dã: Có": [
+"Commitment not to capture wild animals: Yes",
+"Обязательство не отлавливать диких животных: Да"
+],
+"Chi tiết phòng": [
+"Room details",
+"Сведения о номере"
+],
+"Chiếu sáng & ổ cắm phòng": [
+"Room lighting & plug loads",
+"Освещение и розетки номеров"
+],
+"Chiếu sáng & ổ cắm phòng – KS Bờ": [
+"Room lighting & plug loads – Mainland Hotel",
+"Освещение и розетки номеров – Отель на материке"
+],
+"Chu kỳ trò chơi (kWh)": [
+"Ride cycles (kWh)",
+"Циклы аттракционов (kWh)"
+],
+"Chênh lệch": [
+"Difference",
+"Разница"
+],
+"Chênh lệch ghép cặp của các kịch bản so với cơ sở": [
+"Paired differences of scenarios vs baseline",
+"Парные разницы сценариев относительно базового"
+],
+"Chênh lệch ghép cặp so với baseline": [
+"Paired difference vs baseline",
+"Парная разница относительно baseline"
+],
+"Chính sách hỗ trợ nhân viên nữ: Có": [
+"Support policy for female staff: Yes",
+"Политика поддержки сотрудниц: Да"
+],
+"Chính sách khuyến khích khách/NV tiết kiệm TN: Có": [
+"Policy encouraging guests/staff to save resources: Yes",
+"Политика стимулирования гостей/персонала к экономии ресурсов: Да"
+],
+"Chính sách khuyến khích khách/NV tiết kiệm tài nguyên.": [
+"Policy encouraging guests/staff to save resources.",
+"Политика, поощряющая гостей и персонал экономить ресурсы."
+],
+"Chính sách ưu tiên nhà cung cấp địa phương: Có": [
+"Policy prioritising local suppliers: Yes",
+"Политика приоритета местных поставщиков: Да"
+],
+"Chưa bán đêm nay": [
+"Unsold tonight",
+"Не продан на эту ночь"
+],
+"Chưa có dữ kiện nào được kiểm chứng độc lập": [
+"No facts have been independently verified yet",
+"Пока нет независимо проверенных фактов"
+],
+"Chưa có dữ liệu mô phỏng. Hãy chạy python run_simulation.py.": [
+"No simulation data yet. Run python run_simulation.py.",
+"Данных симуляции пока нет. Запустите python run_simulation.py."
+],
+"Chưa có khách của khách sạn ở đây lúc này.": [
+"No hotel guests here at the moment.",
+"Сейчас здесь нет гостей отеля."
+],
+"Chưa có kết quả so sánh. Chạy python run_simulation.py --compare --seeds 10.": [
+"No comparison results yet. Run python run_simulation.py --compare --seeds 10.",
+"Результатов сравнения пока нет. Запустите python run_simulation.py --compare --seeds 10."
+],
+"Chưa khác biệt": [
+"No difference yet",
+"Пока без различий"
+],
+"Chưa mô hình hóa PV tại chỗ.": [
+"On-site PV not yet modelled.",
+"Собственная СЭС пока не моделируется."
+],
+"Chưa về": [
+"Not back yet",
+"Ещё не вернулись"
+],
+"Chưa đạt": [
+"Not passed",
+"Не пройдено"
+],
+"Chưa đến khu": [
+"Not yet arrived",
+"Ещё не прибыли"
+],
+"Chương trình biểu diễn": [
+"Show programme",
+"Шоу-программа"
+],
+"Chương trình tái chế/thu gom vật phẩm: Có": [
+"Recycling/item collection programme: Yes",
+"Программа переработки/сбора вещей: Да"
+],
+"Chạy lại từ 00:00": [
+"Replay from 00:00",
+"Повтор с 00:00"
+],
+"Chạy mô phỏng": [
+"Run simulation",
+"Запустить симуляцию"
+],
+"Chạy theo thời gian": [
+"Play over time",
+"Воспроизведение во времени"
+],
+"Chế độ chờ / làm mát trước": [
+"Standby / pre-cooling",
+"Режим ожидания / предварительное охлаждение"
+],
+"Chế độ giảm bất bình đẳng đã thực hiện: Có người/đội ngũ phụ trách giải quyết vấn đề đa dạng, công bằng và hòa nhập; Có mục tiêu đảm bảo sự đa dạng về nguồn nhân lực (ví dụ: giới tính và dân tộc); Có nguồn lực ưu tiên dành cho các nhóm nhân viên thiểu số; Có chính sách tạo cơ hội việc làm công bằng; Có chính sách và quy trình trả lương bình đẳng; Có chính sách làm việc linh hoạt/nhanh nhẹn; Cung cấp cơ hội được hướng dẫn và đào tạo; Có quy trình báo cáo và giải quyết các vấn đề bất bình đẳng tại nơi làm việc; Tổ chức đào tạo về đa dạng, công bằng và hòa nhập cho nhân viên": [
+"Inequality-reduction measures implemented: A person/team is responsible for diversity, equity and inclusion; There are targets for workforce diversity (e.g. gender and ethnicity); Dedicated resources for minority staff groups; Fair employment opportunity policy; Equal pay policy and procedures; Flexible/agile working policy; Mentoring and training opportunities provided; Procedure for reporting and resolving workplace inequality issues; Diversity, equity and inclusion training for staff",
+"Реализованные меры по снижению неравенства: есть сотрудник/команда, отвечающие за разнообразие, равенство и инклюзивность; есть цели по обеспечению разнообразия персонала (например, по полу и этнической принадлежности); есть приоритетные ресурсы для групп сотрудников из меньшинств; есть политика равных возможностей трудоустройства; есть политика и процедуры равной оплаты труда; есть политика гибкого графика работы; предоставляются возможности наставничества и обучения; есть процедура сообщения о проблемах неравенства на рабочем месте и их решения; проводится обучение персонала по вопросам разнообразия, равенства и инклюзивности"
+],
+"Chế độ tiết kiệm NL cho máy tính/thiết bị: Có": [
+"Energy-saving mode for computers/devices: Yes",
+"Энергосберегающий режим для компьютеров/устройств: Да"
+],
+"Chế độ tiết kiệm năng lượng cho thiết bị.": [
+"Energy-saving mode for equipment.",
+"Энергосберегающий режим оборудования."
+],
+"Chế độ tối": [
+"Dark mode",
+"Тёмный режим"
+],
+"Chỉ số": [
+"Figures",
+"Показатели"
+],
+"Chỉ số tổng hợp của lần chạy": [
+"Run summary metrics",
+"Сводные показатели запуска"
+],
+"Chỉ số từng seed của mọi kịch bản": [
+"Per-seed figures for every scenario",
+"Показатели по каждому seed для всех сценариев"
+],
+"Chỉ tham khảo": [
+"Reference only",
+"Только для справки"
+],
+"Chọn hàng chờ hiển thị": [
+"Select queues to display",
+"Выберите очереди для отображения"
+],
+"Chọn kịch bản so với cơ sở": [
+"Choose a scenario to compare with baseline",
+"Выберите сценарий для сравнения с базовым"
+],
+"Chọn nhóm": [
+"Select group",
+"Выберите группу"
+],
+"Chờ P95": [
+"P95 wait",
+"Ожидание P95"
+],
+"Chờ TB trò chơi (phút)": [
+"Avg ride wait (min)",
+"Среднее ожидание аттракциона (мин)"
+],
+"Chờ chuyến": [
+"Waiting for trip",
+"Ожидание рейса"
+],
+"Chờ cơ sở": [
+"Baseline wait",
+"Ожидание (базовый)"
+],
+"Chờ khách": [
+"Waiting for guests",
+"Ожидание гостей"
+],
+"Chờ kịch bản": [
+"Waiting for scenarios",
+"Ожидание сценариев"
+],
+"Chờ trung bình": [
+"Average wait",
+"Среднее ожидание"
+],
+"Các mẻ giặt": [
+"Laundry batches",
+"Партии стирки"
+],
+"Các mẻ giặt: máy, giờ, khối lượng, điện": [
+"Laundry batches: machine, hour, load, electricity",
+"Партии стирки: машина, час, загрузка, электроэнергия"
+],
+"Cách thức phân loại rác thải: Phân loại để tái chế hoặc bán; Phân loại rác hữu cơ dùng cho chăn nuôi hoặc đem đi phân huỷ; Phân loại chất thải độc hại để xử lý đặc biệt; Khác": [
+"Waste sorting methods: Sorting for recycling or sale; Sorting organic waste for animal feed or composting; Sorting hazardous waste for special treatment; Other",
+"Способы сортировки отходов: Сортировка для переработки или продажи; Сортировка органических отходов на корм скоту или компостирование; Сортировка опасных отходов для специальной обработки; Другое"
+],
+"Cáp treo & xe nội khu": [
+"Cable car & shuttle",
+"Канатная дорога и шаттл"
+],
+"Cáp treo (động cơ & nhà ga)": [
+"Cable car (motors & stations)",
+"Канатная дорога (двигатели и станции)"
+],
+"Cáp treo vượt biển": [
+"Sea-crossing cable car",
+"Канатная дорога через море"
+],
+"Câu lạc bộ trẻ em": [
+"Kids' club",
+"Детский клуб"
+],
+"Câu trả lời đánh giá, không phải quy tắc hành vi/thiết bị thực thi được.": [
+"Assessment answer, not an executable behavioural/equipment rule.",
+"Ответ самооценки, а не исполняемое правило поведения/оборудования."
+],
+"Có khách": [
+"Occupied",
+"Занят"
+],
+"Có khách trong phòng": [
+"Guests in room",
+"Гости в номере"
+],
+"Có khách, ngủ": [
+"Occupied, asleep",
+"Занят, гости спят"
+],
+"Có khách, quá nóng": [
+"Occupied, too hot",
+"Занят, слишком жарко"
+],
+"Có khách, thức": [
+"Occupied, awake",
+"Занят, гости бодрствуют"
+],
+"Có khách, trên": [
+"Occupied, above",
+"Занят, выше"
+],
+"Có kế hoạch giảm phát thải.": [
+"Has an emissions reduction plan.",
+"Есть план сокращения выбросов."
+],
+"Có kế hoạch hành động giảm phát thải: Có": [
+"Has an emissions-reduction action plan: Yes",
+"Есть план действий по сокращению выбросов: Да"
+],
+"Có mục riêng về PTBV trên website: Có": [
+"Dedicated sustainability section on website: Yes",
+"Отдельный раздел об устойчивом развитии на сайте: Да"
+],
+"Có người chờ": [
+"People waiting",
+"Есть ожидающие"
+],
+"Có thực đơn thuần chay/thuần thực vật: Có, cho mọi món ăn và bữa ăn": [
+"Vegan/plant-based menu available: Yes, for all dishes and meals",
+"Веганское/растительное меню: Да, для всех блюд и приёмов пищи"
+],
+"Có xe đạp/xe đạp điện cho khách: Có": [
+"Bicycles/e-bikes available to guests: Yes",
+"Велосипеды/электровелосипеды для гостей: Да"
+],
+"Có đội ngũ phụ trách PTBV: Có": [
+"Has a sustainability team: Yes",
+"Есть команда по устойчивому развитию: Да"
+],
+"Công suất": [
+"Power",
+"Мощность"
+],
+"Công suất 15 phút": [
+"15-min power",
+"15-минутная мощность"
+],
+"Công suất phòng": [
+"Room occupancy",
+"Загрузка номеров"
+],
+"Công suất phòng tự khai 53%; mô hình mặc định dùng 80% theo đề cương dự án.": [
+"Self-reported room occupancy 53%; the model uses 80% by default per the project brief.",
+"Загрузка номеров по самооценке 53%; модель по умолчанию использует 80% согласно техническому заданию проекта."
+],
+"Công suất sử dụng phòng (%): 53 [%]": [
+"Room occupancy (%): 53 [%]",
+"Загрузка номеров (%): 53 [%]"
+],
+"Công suất trung bình": [
+"Average power",
+"Средняя мощность"
+],
+"Công suất trung bình 15 phút theo mục đích": [
+"Average 15-min power by end use",
+"Средняя 15-минутная мощность по видам использования"
+],
+"Công suất từng 15 phút tách theo mục đích sử dụng, điện năng cả ngày và lượng CO2e đi kèm. Rê chuột lên biểu đồ để đọc từng mốc.": [
+"Power per 15 minutes by end use, whole-day electricity and the associated CO2e. Hover over the chart to read each point.",
+"Мощность за каждые 15 минут по видам использования, электроэнергия за день и соответствующие CO2e. Наведите курсор на график, чтобы увидеть значения."
+],
+"Công suất ÷ trung bình ngày": [
+"Power ÷ daily average",
+"Мощность ÷ среднесуточная"
+],
+"Công viên": [
+"Park",
+"Парк"
+],
+"Công việc tồn đọng được báo cáo": [
+"Outstanding work is reported",
+"Невыполненная работа отражается в отчёте"
+],
+"Cơ sở": [
+"Baseline",
+"Базовый"
+],
+"Cơ sở (baseline)": [
+"Baseline",
+"Базовый (baseline)"
+],
+"Cả ngày": [
+"Whole day",
+"Весь день"
+],
+"Cả ngày. Vạch dọc": [
+"Full day. Vertical line",
+"Весь день. Вертикальная линия"
+],
+"Cảm biến HVAC tự động - khu vực chung: 76-100%": [
+"Automatic HVAC sensors - common areas: 76-100%",
+"Автоматические датчики HVAC - общие зоны: 76-100%"
+],
+"Cảm biến HVAC tự động - phòng lưu trú: 76-100%": [
+"Automatic HVAC sensors - guest rooms: 76-100%",
+"Автоматические датчики HVAC - номера: 76-100%"
+],
+"Cảm biến HVAC tự động khu chung 76–100%.": [
+"Automatic HVAC sensors in common areas 76–100%.",
+"Автоматические датчики HVAC в общих зонах 76–100%."
+],
+"Cảm biến HVAC tự động phòng lưu trú 76–100%.": [
+"Automatic HVAC sensors in guest rooms 76–100%.",
+"Автоматические датчики HVAC в номерах 76–100%."
+],
+"Cặp đôi": [
+"Couple",
+"Пара"
+],
+"Cổng & điểm đón công viên": [
+"Park gate & pick-up point",
+"Вход и точка посадки парка"
+],
+"Cột số phòng dọn mỗi giờ và đường số phòng còn chờ dọn": [
+"Bars: rooms cleaned per hour; line: rooms still awaiting cleaning",
+"Столбцы: номера, убранные за час; линия: номера, ожидающие уборки"
+],
+"Cột tô cam là mốc đang chọn. Hệ số lưới": [
+"The orange bar is the selected time. Grid factor",
+"Оранжевый столбец — выбранный момент. Коэффициент сети"
+],
+"DT sàn xây dựng toàn bộ (m2): 78408 [m2]": [
+"Total gross floor area (m2): 78408 [m2]",
+"Общая площадь застройки (m2): 78408 [m2]"
+],
+"DT sưởi ấm/làm mát (m2): 69827 [m2]": [
+"Heated/cooled area (m2): 69827 [m2]",
+"Отапливаемая/охлаждаемая площадь (m2): 69827 [m2]"
+],
+"DT điều hòa - phòng & hành lang (m2): 59628 [m2]": [
+"Air-conditioned area - rooms & corridors (m2): 59628 [m2]",
+"Кондиционируемая площадь - номера и коридоры (m2): 59628 [m2]"
+],
+"DT điều hòa - phòng họp/khu chung (m2): 1814 [m2]": [
+"Air-conditioned area - meeting rooms/common areas (m2): 1814 [m2]",
+"Кондиционируемая площадь - залы/общие зоны (m2): 1814 [m2]"
+],
+"Di chuyển": [
+"Travelling",
+"В пути"
+],
+"Di chuyển / chờ xe": [
+"Travelling / waiting for transport",
+"В пути / ожидание транспорта"
+],
+"Di chuyển giữa hai nút khác nhau luôn tốn thời gian": [
+"Travel between two different nodes always takes time",
+"Перемещение между двумя разными узлами всегда занимает время"
+],
+"Diện tích sưởi/làm mát.": [
+"Heated/cooled floor area.",
+"Отапливаемая/охлаждаемая площадь."
+],
+"Diện tích điều hòa khu chung.": [
+"Air-conditioned common area.",
+"Кондиционируемая площадь общих зон."
+],
+"Diện tích điều hòa phòng & hành lang.": [
+"Air-conditioned area of rooms & corridors.",
+"Кондиционируемая площадь номеров и коридоров."
+],
+"Dùng cây địa phương/chịu hạn giảm tưới: Có": [
+"Local/drought-tolerant plants to reduce irrigation: Yes",
+"Местные/засухоустойчивые растения для сокращения полива: Да"
+],
+"Dùng làm tham chiếu; không hiệu chỉnh.": [
+"Used as a reference; not calibrated.",
+"Используется как эталон; без калибровки."
+],
+"Dùng làm đầu vào cố định": [
+"Used as fixed input",
+"Используется как фиксированный вход"
+],
+"Dùng như cơ sở cho kịch bản gợi ý & khuyến khích tái sử dụng khăn (không giả định tuân thủ).": [
+"Used as the basis for the recommendation & towel-reuse encouragement scenarios (compliance not assumed).",
+"Используется как основа для сценариев рекомендаций и поощрения повторного использования полотенец (соблюдение не предполагается)."
+],
+"Dùng phương tiện xanh chở khách.": [
+"Green vehicles used to carry guests.",
+"Для перевозки гостей используется экологичный транспорт."
+],
+"Dùng phương tiện xanh chở khách: Có": [
+"Uses green vehicles to transport guests: Yes",
+"Используется экологичный транспорт для гостей: Да"
+],
+"Dùng sản phẩm thân thiện môi trường: Có": [
+"Uses eco-friendly products: Yes",
+"Используются экологичные продукты: Да"
+],
+"Dạo phố & ăn tối trong thành phố": [
+"City stroll & dinner in town",
+"Прогулка и ужин в городе"
+],
+"Dạo phố trong thành phố": [
+"Strolling in the city",
+"Прогулка по городу"
+],
+"Dầu diesel: T1=132; T2=151; T3=654; T4=7244; T5=726; T6=3981; T7=5779; T8=16460; T9=18977; T10=1926; T11=5325; T12=425 [lit]": [
+"Diesel: T1=132; T2=151; T3=654; T4=7244; T5=726; T6=3981; T7=5779; T8=16460; T9=18977; T10=1926; T11=5325; T12=425 [lit]",
+"Дизельное топливо: T1=132; T2=151; T3=654; T4=7244; T5=726; T6=3981; T7=5779; T8=16460; T9=18977; T10=1926; T11=5325; T12=425 [lit]"
+],
+"Dầu hỏa: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [lit]": [
+"Kerosene: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [lit]",
+"Керосин: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [lit]"
+],
+"Dầu nhiên liệu (FO): T1=108; T2=110; T3=605; T4=6627; T5=504; T6=3497; T7=4822; T8=5551; T9=16938; T10=1861; T11=4267; T12=388 [lit]": [
+"Fuel oil (FO): T1=108; T2=110; T3=605; T4=6627; T5=504; T6=3497; T7=4822; T8=5551; T9=16938; T10=1861; T11=4267; T12=388 [lit]",
+"Мазут (FO): T1=108; T2=110; T3=605; T4=6627; T5=504; T6=3497; T7=4822; T8=5551; T9=16938; T10=1861; T11=4267; T12=388 [lit]"
+],
+"Dầu thô: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [lit]": [
+"Crude oil: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [lit]",
+"Сырая нефть: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [lit]"
+],
+"Dịch vụ &": [
+"Services &",
+"Услуги &"
+],
+"Dọn phòng bị gián đoạn": [
+"Cleaning interrupted",
+"Уборка прервана"
+],
+"Dọn phòng hằng ngày; thay ga/khăn chỉ khi khách yêu cầu.": [
+"Daily room cleaning; sheets/towels changed only on guest request.",
+"Ежедневная уборка номеров; смена белья/полотенец только по запросу гостя."
+],
+"Dừng theo dõi": [
+"Stop following",
+"Прекратить отслеживание"
+],
+"Dừng tại khu": [
+"Stopped at area",
+"Остановка в зоне"
+],
+"Dữ kiện đã kiểm chứng": [
+"Verified facts",
+"Проверенные факты"
+],
+"Dữ liệu": [
+"Data",
+"Данные"
+],
+"E. Nước": [
+"E. Water",
+"E. Вода"
+],
+"F. Rác thải & Nhựa dùng một lần": [
+"F. Waste & Single-use Plastics",
+"F. Отходы и одноразовый пластик"
+],
+"G. Thực phẩm bền vững": [
+"G. Sustainable food",
+"G. Устойчивое питание"
+],
+"Ga cáp treo trên đảo": [
+"Island cable-car station",
+"Станция канатной дороги на острове"
+],
+"Ga cáp treo đất liền": [
+"Mainland cable-car station",
+"Станция канатной дороги на материке"
+],
+"Gia đình": [
+"Family",
+"Семья"
+],
+"Giá": [
+"Price",
+"Цена"
+],
+"Giám sát": [
+"Monitoring",
+"Мониторинг"
+],
+"Giám sát khách sạn ảo": [
+"Virtual hotel monitor",
+"Мониторинг виртуального отеля"
+],
+"Giả định": [
+"Assumptions",
+"Допущения"
+],
+"Giải pháp thay thế chai nhựa dùng 1 lần: Vòi lọc nước trong phòng; Chai nước có thể tái sử dụng (bán/cho thuê hoặc miễn phí); Chai nhôm dùng một lần; Chai thủy tinh dùng một lần; Hộp carton nhựa (VD: Tetra Pak); Khác": [
+"Alternatives to single-use (1) plastic bottles: In-room filtered water taps; Reusable water bottles (sold/rented or free); Single-use aluminium bottles; Single-use glass bottles; Plastic-lined cartons (e.g. Tetra Pak); Other",
+"Альтернативы одноразовым (1) пластиковым бутылкам: Краны с фильтрованной водой в номерах; Многоразовые бутылки (продажа/аренда или бесплатно); Одноразовые алюминиевые бутылки; Одноразовые стеклянные бутылки; Картонные упаковки с пластиком (напр. Tetra Pak); Другое"
+],
+"Giải pháp thay thế túi rác dùng 1 lần: Thùng rác có thể tái sử dụng hoặc vệ sinh được (không có lớp lót); Sử dụng túi rác phân hủy sinh học; Sử dụng thùng thu gom chất thải tập trung; Khác": [
+"Alternatives to single-use (1) bin liners: Reusable or washable bins (no liner); Biodegradable bin bags; Centralised waste collection bins; Other",
+"Альтернативы одноразовым (1) мусорным пакетам: Многоразовые или моющиеся урны (без вкладыша); Биоразлагаемые мусорные пакеты; Централизованные контейнеры для сбора отходов; Другое"
+],
+"Giặt là": [
+"Laundry",
+"Прачечная"
+],
+"Giặt là (kWh)": [
+"Laundry (kWh)",
+"Прачечная (kWh)"
+],
+"Giờ-khách trong công viên": [
+"Guest-hours in the park",
+"Человеко-часы гостей в парке"
+],
+"Giờ-phòng có khách quá nóng": [
+"Overheated occupied room-hours",
+"Номеро-часы перегрева в занятых номерах"
+],
+"Gym KS Bờ": [
+"Mainland Hotel gym",
+"Тренажёрный зал Отеля на материке"
+],
+"Góc trái dưới là tốt": [
+"Bottom left is better",
+"Лучше — внизу слева"
+],
+"Gợi ý Trò chơi cảm giác mạnh thay cho Khu trải nghiệm trong nhà – chấp nhận": [
+"Suggested Thrill ride instead of Indoor experience zone – accepted",
+"Предложен экстремальный аттракцион вместо крытой зоны впечатлений – принято"
+],
+"Gợi ý Trò chơi gia đình thay cho Khu trải nghiệm trong nhà – chấp nhận": [
+"Suggested Family ride instead of Indoor experience zone – accepted",
+"Предложен семейный аттракцион вместо крытой зоны впечатлений – принято"
+],
+"Gợi ý Trò chơi gia đình thay cho Khu trải nghiệm trong nhà – từ chối": [
+"Suggested Family ride instead of Indoor experience zone – declined",
+"Предложен Семейный аттракцион вместо Крытой зоны впечатлений – отклонено"
+],
+"Gợi ý Trò chơi nước thay cho Khu trải nghiệm trong nhà – chấp nhận": [
+"Recommended Water ride instead of Indoor experience zone – accepted",
+"Рекомендован водный аттракцион вместо крытой зоны впечатлений – принято"
+],
+"Gợi ý Trò chơi nước thay cho Khu trải nghiệm trong nhà – từ chối": [
+"Recommended Water ride instead of Indoor experience zone – declined",
+"Рекомендован водный аттракцион вместо крытой зоны впечатлений – отклонено"
+],
+"Gợi ý dữ liệu theo bộ phận có thể dùng hiệu chỉnh trong tương lai.": [
+"Suggests department-level data that could be used for future calibration.",
+"Указывает на данные по подразделениям, пригодные для будущей калибровки."
+],
+"Gợi ý khách sang khu ít chờ hơn khi hàng chờ dự kiến dài": [
+"Suggest less busy areas to guests when expected queues are long",
+"Предлагать гостям зоны с меньшим ожиданием, когда ожидаемые очереди длинные"
+],
+"Gợi ý lộ trình trong công viên": [
+"Park route recommendations",
+"Рекомендации маршрутов в парке"
+],
+"H. Giao thông xanh": [
+"H. Green Transport",
+"H. Экологичный транспорт"
+],
+"Hiển thị như tham chiếu, không cộng vào điện bottom-up.": [
+"Shown as a reference, not added to bottom-up electricity.",
+"Показано как справочные данные, не суммируется с bottom-up электроэнергией."
+],
+"Hiện chỉ số": [
+"Show figures",
+"Показать показатели"
+],
+"Hiện khách": [
+"Show guests",
+"Показать гостей"
+],
+"Hiện nhãn và chỉ số các khu": [
+"Show area labels and figures",
+"Показать названия и показатели зон"
+],
+"Hoàng hôn": [
+"Sunset",
+"Закат"
+],
+"Hoãn": [
+"Deferred",
+"Отложено"
+],
+"Hàng chờ": [
+"Queue",
+"Очередь"
+],
+"Hàng dài nhất": [
+"Longest queue",
+"Самая длинная очередь"
+],
+"Hành lang": [
+"Corridor",
+"Коридор"
+],
+"Hành trình": [
+"Itinerary",
+"Маршрут"
+],
+"Hành trình từng nhóm khách, mỗi chặng một dòng": [
+"Itinerary of each guest group, one row per leg",
+"Маршрут каждой группы гостей, одна строка на этап"
+],
+"Hình dạng phụ tải ngày": [
+"Daily load shape",
+"Суточный профиль нагрузки"
+],
+"Hướng biển": [
+"Sea view",
+"Вид на море"
+],
+"Hướng núi": [
+"Mountain view",
+"Вид на горы"
+],
+"Hướng phố": [
+"City view",
+"Вид на город"
+],
+"Hệ số phụ tải": [
+"Load factor",
+"Коэффициент нагрузки"
+],
+"Hệ số tải chuyến": [
+"Trip load factor",
+"Коэффициент загрузки рейса"
+],
+"Hệ thống giám sát năng lượng tập trung.": [
+"Centralised energy monitoring system.",
+"Централизованная система мониторинга энергопотребления."
+],
+"Hệ thống giám sát năng lượng tập trung: Có": [
+"Centralised energy monitoring system: Yes",
+"Централизованная система мониторинга энергопотребления: Да"
+],
+"Hệ thống xử lý nước thải đạt chuẩn: Có": [
+"Wastewater treatment system meets standards: Yes",
+"Система очистки сточных вод соответствует нормам: Да"
+],
+"Hồ bơi": [
+"Pool",
+"Бассейн"
+],
+"Hồ bơi / thư giãn": [
+"Pool / relaxation",
+"Бассейн / отдых"
+],
+"Hỗ trợ phát triển văn hóa địa phương: Có": [
+"Support for local cultural development: Yes",
+"Поддержка развития местной культуры: Да"
+],
+"Hợp tác DN địa phương quảng bá sản phẩm: Có": [
+"Partnership with local businesses to promote products: Yes",
+"Сотрудничество с местным бизнесом в продвижении продукции: Да"
+],
+"Hợp tác NCC để giảm thiểu chất thải: Cho phép trả lại bao bì hoặc tái sử dụng (ví dụ: chai đồ uống có thể trả lại); Tham gia các chương trình thu hồi sản phẩm của nhà cung cấp khi kết thúc vòng đời; Hợp tác trong thiết kế sản phẩm bền vững; Khác": [
+"Supplier cooperation to minimise waste: Returnable or reusable packaging allowed (e.g. returnable drink bottles); Joining suppliers' end-of-life product take-back programmes; Collaboration on sustainable product design; Other",
+"Сотрудничество с поставщиками для сокращения отходов: Возврат или повторное использование упаковки (например, возвратные бутылки для напитков); Участие в программах поставщиков по приёму продукции по окончании срока службы; Сотрудничество в разработке устойчивой продукции; Другое"
+],
+"Hứng thú": [
+"Interest",
+"Интерес"
+],
+"I. Sinh thái - Hóa chất - Đa dạ": [
+"I. Ecology - Chemicals - Biodiversity",
+"I. Экология - Химикаты - Биоразнообразие"
+],
+"J. Quản lý PTBV & Truyền thông": [
+"J. Sustainability management & communication",
+"J. Управление устойчивым развитием и коммуникации"
+],
+"K. Nhân sự - Lao động": [
+"K. Human resources - Labour",
+"K. Персонал - Труд"
+],
+"KS Bờ ↔ ga cáp treo": [
+"Mainland Hotel ↔ cable-car station",
+"Отель на материке ↔ станция канатной дороги"
+],
+"KS Đảo": [
+"Island Hotel",
+"Отель на острове"
+],
+"Khen thưởng NV tích cực bảo vệ môi trường: Có": [
+"Rewards staff active in environmental protection: Yes",
+"Поощрение персонала за активную защиту окружающей среды: Да"
+],
+"Khoảng": [
+"About",
+"Около"
+],
+"Khu chung & tiện ích KS": [
+"Hotel common areas & amenities",
+"Общие зоны и удобства отеля"
+],
+"Khu chung công viên": [
+"Park common areas",
+"Общие зоны парка"
+],
+"Khu chung khách sạn": [
+"Hotel common areas",
+"Общие зоны отеля"
+],
+"Khu chung là tải tổng hợp theo lịch.": [
+"Common areas are an aggregate scheduled load.",
+"Общие зоны — агрегированная нагрузка по расписанию."
+],
+"Khu chung, café, tiện ích & nước nóng – KS Bờ": [
+"Common areas, café, amenities & hot water – Mainland Hotel",
+"Общие зоны, кафе, удобства и горячая вода – Отель на материке"
+],
+"Khu nghỉ có mái che": [
+"Covered rest area",
+"Крытая зона отдыха"
+],
+"Khu nghỉ có điều hòa": [
+"Air-conditioned rest area",
+"Зона отдыха с кондиционером"
+],
+"Khu nghỉ dưỡng": [
+"Resort",
+"Курорт"
+],
+"Khu quá tải": [
+"Overloaded areas",
+"Перегруженные зоны"
+],
+"Khu trong nhà": [
+"Indoor zone",
+"Крытая зона"
+],
+"Khu trò chơi gia đình": [
+"Family ride area",
+"Зона семейных аттракционов"
+],
+"Khu trải nghiệm trong nhà": [
+"Indoor experience zone",
+"Крытая зона впечатлений"
+],
+"Khách": [
+"Guests",
+"Гости"
+],
+"Khách lưu trú": [
+"Resident guests",
+"Проживающие гости"
+],
+"Khách phòng": [
+"Room guests",
+"Гости номера"
+],
+"Khách sạn Bờ": [
+"Mainland Hotel",
+"Отель на материке"
+],
+"Khách sạn Bờ: số phòng và phòng có khách khớp cấu hình": [
+"Mainland Hotel: room and occupied-room counts match configuration",
+"Отель на материке: число номеров и занятых номеров соответствует конфигурации"
+],
+"Khách sạn Đảo": [
+"Island Hotel",
+"Отель на острове"
+],
+"Khách tầng này đang ở đâu": [
+"Where guests on this floor are",
+"Где сейчас гости этого этажа"
+],
+"Khí tự nhiên: T1=1019; T2=920; T3=1019; T4=986; T5=1019; T6=986; T7=1019; T8=1019; T9=986; T10=1019; T11=986; T12=1019 [kg]": [
+"Natural gas: T1=1019; T2=920; T3=1019; T4=986; T5=1019; T6=986; T7=1019; T8=1019; T9=986; T10=1019; T11=986; T12=1019 [kg]",
+"Природный газ: T1=1019; T2=920; T3=1019; T4=986; T5=1019; T6=986; T7=1019; T8=1019; T9=986; T10=1019; T11=986; T12=1019 [kg]"
+],
+"Không có khách": [
+"No guests",
+"Нет гостей"
+],
+"Không nhóm nào bị kẹt ở hàng chờ/bến cuối kỳ": [
+"No group stranded in a queue/at a stop at end of horizon",
+"Ни одна группа не застряла в очереди/на остановке в конце периода"
+],
+"Không nạp được kết quả": [
+"Could not load results",
+"Не удалось загрузить результаты"
+],
+"Không vượt sức chứa": [
+"Capacity never exceeded",
+"Вместимость не превышается"
+],
+"Không áp dụng": [
+"Not applicable",
+"Не применимо"
+],
+"Không đạt": [
+"Fail",
+"Не пройдено"
+],
+"Khả năng tiếp cận cho người khuyết tật: Có": [
+"Accessibility for people with disabilities: Yes",
+"Доступность для людей с инвалидностью: Да"
+],
+"Khối lượng": [
+"Volume",
+"Объём"
+],
+"Khối phòng (533)": [
+"Room block (533)",
+"Номерной фонд (533)"
+],
+"Khối phòng KS Bờ (208)": [
+"Mainland Hotel room block (208)",
+"Корпус номеров Отеля на материке (208)"
+],
+"Kiến trúc/dịch vụ phản ánh văn hóa địa phương: Kiến trúc; Hoạt động; Dịch vụ": [
+"Architecture/services reflect local culture: Architecture; Activities; Services",
+"Архитектура/услуги отражают местную культуру: Архитектура; Мероприятия; Услуги"
+],
+"Kiểm soát/giới hạn nhiệt độ vận hành: Đặt nhiệt độ nước nóng trong phòng lưu trú khoảng từ 50°C đến 70°C; Đặt nhiệt độ nước nóng cung cấp cho phòng giặt là ở mức khoảng 70°C; Đặt nhiệt độ điều hòa không khí trong phòng khách ở mức 24°C-26°C (mùa hè), 20°C-21°C (mùa đông); Khác": [
+"Operating temperature control/limits: Hot water in guest rooms set at about 50°C to 70°C; hot water supplied to the laundry set at about 70°C; guest-room air conditioning set at 24°C-26°C (summer), 20°C-21°C (winter); Other",
+"Контроль/ограничение рабочих температур: горячая вода в номерах около 50°C–70°C; горячая вода для прачечной около 70°C; кондиционер в номерах 24°C-26°C (лето), 20°C-21°C (зима); Другое"
+],
+"Kiểm toán năng lượng & nước (3 năm): Có": [
+"Energy & water audit (3 years): Yes",
+"Энерго- и водоаудит (3 года): Да"
+],
+"Kiểm tra mô hình": [
+"Model checks",
+"Проверки модели"
+],
+"Kiểm tra/bảo trì khu lưu trữ hóa chất: Có": [
+"Chemical storage inspection/maintenance: Yes",
+"Проверка/обслуживание склада химикатов: Да"
+],
+"Kéo để di chuyển bản đồ": [
+"Drag to pan the map",
+"Перетащите, чтобы сдвинуть карту"
+],
+"Kéo để xoay. Chuột phải để di chuyển. Cuộn để thu phóng": [
+"Drag to rotate. Right-click to pan. Scroll to zoom",
+"Перетащите для вращения. Правая кнопка — перемещение. Колесо — масштаб"
+],
+"Kết hợp tất cả": [
+"All combined",
+"Все вместе"
+],
+"Kết quả các bước kiểm tra mô hình": [
+"Model verification results",
+"Результаты проверок модели"
+],
+"Kết quả mô phỏng": [
+"Simulation results",
+"Результаты симуляции"
+],
+"Kết quả từng seed": [
+"Per-seed results",
+"Результаты по seed"
+],
+"Kết thúc": [
+"End",
+"Конец"
+],
+"Kết thúc ngày (về phòng ngủ)": [
+"End of day (back to room)",
+"Конец дня (возврат в номер)"
+],
+"Kịch bản": [
+"Scenario",
+"Сценарий"
+],
+"Kịch bản cơ sở": [
+"Baseline scenario",
+"Базовый сценарий"
+],
+"L. Cộng đồng địa phương - Chuỗi": [
+"L. Local community - Supply chain",
+"L. Местное сообщество - Цепочка поставок"
+],
+"LPG (khí hóa lỏng): T1=7110; T2=4944; T3=14435; T4=8255; T5=9246; T6=9830; T7=9614; T8=8845; T9=8054; T10=8642; T11=6710; T12=9408 [lit]": [
+"LPG (liquefied petroleum gas): T1=7110; T2=4944; T3=14435; T4=8255; T5=9246; T6=9830; T7=9614; T8=8845; T9=8054; T10=8642; T11=6710; T12=9408 [lit]",
+"LPG (сжиженный газ): T1=7110; T2=4944; T3=14435; T4=8255; T5=9246; T6=9830; T7=9614; T8=8845; T9=8054; T10=8642; T11=6710; T12=9408 [lit]"
+],
+"Loại nhóm": [
+"Group type",
+"Тип группы"
+],
+"Loại phòng": [
+"Room type",
+"Тип номера"
+],
+"Loại đồ": [
+"Item type",
+"Тип изделий"
+],
+"Luồng": [
+"Flows",
+"Потоки"
+],
+"Làm mát khu trong nhà": [
+"Indoor attraction cooling",
+"Охлаждение крытых зон"
+],
+"Lên một tầng": [
+"Up one floor",
+"На этаж выше"
+],
+"Lúc": [
+"At",
+"В"
+],
+"Lúc đông nhất": [
+"At peak",
+"В пиковый момент"
+],
+"Lý do lựa chọn": [
+"Choice reasons",
+"Причины выбора"
+],
+"Lưu lượng lối đi": [
+"Path flow",
+"Поток на дорожках"
+],
+"Lưu trữ hóa chất đúng quy trình, có nhãn: Có": [
+"Chemicals stored properly and labelled: Yes",
+"Химикаты хранятся по правилам и маркированы: Да"
+],
+"Lưới 533 phòng": [
+"533-room grid",
+"Сетка из 533 номеров"
+],
+"Lưới phòng": [
+"Room grid",
+"Сетка номеров"
+],
+"Lưới phòng – ABM": [
+"Room grid – ABM",
+"Сетка номеров – ABM"
+],
+"Lượt chơi hoàn thành": [
+"Completed rides",
+"Завершённые катания"
+],
+"Lượt phòng trong năm: 132776": [
+"Room-nights per year: 132776",
+"Номеро-ночей за год: 132776"
+],
+"Lượt phòng/năm tự khai; 132776/(533×365)=68,2% – không khớp Q1.3 (53%).": [
+"Self-reported room-nights/year; 132776/(533×365)=68,2% – does not match Q1.3 (53%).",
+"Номеро-ночей/год по самооценке; 132776/(533×365)=68,2% – не совпадает с Q1.3 (53%)."
+],
+"Lượt phục vụ": [
+"Services delivered",
+"Обслуживания"
+],
+"Lấy ý kiến khách về vấn đề MT-VH-XH: Có": [
+"Guest feedback on environmental, cultural and social issues: Yes",
+"Опрос гостей по экологическим, культурным и социальным вопросам: Да"
+],
+"Lần quyết định": [
+"Decisions",
+"Решения"
+],
+"Lắp trạm sạc xe điện: Có": [
+"EV charging stations installed: Yes",
+"Установлены зарядные станции для электромобилей: Да"
+],
+"Lắp đồng hồ đo nước theo bộ phận: Có": [
+"Water meters installed per department: Yes",
+"Счётчики воды по подразделениям: Да"
+],
+"Lắp đồng hồ đo điện theo bộ phận: Có": [
+"Per-department electricity sub-meters installed: Yes",
+"Установлены счётчики электроэнергии по подразделениям: Да"
+],
+"Lịch từng phòng là lịch trình của nhóm khách trong lần chạy ABM này: giờ thức dậy, các lượt xếp hàng, tham quan, ăn uống, nghỉ và giờ về phòng.": [
+"Each room's schedule is its guest group's itinerary in this ABM run: wake-up time, queues, visits, meals, rest and return time.",
+"Расписание каждого номера — маршрут его группы гостей в этом прогоне ABM: время подъёма, очереди, посещения, питание, отдых и время возвращения."
+],
+"Lỗi tải dữ liệu:": [
+"Data loading error:",
+"Ошибка загрузки данных:"
+],
+"Lớp hiển thị con người": [
+"People display layer",
+"Слой отображения людей"
+],
+"Lớp người": [
+"People layer",
+"Слой людей"
+],
+"Lựa chọn hạn chế dọn phòng cho khách: Phòng được dọn dẹp hằng ngày, nhưng ga trải giường và khăn tắm chỉ được thay mới khi khách yêu cầu": [
+"Option for guests to limit housekeeping: Rooms are cleaned daily, but bed linen and towels are only replaced on guest request",
+"Возможность для гостей ограничить уборку: номера убираются ежедневно, но постельное бельё и полотенца меняются только по просьбе гостя"
+],
+"Màu đậm": [
+"Dark colour",
+"Насыщенный цвет"
+],
+"Mái Vòm Đại Dương": [
+"Ocean Dome",
+"Океанский купол"
+],
+"Máy": [
+"Machine",
+"Машина"
+],
+"Mã": [
+"ID",
+"Код"
+],
+"Mã nhóm": [
+"Group ID",
+"ID группы"
+],
+"Mô hình 3D: khách sạn trên đảo, khách sạn ven bờ, cáp treo vượt biển, tàu cao tốc và công viên giải trí": [
+"3D model: island hotel, mainland hotel, sea-crossing cable car, speedboats and amusement park",
+"3D-модель: отель на острове, отель на материке, канатная дорога через море, скоростные катера и парк развлечений"
+],
+"Mô hình phòng dùng UA/C tổng hợp, không theo m2.": [
+"Room model uses aggregate UA/C, not per m2.",
+"Модель номера использует агрегированные UA/C, не по m2."
+],
+"Mô hình đã được kiểm tra những gì, dựa trên giả định nào, và các quy tắc tác tử lấy từ đâu. Tải dữ liệu gốc để tự phân tích.": [
+"What the model has been checked for, which assumptions it rests on, and where the agent rules come from. Download the raw data to analyse it yourself.",
+"Что проверено в модели, на каких допущениях она основана и откуда взяты правила агентов. Скачайте исходные данные для самостоятельного анализа."
+],
+"Mô phỏng tác tử khách sạn 533 phòng + công viên: hành vi khách, hàng chờ, điện năng và phát thải. Bản đồ 3D và dashboard tương tác.": [
+"Agent-based simulation of a 533-room hotel + park: guest behaviour, queues, electricity and emissions. 3D map and interactive dashboard.",
+"Агентная симуляция отеля на 533 номера + парка: поведение гостей, очереди, электроэнергия и выбросы. 3D-карта и интерактивный dashboard."
+],
+"Mật độ": [
+"Density",
+"Плотность"
+],
+"Mặt cắt. Chọn tầng": [
+"Cross-section. Select floor",
+"Разрез. Выберите этаж"
+],
+"Mặt đứng theo tầng": [
+"Elevation by floor",
+"Фасад по этажам"
+],
+"Mẻ": [
+"Batch",
+"Партия"
+],
+"Mẻ chưa đầy": [
+"Partial batch",
+"Неполная партия"
+],
+"Mẻ đầy": [
+"Full batch",
+"Полная загрузка"
+],
+"Mốc 15 phút": [
+"15-min steps",
+"Шаг 15 мин"
+],
+"Mốc 5 phút": [
+"5-min steps",
+"Шаг 5 мин"
+],
+"Mỗi kịch bản chạy cùng 10 seed với cơ sở, nên chênh lệch được tính theo cặp seed. Khoảng tin cậy 95% không cắt vạch 0 là khác biệt có ý nghĩa.": [
+"Each scenario runs the same 10 seeds as the baseline, so differences are computed per seed pair. A 95% confidence interval that does not cross 0 indicates a significant difference.",
+"Каждый сценарий запускается с теми же 10 seed, что и базовый, поэтому разницы считаются по парам seed. 95% доверительный интервал, не пересекающий 0, означает значимое различие."
+],
+"Mỗi nhóm có đúng một phòng hợp lệ (khách tham quan trong ngày không có phòng)": [
+"Each group has exactly one valid room (day visitors have no room)",
+"У каждой группы ровно один допустимый номер (у однодневных посетителей номера нет)"
+],
+"Mỗi ô là một phòng, xếp theo tầng 3 đến 20 như mặt đứng tòa nhà. Kéo thời điểm để xem khách thức dậy, ra ngoài, về phòng và điều hòa bật tắt theo.": [
+"Each cell is one room, arranged by floor 3 to 20 like the building façade. Drag the time to see guests wake up, go out, return to their rooms and the AC switch on and off accordingly.",
+"Каждая ячейка — один номер, расположенный по этажам с 3 по 20, как на фасаде здания. Перемещайте время, чтобы увидеть, как гости просыпаются, уходят, возвращаются в номера и как включается и выключается кондиционер."
+],
+"Một mình": [
+"Solo",
+"Один"
+],
+"Mở": [
+"Open",
+"Открыто"
+],
+"Mở rộng bảng": [
+"Expand panel",
+"Развернуть панель"
+],
+"Nghỉ": [
+"Rest",
+"Отдых"
+],
+"Nghỉ trong phòng": [
+"Resting in room",
+"Отдых в номере"
+],
+"Ngoài khách sạn": [
+"Outside the hotel",
+"Вне отеля"
+],
+"Ngoài trời": [
+"Outdoor",
+"На улице"
+],
+"Nguồn": [
+"Source",
+"Источник"
+],
+"Ngày": [
+"Day",
+"День"
+],
+"Ngày 1/": [
+"Day 1/",
+"День 1/"
+],
+"Người dùng có thể đặt 0,53 trong dashboard.": [
+"Users can set 0,53 in the dashboard.",
+"Пользователь может задать 0,53 в dashboard."
+],
+"Ngủ": [
+"Asleep",
+"Сон"
+],
+"Ngủ trong phòng": [
+"Sleeping in room",
+"Сон в номере"
+],
+"Ngủ, thức dậy lúc": [
+"Asleep, wakes up at",
+"Спят, просыпаются в"
+],
+"Ngừng": [
+"Stopped",
+"Остановлено"
+],
+"Nhiên liệu tàu cả ngày": [
+"Boat fuel for the day",
+"Топливо катеров за день"
+],
+"Nhiệt độ": [
+"Temperature",
+"Температура"
+],
+"Nhiệt độ phòng": [
+"Room temperature",
+"Температура в номере"
+],
+"Nhiệt độ phòng lúc": [
+"Room temperature at",
+"Температура в номере в"
+],
+"Nhiệt độ điều hòa phòng khách 24–26°C (mùa hè); nước nóng 50–70°C.": [
+"Guest-room AC temperature 24–26°C (summer); hot water 50–70°C.",
+"Температура кондиционера в номерах 24–26°C (лето); горячая вода 50–70°C."
+],
+"Nhà hàng (KS + công viên)": [
+"Restaurants (hotel + park)",
+"Рестораны (отель + парк)"
+],
+"Nhà hàng KS": [
+"Hotel restaurant",
+"Ресторан отеля"
+],
+"Nhà hàng công viên": [
+"Park restaurant",
+"Ресторан парка"
+],
+"Nhà hàng khách sạn": [
+"Hotel restaurant",
+"Ресторан отеля"
+],
+"Nhân viên buồng phòng không làm hai việc cùng lúc": [
+"Housekeeping staff never do two tasks at once",
+"Сотрудники уборки номеров не выполняют две задачи одновременно"
+],
+"Nhãn khu vực": [
+"Area labels",
+"Подписи зон"
+],
+"Nhóm": [
+"Group",
+"Группа"
+],
+"Nhóm bạn": [
+"Friends",
+"Друзья"
+],
+"Nhóm khách": [
+"Guest groups",
+"Группы гостей"
+],
+"Nhóm sau": [
+"Groups behind",
+"Группы позади"
+],
+"Nhóm trước": [
+"Previous group",
+"Предыдущая группа"
+],
+"Nhóm đang theo dõi": [
+"Tracked group",
+"Отслеживаемая группа"
+],
+"Nhóm đi công viên": [
+"Groups visiting the park",
+"Группы, посетившие парк"
+],
+"Nhật ký dọn từng phòng": [
+"Per-room cleaning log",
+"Журнал уборки по номерам"
+],
+"Năng lượng gió: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]": [
+"Wind energy: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]",
+"Энергия ветра: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]"
+],
+"Năng lượng khác: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]": [
+"Other energy: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]",
+"Прочая энергия: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]"
+],
+"Năng lượng mặt trời: T1=22103; T2=21841; T3=31468; T4=39873; T5=27702; T6=29235; T7=33856; T8=34077; T9=31489; T10=24262; T11=17824; T12=15470 [kWh]": [
+"Solar energy: T1=22103; T2=21841; T3=31468; T4=39873; T5=27702; T6=29235; T7=33856; T8=34077; T9=31489; T10=24262; T11=17824; T12=15470 [kWh]",
+"Солнечная энергия: T1=22103; T2=21841; T3=31468; T4=39873; T5=27702; T6=29235; T7=33856; T8=34077; T9=31489; T10=24262; T11=17824; T12=15470 [kWh]"
+],
+"Năng lượng địa nhiệt: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]": [
+"Geothermal energy: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]",
+"Геотермальная энергия: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [kWh]"
+],
+"Nước không được mô hình hóa.": [
+"Water is not modelled.",
+"Вода не моделируется."
+],
+"Nước khử muối: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]": [
+"Desalinated water: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]",
+"Опреснённая вода: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]"
+],
+"Nước máy: T1=19847; T2=17203; T3=19160; T4=17703; T5=18942; T6=22916; T7=25112; T8=26851; T9=23032; T10=21306; T11=19747; T12=19947 [m3]": [
+"Tap water: T1=19847; T2=17203; T3=19160; T4=17703; T5=18942; T6=22916; T7=25112; T8=26851; T9=23032; T10=21306; T11=19747; T12=19947 [m3]",
+"Водопроводная вода: T1=19847; T2=17203; T3=19160; T4=17703; T5=18942; T6=22916; T7=25112; T8=26851; T9=23032; T10=21306; T11=19747; T12=19947 [m3]"
+],
+"Nước mưa: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=25621 [m3]": [
+"Rainwater: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=25621 [m3]",
+"Дождевая вода: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=25621 [m3]"
+],
+"Nước ngầm: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]": [
+"Groundwater: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]",
+"Подземная вода: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]"
+],
+"Nước nóng phòng": [
+"Room hot water",
+"Горячая вода в номерах"
+],
+"Nước nóng phòng (bơm nhiệt)": [
+"Room hot water (heat pump)",
+"Горячая вода в номерах (тепловой насос)"
+],
+"Nước tái chế: T1=21744; T2=18754; T3=20488; T4=24146; T5=24939; T6=24427; T7=28943; T8=25370; T9=23564; T10=23800; T11=20298; T12=23698 [m3]": [
+"Recycled water: T1=21744; T2=18754; T3=20488; T4=24146; T5=24939; T6=24427; T7=28943; T8=25370; T9=23564; T10=23800; T11=20298; T12=23698 [m3]",
+"Повторно используемая вода: T1=21744; T2=18754; T3=20488; T4=24146; T5=24939; T6=24427; T7=28943; T8=25370; T9=23564; T10=23800; T11=20298; T12=23698 [m3]"
+],
+"Nước vận chuyển bằng tàu: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]": [
+"Water delivered by boat: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]",
+"Вода, доставленная судами: T1=0; T2=0; T3=0; T4=0; T5=0; T6=0; T7=0; T8=0; T9=0; T10=0; T11=0; T12=0 [m3]"
+],
+"Nội dung bảng": [
+"Table contents",
+"Содержимое таблицы"
+],
+"Phát thải": [
+"Emissions",
+"Выбросы"
+],
+"Phát thải = điện × hệ số": [
+"Emissions = electricity × factor",
+"Выбросы = электроэнергия × коэффициент"
+],
+"Phát thải cả ngày": [
+"Whole-day emissions",
+"Выбросы за день"
+],
+"Phát thải liên quan điện": [
+"Electricity-related emissions",
+"Выбросы, связанные с электроэнергией"
+],
+"Phát thải liên quan điện (kg CO2e)": [
+"Electricity-related emissions (kg CO2e)",
+"Выбросы от электроэнергии (kg CO2e)"
+],
+"Phát thải lũy kế": [
+"Cumulative emissions",
+"Накопленные выбросы"
+],
+"Phân hệ": [
+"Subsystem",
+"Подсистема"
+],
+"Phòng": [
+"Room",
+"Номер"
+],
+"Phòng chưa bán đêm nay. Điều hòa tắt, không có khách.": [
+"Room not sold tonight. AC off, no guests.",
+"Номер не продан на эту ночь. Кондиционер выключен, гостей нет."
+],
+"Phòng chưa dọn": [
+"Rooms not cleaned",
+"Неубранные номера"
+],
+"Phòng còn chờ dọn": [
+"Rooms awaiting cleaning",
+"Номера, ожидающие уборки"
+],
+"Phòng có khách quá nóng": [
+"Overheated occupied rooms",
+"Перегретые занятые номера"
+],
+"Phòng có người": [
+"Occupied rooms",
+"Занятые номера"
+],
+"Phòng có người /": [
+"Occupied rooms /",
+"Занятые номера /"
+],
+"Phòng cần chú ý": [
+"Rooms needing attention",
+"Номера, требующие внимания"
+],
+"Phòng dọn mỗi giờ và tồn đọng": [
+"Rooms cleaned per hour and backlog",
+"Убранные номера по часам и невыполненная уборка"
+],
+"Phòng dọn xong trong giờ": [
+"Rooms cleaned within the hour",
+"Номера, убранные за час"
+],
+"Phòng gym": [
+"Gym",
+"Тренажёрный зал"
+],
+"Phòng gym KS Bờ": [
+"Mainland Hotel gym",
+"Тренажёрный зал Отеля на материке"
+],
+"Phòng hai khách sạn và khu trong nhà": [
+"Rooms in both hotels and the indoor zone",
+"Номера обоих отелей и крытая зона"
+],
+"Phòng trống": [
+"Vacant room",
+"Свободный номер"
+],
+"Phòng trống vẫn được tính điện chờ": [
+"Vacant rooms still count standby electricity",
+"Свободные номера учитываются с потреблением в режиме ожидания"
+],
+"Phòng vắng giữ điều hòa ở 28°C và làm mát lại trước giờ khách dự kiến về, thay cho việc rút thẻ là tắt.": [
+"Vacant rooms hold AC at 28°C and pre-cool before guests' expected return, instead of switching off when the key card is removed.",
+"В пустующих номерах кондиционер держит 28°C и заранее охлаждает номер к ожидаемому возвращению гостей вместо отключения при извлечении ключ-карты."
+],
+"Phòng đang chạy máy nén": [
+"Rooms running compressor",
+"Номера с работающим компрессором"
+],
+"Phòng đã bán": [
+"Sold room",
+"Проданный номер"
+],
+"Phóng to": [
+"Zoom in",
+"Приблизить"
+],
+"Phương tiện (xe, cabin cáp treo, tàu) không vượt sức chứa": [
+"Vehicles (shuttles, cable cars, boats) do not exceed capacity",
+"Транспорт (шаттлы, кабины канатной дороги, катера) не превышает вместимость"
+],
+"Phố ẩm thực": [
+"Food street",
+"Гастрономическая улица"
+],
+"Phối hợp buồng phòng & tái sử dụng khăn": [
+"Housekeeping & towel-reuse coordination",
+"Координация уборки номеров и повторного использования полотенец"
+],
+"Quy tắc": [
+"Rules",
+"Правила"
+],
+"Quá ngưỡng nóng": [
+"Above heat threshold",
+"Выше порога жары"
+],
+"Quá nóng": [
+"Too hot",
+"Слишком жарко"
+],
+"Quá tải": [
+"Overloaded",
+"Перегрузка"
+],
+"Quãng đường": [
+"Distance",
+"Расстояние"
+],
+"Quản lý dịch hại tích hợp (IPM): Mồi sinh học trong hộp; Giám sát dịch hại liên tục; Gel và/hoặc rào cản cho dịch hại; Thuốc trừ sâu/diệt côn trùng hữu cơ; Khác": [
+"Integrated pest management (IPM): Boxed biological baits; Continuous pest monitoring; Pest gels and/or barriers; Organic pesticides/insecticides; Other",
+"Комплексная защита от вредителей (IPM): Биологические приманки в контейнерах; Постоянный мониторинг вредителей; Гели и/или барьеры от вредителей; Органические пестициды/инсектициды; Другое"
+],
+"Quản lý và phân loại chất thải rắn: Có": [
+"Solid waste management and sorting: Yes",
+"Управление и сортировка твёрдых отходов: Да"
+],
+"Quảng bá tour/hướng dẫn viên địa phương: Có": [
+"Promotes local tours/guides: Yes",
+"Продвижение местных туров/гидов: Да"
+],
+"Ra ngoài / di chuyển": [
+"Out / travelling",
+"Вне номера / в пути"
+],
+"Rác hữu cơ: T1=76610; T2=59700; T3=72650; T4=70650; T5=73900; T6=77380; T7=79950; T8=77640; T9=69860; T10=83010; T11=70400; T12=83020 [kg]": [
+"Organic waste: T1=76610; T2=59700; T3=72650; T4=70650; T5=73900; T6=77380; T7=79950; T8=77640; T9=69860; T10=83010; T11=70400; T12=83020 [kg]",
+"Органические отходы: T1=76610; T2=59700; T3=72650; T4=70650; T5=73900; T6=77380; T7=79950; T8=77640; T9=69860; T10=83010; T11=70400; T12=83020 [kg]"
+],
+"Rác tái chế: T1=767; T2=713; T3=1559; T4=2248; T5=2497; T6=3254; T7=3612; T8=3227; T9=2632; T10=2656; T11=2252; T12=1724 [kg]": [
+"Recyclable waste: T1=767; T2=713; T3=1559; T4=2248; T5=2497; T6=3254; T7=3612; T8=3227; T9=2632; T10=2656; T11=2252; T12=1724 [kg]",
+"Перерабатываемые отходы: T1=767; T2=713; T3=1559; T4=2248; T5=2497; T6=3254; T7=3612; T8=3227; T9=2632; T10=2656; T11=2252; T12=1724 [kg]"
+],
+"Rác vô cơ: T1=48550; T2=36400; T3=42050; T4=42750; T5=49000; T6=49830; T7=48820; T8=45970; T9=43030; T10=51400; T11=42490; T12=50560 [kg]": [
+"Inorganic waste: T1=48550; T2=36400; T3=42050; T4=42750; T5=49000; T6=49830; T7=48820; T8=45970; T9=43030; T10=51400; T11=42490; T12=50560 [kg]",
+"Неорганические отходы: T1=48550; T2=36400; T3=42050; T4=42750; T5=49000; T6=49830; T7=48820; T8=45970; T9=43030; T10=51400; T11=42490; T12=50560 [kg]"
+],
+"Rèm cách nhiệt chống hấp thụ nhiệt: Có": [
+"Thermal insulating curtains against heat gain: Yes",
+"Теплоизолирующие шторы против нагрева: Да"
+],
+"Rèm cách nhiệt.": [
+"Thermal curtains.",
+"Теплоизоляционные шторы."
+],
+"Sinh khối: T1=682; T2=680; T3=958; T4=1092; T5=1365; T6=1368; T7=1635; T8=1638; T9=1502; T10=1228; T11=819; T12=683 [kg]": [
+"Biomass: T1=682; T2=680; T3=958; T4=1092; T5=1365; T6=1368; T7=1635; T8=1638; T9=1502; T10=1228; T11=819; T12=683 [kg]",
+"Биомасса: T1=682; T2=680; T3=958; T4=1092; T5=1365; T6=1368; T7=1635; T8=1638; T9=1502; T10=1228; T11=819; T12=683 [kg]"
+],
+"Sky bar (sân thượng)": [
+"Sky bar (rooftop)",
+"Sky bar (на крыше)"
+],
+"Sky bar Hoàng Hôn": [
+"Sunset Sky Bar",
+"Скай-бар «Закат»"
+],
+"So sánh kịch bản": [
+"Scenario comparison",
+"Сравнение сценариев"
+],
+"So với cơ sở": [
+"Vs baseline",
+"Относительно базового"
+],
+"Spa KS Bờ": [
+"Mainland Hotel spa",
+"Спа Отеля на материке"
+],
+"Spa, gym, CLB trẻ em & bar": [
+"Spa, gym, kids' club & bar",
+"Спа, тренажёрный зал, детский клуб и бар"
+],
+"Sáng kiến phát triển cộng đồng địa phương: Có": [
+"Local community development initiatives: Yes",
+"Инициативы по развитию местного сообщества: Да"
+],
+"Sân khấu": [
+"Stage",
+"Сцена"
+],
+"Sân khấu biểu diễn": [
+"Show stage",
+"Сцена для шоу"
+],
+"Sân thượng, sky bar": [
+"Rooftop, sky bar",
+"Крыша, скай-бар"
+],
+"Sơn/vật liệu VOC thấp khi cải tạo: Có, luôn luôn": [
+"Low-VOC paints/materials in renovations: Yes, always",
+"Краски/материалы с низким содержанием ЛОС при ремонте: Да, всегда"
+],
+"Sảnh & lễ tân": [
+"Lobby & reception",
+"Лобби и ресепшн"
+],
+"Sảnh KS Bờ": [
+"Mainland Hotel lobby",
+"Лобби Отеля на материке"
+],
+"Sảnh, café": [
+"Lobby, café",
+"Лобби, кафе"
+],
+"Sảnh, nhà hàng": [
+"Lobby, restaurant",
+"Лобби, ресторан"
+],
+"Số khách": [
+"Guests",
+"Гостей"
+],
+"Số người xếp hàng. Ảnh chụp 5 phút": [
+"People in queue. 5-min snapshots",
+"Людей в очереди. Снимки каждые 5 мин"
+],
+"Số phòng có khách khớp công suất": [
+"Occupied rooms match occupancy",
+"Число занятых номеров соответствует загрузке"
+],
+"Số phòng lưu trú: 533": [
+"Number of guest rooms: 533",
+"Количество номеров: 533"
+],
+"Số phòng mặc định = 533 (yêu cầu người dùng).": [
+"Default room count = 533 (user requirement).",
+"Число номеров по умолчанию = 533 (требование пользователя)."
+],
+"Số phòng xếp chồng. Mốc giữa mỗi giờ": [
+"Stacked room counts. Mark at the middle of each hour",
+"Число номеров с накоплением. Отметка в середине каждого часа"
+],
+"Sổ đăng ký quy tắc": [
+"Rule registry",
+"Реестр правил"
+],
+"Sở thích nhóm": [
+"Group preferences",
+"Предпочтения группы"
+],
+"TB mỗi phòng": [
+"Avg per room",
+"В среднем на номер"
+],
+"TB phòng có khách": [
+"Occupied-room avg.",
+"Среднее по занятым номерам"
+],
+"Tham gia chiến dịch môi trường/khí hậu: Có": [
+"Takes part in environmental/climate campaigns: Yes",
+"Участие в экологических/климатических кампаниях: Да"
+],
+"Tham gia sáng kiến bảo tồn đa dạng sinh học: Có": [
+"Participation in biodiversity conservation initiatives: Yes",
+"Участие в инициативах по сохранению биоразнообразия: Да"
+],
+"Tham gia trò chơi": [
+"On rides",
+"На аттракционах"
+],
+"Tham số": [
+"Parameters",
+"Параметры"
+],
+"Than củi: T1=1000; T2=0; T3=1940; T4=60; T5=2812; T6=1000; T7=660; T8=2000; T9=1000; T10=1000; T11=2000; T12=1300 [kg]": [
+"Charcoal: T1=1000; T2=0; T3=1940; T4=60; T5=2812; T6=1000; T7=660; T8=2000; T9=1000; T10=1000; T11=2000; T12=1300 [kg]",
+"Древесный уголь: T1=1000; T2=0; T3=1940; T4=60; T5=2812; T6=1000; T7=660; T8=2000; T9=1000; T10=1000; T11=2000; T12=1300 [kg]"
+],
+"Thang máy": [
+"Elevator",
+"Лифт"
+],
+"Thanh điều khiển": [
+"Control bar",
+"Панель управления"
+],
+"Theo dõi một nhóm": [
+"Follow a group",
+"Следить за группой"
+],
+"Theo dõi năng lượng hằng tuần.": [
+"Weekly energy monitoring.",
+"Еженедельный мониторинг энергопотребления."
+],
+"Theo dõi/giảm ô nhiễm & tác động hệ sinh thái: Có": [
+"Monitoring/reducing pollution & ecosystem impacts: Yes",
+"Мониторинг/снижение загрязнения и воздействия на экосистемы: Да"
+],
+"Theo một nhóm qua cả ngày: họ đi đâu, chờ bao lâu, và vì sao mô hình cho họ chọn điểm đến đó thay vì các phương án khác.": [
+"Follow one group through the whole day: where they go, how long they wait, and why the model had them choose that destination over the alternatives.",
+"Проследите за одной группой в течение всего дня: куда она идёт, сколько ждёт и почему модель выбрала для неё это место, а не другие варианты."
+],
+"Thiết bị giặt là tiết kiệm nước.": [
+"Water-saving laundry equipment.",
+"Водосберегающее прачечное оборудование."
+],
+"Thiết bị giặt là tiết kiệm nước: Có": [
+"Water-saving laundry equipment: Yes",
+"Водосберегающее прачечное оборудование: Да"
+],
+"Thiết bị tiết kiệm nước toilet/vòi: Có": [
+"Water-saving toilets/taps: Yes",
+"Водосберегающие унитазы/смесители: Да"
+],
+"Thu gom nước mưa để tái sử dụng: Có": [
+"Rainwater harvesting for reuse: Yes",
+"Сбор дождевой воды для повторного использования: Да"
+],
+"Thu gọn bảng": [
+"Collapse panel",
+"Свернуть панель"
+],
+"Thu nhỏ": [
+"Minimise",
+"Свернуть"
+],
+"Thuộc tính từng nhóm khách": [
+"Attributes of each guest group",
+"Характеристики каждой группы гостей"
+],
+"Thành phần hữu dụng của các phương án tại mỗi lần ra quyết định.": [
+"Utility components of the options at each decision.",
+"Компоненты полезности вариантов при каждом решении."
+],
+"Thành phần nhóm hợp lệ (≥1 người lớn, tổng = quy mô)": [
+"Valid group composition (≥1 adult, total = size)",
+"Корректный состав групп (≥1 взрослый, сумма = размер)"
+],
+"Thành phố": [
+"City",
+"Город"
+],
+"Thành phố (ngoài mô hình)": [
+"City (outside the model)",
+"Город (вне модели)"
+],
+"Thêm chỉ số và lớp hiển thị": [
+"More figures and display layers",
+"Дополнительные показатели и слои"
+],
+"Thông báo chính sách MT-VH-XH nơi dễ thấy: Có": [
+"Environmental, cultural and social policy displayed prominently: Yes",
+"Экологическая, культурная и социальная политика размещена на видном месте: Да"
+],
+"Thông báo hoạt động bảo vệ MT cho khách/NV: Có": [
+"Environmental protection activities communicated to guests/staff: Yes",
+"Информирование гостей и персонала о природоохранной деятельности: Да"
+],
+"Thông báo quy định về di tích/cổ vật: Có": [
+"Rules on heritage sites/artefacts displayed: Yes",
+"Размещены правила обращения с памятниками/артефактами: Да"
+],
+"Thưa": [
+"Quiet",
+"Свободно"
+],
+"Thấp": [
+"Low",
+"Низкая"
+],
+"Thấp nhất": [
+"Lowest",
+"Минимум"
+],
+"Thống kê hàng chờ": [
+"Queue statistics",
+"Статистика очередей"
+],
+"Thống kê hàng chờ từng khu trong ngày": [
+"Daily queue statistics by area",
+"Статистика очередей по зонам за день"
+],
+"Thời gian": [
+"Time",
+"Время"
+],
+"Thời gian chờ": [
+"Waiting time",
+"Время ожидания"
+],
+"Thời gian mô phỏng": [
+"Simulation time",
+"Время симуляции"
+],
+"Thời điểm": [
+"Time",
+"Момент"
+],
+"Thời điểm mô phỏng": [
+"Simulation time",
+"Время симуляции"
+],
+"Tiêu chuẩn/chứng nhận môi trường áp dụng: Khác": [
+"Environmental standard/certification applied: Other",
+"Применяемый экологический стандарт/сертификат: Другое"
+],
+"Tiến trình mô phỏng": [
+"Simulation progress",
+"Ход симуляции"
+],
+"Tiện ích trong khách sạn": [
+"Hotel amenities",
+"Удобства отеля"
+],
+"Trong phòng": [
+"In room",
+"В номере"
+],
+"Trong phòng, thức": [
+"In room, awake",
+"В номере, не спят"
+],
+"Trung bình 10 seed. Đậm": [
+"Mean of 10 seeds. Bold",
+"Среднее по 10 seed. Жирным"
+],
+"Trung bình ÷ đỉnh": [
+"Average ÷ peak",
+"Среднее ÷ пик"
+],
+"Trên 20 người": [
+"Over 20 people",
+"Более 20 человек"
+],
+"Trình duyệt này chưa hỗ trợ đồ họa 3D nên không hiển thị được mô hình.": [
+"This browser does not support 3D graphics, so the model cannot be displayed.",
+"Этот браузер не поддерживает 3D-графику, поэтому модель не может быть показана."
+],
+"Trò chơi & khu trong nhà": [
+"Rides & indoor areas",
+"Аттракционы и крытые зоны"
+],
+"Trò chơi chờ thêm tối đa vài phút để chuyến đầy hơn, trong giới hạn chờ và an toàn.": [
+"Rides wait up to a few extra minutes to fill each cycle, within wait and safety limits.",
+"Аттракционы ждут до нескольких минут, чтобы заполнить цикл, в пределах ограничений ожидания и безопасности."
+],
+"Trò chơi cảm giác mạnh": [
+"Thrill ride",
+"Экстремальный аттракцион"
+],
+"Trò chơi gia đình": [
+"Family ride",
+"Семейный аттракцион"
+],
+"Trò chơi nước": [
+"Water ride",
+"Водный аттракцион"
+],
+"Trò chơi – chu kỳ vận hành / biểu diễn": [
+"Rides – operating cycles / shows",
+"Аттракционы – рабочие циклы / шоу"
+],
+"Trò chơi – tải nền giờ mở cửa": [
+"Rides – opening-hours base load",
+"Аттракционы – базовая нагрузка в часы работы"
+],
+"Trạm sạc xe điện.": [
+"EV charging stations.",
+"Зарядные станции для электромобилей."
+],
+"Trạng thái": [
+"Status",
+"Состояние"
+],
+"Trạng thái lúc": [
+"Status at",
+"Состояние в"
+],
+"Trạng thái phòng theo giờ": [
+"Room status by hour",
+"Состояние номеров по часам"
+],
+"Trạng thái phòng trên mặt tiền": [
+"Room status on the façade",
+"Состояние номеров на фасаде"
+],
+"Trạng thái trong ngày": [
+"Status through the day",
+"Состояние в течение дня"
+],
+"Trễ giờ về": [
+"Late return",
+"Позднее возвращение"
+],
+"Tài liệu hướng dẫn phong tục địa phương cho khách: Có": [
+"Guide to local customs for guests: Yes",
+"Справочные материалы о местных обычаях для гостей: Да"
+],
+"Tài liệu về di sản văn hóa - tự nhiên địa phương: Có": [
+"Materials on local cultural and natural heritage: Yes",
+"Материалы о местном культурном и природном наследии: Да"
+],
+"Tàu cao tốc": [
+"Speedboat",
+"Скоростной катер"
+],
+"Tác tử": [
+"Agents",
+"Агенты"
+],
+"Tái sử dụng ga/gối/khăn cũ.": [
+"Reuse of old linen/pillows/towels.",
+"Повторное использование старого белья/подушек/полотенец."
+],
+"Tái sử dụng ga/gối/khăn cũ: Có": [
+"Reuse of old sheets/pillows/towels: Yes",
+"Повторное использование старых простыней/подушек/полотенец: Да"
+],
+"Tái sử dụng nước thải/nước xám: Có": [
+"Wastewater/greywater reuse: Yes",
+"Повторное использование сточных/серых вод: Да"
+],
+"Tô màu": [
+"Colour by",
+"Цвет по"
+],
+"Tô màu theo": [
+"Colour by",
+"Цвет по"
+],
+"Tại": [
+"At",
+"В"
+],
+"Tạm dừng": [
+"Pause",
+"Пауза"
+],
+"Tạm dừng mô phỏng": [
+"Pause simulation",
+"Приостановить симуляцию"
+],
+"Tải": [
+"Load",
+"Нагрузка"
+],
+"Tải chiếu sáng phòng giả định mức thấp (LED).": [
+"Room lighting load assumed low (LED).",
+"Нагрузка освещения номеров принята низкой (LED)."
+],
+"Tải dữ liệu": [
+"Download data",
+"Скачать данные"
+],
+"Tất cả": [
+"All",
+"Все"
+],
+"Tất cả chỉ số": [
+"All figures",
+"Все показатели"
+],
+"Tần suất báo cáo với ban quản lý: Hàng tháng": [
+"Reporting frequency to management: Monthly",
+"Периодичность отчётов руководству: Ежемесячно"
+],
+"Tần suất theo dõi rác thải bị loại bỏ: Hàng tuần": [
+"Frequency of monitoring discarded waste: Weekly",
+"Частота контроля выбрасываемых отходов: Еженедельно"
+],
+"Tần suất theo dõi tiêu thụ năng lượng: Hàng tuần": [
+"Energy consumption monitoring frequency: Weekly",
+"Частота мониторинга энергопотребления: еженедельно"
+],
+"Tần suất theo dõi tiêu thụ nước: Hàng tuần": [
+"Water consumption monitoring frequency: Weekly",
+"Частота мониторинга водопотребления: еженедельно"
+],
+"Tần suất tập huấn đội ngũ PTBV: Hàng tháng": [
+"Sustainability training frequency for staff: Monthly",
+"Периодичность обучения персонала по устойчивому развитию: Ежемесячно"
+],
+"Tần suất đo lường phát thải carbon: Hàng tháng": [
+"Frequency of carbon-emissions measurement: Monthly",
+"Частота измерения выбросов углерода: Ежемесячно"
+],
+"Tầng": [
+"Floor",
+"Этаж"
+],
+"Tầng này chưa có khách.": [
+"No guests on this floor yet.",
+"На этом этаже пока нет гостей."
+],
+"Tầng suite": [
+"Suite floor",
+"Этаж люксов"
+],
+"Tắt": [
+"Off",
+"Выкл."
+],
+"Tệp CSV mã hóa UTF-8, mở được bằng Excel.": [
+"UTF-8 encoded CSV file; opens in Excel.",
+"CSV-файл в кодировке UTF-8, открывается в Excel."
+],
+"Tốc độ mô phỏng": [
+"Simulation speed",
+"Скорость симуляции"
+],
+"Tốt hơn, có ý nghĩa": [
+"Better, significant",
+"Лучше, значимо"
+],
+"Tổng diện tích sàn.": [
+"Total floor area.",
+"Общая площадь."
+],
+"Tổng quan": [
+"Overview",
+"Обзор"
+],
+"Tổng theo khoảng 15 phút = tổng theo phút": [
+"15-min interval total = per-minute total",
+"Сумма по 15-минутным интервалам = поминутная сумма"
+],
+"Tổng theo mục đích sử dụng = tổng điện": [
+"Sum of end uses = total electricity",
+"Сумма по видам использования = общая электроэнергия"
+],
+"Tổng thời gian chờ": [
+"Total waiting time",
+"Общее время ожидания"
+],
+"Tổng điện (kWh)": [
+"Total electricity (kWh)",
+"Всего электроэнергии (kWh)"
+],
+"Tới tầng": [
+"Go to floor",
+"Перейти на этаж"
+],
+"Tự khai 533 phòng – trùng với yêu cầu người dùng (533).": [
+"Self-reported 533 rooms – matches the user requirement (533).",
+"По самооценке 533 номера – совпадает с требованием пользователя (533)."
+],
+"Tỷ lệ LED 76–100%.": [
+"LED share 76–100%.",
+"Доля LED 76–100%."
+],
+"Tỷ lệ bóng đèn LED: 76-100%": [
+"Share of LED bulbs: 76-100%",
+"Доля светодиодных ламп: 76-100%"
+],
+"Tỷ lệ dùng điện/NL sạch thay nhiên liệu hóa thạch: 76-100%": [
+"Share of clean electricity/energy replacing fossil fuels: 76-100%",
+"Доля чистой электроэнергии/энергии вместо ископаемого топлива: 76-100%"
+],
+"Tỷ lệ loại bỏ nhựa dùng một lần: 76-100%": [
+"Single-use plastic elimination rate: 76-100%",
+"Доля отказа от одноразового пластика: 76-100%"
+],
+"Tỷ lệ nhóm có ít nhất một lượt vào công viên trong ngày.": [
+"Share of groups with at least one park visit during the day.",
+"Доля групп, хотя бы раз посетивших парк за день."
+],
+"Tỷ số đỉnh ÷ đáy": [
+"Peak ÷ trough ratio",
+"Отношение пик ÷ минимум"
+],
+"Virtual Hotel Monitoring – mô phỏng tác tử khách sạn 533 phòng, khách sạn ven bờ, cáp treo, tàu và công viên giải trí: phòng, hành trình khách, điện năng, hàng chờ và so sánh kịch bản.": [
+"Virtual Hotel Monitoring – agent-based simulation of a 533-room hotel, a mainland hotel, cable car, boats and an amusement park: rooms, guest itineraries, electricity, queues and scenario comparison.",
+"Virtual Hotel Monitoring – агентная симуляция отеля на 533 номера, отеля на материке, канатной дороги, катеров и парка развлечений: номера, маршруты гостей, электроэнергия, очереди и сравнение сценариев."
+],
+"Vì sao?": [
+"Why?",
+"Почему?"
+],
+"Vòng quanh khu:": [
+"Around the area:",
+"По территории:"
+],
+"Vườn Cọ": [
+"Palm Garden",
+"Пальмовый сад"
+],
+"Vườn Kính": [
+"Glass Garden",
+"Стеклянный сад"
+],
+"Vạch dọc trên thanh": [
+"Vertical tick on the bar",
+"Вертикальная метка на полосе"
+],
+"Vẫn chạy dù phòng vắng": [
+"Still running in empty room",
+"Работает в пустом номере"
+],
+"Vắng, ĐH chạy": [
+"Vacant, AC on",
+"Пусто, кондиционер включён"
+],
+"Vắng, điều hòa chạy": [
+"Empty, AC on",
+"Пусто, кондиционер вкл."
+],
+"Vắng, điều hòa tắt": [
+"Empty, AC off",
+"Пусто, кондиционер выкл."
+],
+"Về 80%": [
+"Reset to 80%",
+"Сброс на 80%"
+],
+"Về góc nhìn mặc định": [
+"Reset to default view",
+"Вернуть вид по умолчанию"
+],
+"Về khách sạn": [
+"Back to hotel",
+"Возврат в отель"
+],
+"Về phòng ngủ": [
+"Back to room to sleep",
+"Возврат в номер на ночь"
+],
+"Vệt mờ": [
+"Trails",
+"Следы"
+],
+"Vịnh Sóng Xanh": [
+"Blue Wave Bay",
+"Бухта «Голубая волна»"
+],
+"Vừa": [
+"Medium",
+"Средне"
+],
+"Xe nội khu": [
+"Shuttle",
+"Шаттл"
+],
+"Xe đạp/xe đạp điện cho khách.": [
+"Bicycles/e-bikes for guests.",
+"Велосипеды/электровелосипеды для гостей."
+],
+"Xe, cáp treo và tàu không chạy trước giờ mở": [
+"Shuttle, cable car and boats do not run before opening",
+"Шаттл, канатная дорога и катера не работают до открытия"
+],
+"Xem bên trong từng tầng": [
+"View inside each floor",
+"Посмотреть каждый этаж изнутри"
+],
+"Xem lại phần mở đầu": [
+"Replay the intro",
+"Посмотреть вступление снова"
+],
+"Xem từng tầng →": [
+"View floors →",
+"Этажи →"
+],
+"Xuống một tầng": [
+"Down one floor",
+"Этажом ниже"
+],
+"Xác minh nguồn gốc SX để đảm bảo bền vững: Có": [
+"Production origin verified to ensure sustainability: Yes",
+"Проверка происхождения продукции для обеспечения устойчивости: Да"
+],
+"Xác suất yêu cầu thay khăn là giả định; không coi là tuân thủ 100%.": [
+"The towel-change request probability is an assumption; not treated as 100% compliance.",
+"Вероятность запроса смены полотенец — допущение; не считается 100% соблюдением."
+],
+"Xăng: T1=60; T2=60; T3=60; T4=60; T5=60; T6=60; T7=60; T8=60; T9=60; T10=60; T11=60; T12=60 [lit]": [
+"Petrol: T1=60; T2=60; T3=60; T4=60; T5=60; T6=60; T7=60; T8=60; T9=60; T10=60; T11=60; T12=60 [lit]",
+"Бензин: T1=60; T2=60; T3=60; T4=60; T5=60; T6=60; T7=60; T8=60; T9=60; T10=60; T11=60; T12=60 [lit]"
+],
+"Xấu hơn, có ý nghĩa": [
+"Worse, significant",
+"Хуже, значимо"
+],
+"Xếp hàng": [
+"Queuing",
+"В очереди"
+],
+"Xếp hàng ở": [
+"Queuing at",
+"В очереди у"
+],
+"Xử lý nước hồ bơi thân thiện môi trường: Có": [
+"Eco-friendly pool water treatment: Yes",
+"Экологичная обработка воды в бассейне: Да"
+],
+"Yêu cầu NCC hỗ trợ hoạt động bảo vệ MT: Có": [
+"Suppliers required to support environmental protection: Yes",
+"Требование к поставщикам поддерживать охрану окружающей среды: Да"
+],
+"bán.": [
+"sold.",
+"продано."
+],
+"bãi xe KS Bờ": [
+"Mainland Hotel car park",
+"парковка Отеля на материке"
+],
+"bến tàu trên đảo": [
+"island pier",
+"причал на острове"
+],
+"bến tàu đất liền": [
+"mainland pier",
+"причал на материке"
+],
+"café Bờ": [
+"Mainland café",
+"кафе на материке"
+],
+"chuyến": [
+"trips",
+"рейсов"
+],
+"chưa bán": [
+"unsold",
+"не продан"
+],
+"chỗ mỗi phút": [
+"places per minute",
+"мест в минуту"
+],
+"chỗ mỗi phút. Khách KS Bờ và khách trong ngày": [
+"seats per min. Mainland Hotel guests and day visitors",
+"мест в мин. Гости отеля на материке и однодневные посетители"
+],
+"chỗ. Mỗi": [
+"places. Each",
+"мест. Каждые"
+],
+"chờ": [
+"wait",
+"ожидание"
+],
+"chờ P95": [
+"P95 wait",
+"ожидание P95"
+],
+"chờ TB": [
+"avg. wait",
+"ср. ожидание"
+],
+"công suất": [
+"power",
+"мощность"
+],
+"công viên": [
+"park",
+"парк"
+],
+"cơ sở": [
+"baseline",
+"базовый"
+],
+"cổng công viên": [
+"park gate",
+"вход в парк"
+],
+"di chuyển": [
+"travelling",
+"в пути"
+],
+"ga cáp treo trên đảo": [
+"island cable-car station",
+"станция канатной дороги на острове"
+],
+"ga cáp treo đất liền": [
+"mainland cable-car station",
+"станция канатной дороги на материке"
+],
+"giả định đang dùng": [
+"assumptions in use",
+"используемые допущения"
+],
+"giả định, xem trang Dữ liệu": [
+"assumption, see the Data page",
+"допущение, см. страницу «Данные»"
+],
+"giặt là": [
+"laundry",
+"прачечная"
+],
+"giờ-phòng": [
+"room-hours",
+"номеро-часов"
+],
+"hướng biển": [
+"sea view",
+"вид на море"
+],
+"hướng núi": [
+"mountain view",
+"вид на горы"
+],
+"hướng đi": [
+"direction",
+"направление"
+],
+"kW lúc": [
+"kW at",
+"kW в"
+],
+"kW xếp chồng": [
+"kW stacked",
+"kW, с накоплением"
+],
+"kWh cả ngày": [
+"kWh for the day",
+"kWh за день"
+],
+"kWh mỗi phòng bán": [
+"kWh per sold room",
+"kWh на проданный номер"
+],
+"kg CO2e mỗi 15 phút": [
+"kg CO2e per 15 min",
+"kg CO2e за 15 мин"
+],
+"kg mỗi phòng bán": [
+"kg per sold room",
+"kg на проданный номер"
+],
+"khi có khách": [
+"when there are passengers",
+"при наличии пассажиров"
+],
+"khách": [
+"guests",
+"гостей"
+],
+"khách có thể từ chối.": [
+"guests may decline.",
+"гости могут отказаться."
+],
+"khách dừng lâu ở đó": [
+"guests linger there",
+"гости задерживаются там"
+],
+"khách sạn ảo": [
+"virtual hotel",
+"виртуальный отель"
+],
+"khách trong công viên": [
+"guests in the park",
+"гостей в парке"
+],
+"khách trên xe": [
+"guests on board",
+"гостей в салоне"
+],
+"khách đang ở đây": [
+"guests here now",
+"гостей сейчас здесь"
+],
+"khách,": [
+"guests,",
+"гостей,"
+],
+"khách.": [
+"guests.",
+"гостей."
+],
+"không bán": [
+"unsold",
+"не продан"
+],
+"không đạt": [
+"failed",
+"не пройдено"
+],
+"kịch bản.": [
+"scenarios.",
+"сценариев."
+],
+"lượt": [
+"visits",
+"посещений"
+],
+"lượt cabin": [
+"cabin trips",
+"рейсов кабин"
+],
+"lần quyết định": [
+"decisions",
+"решений"
+],
+"mẻ.": [
+"batches.",
+"загрузок."
+],
+"mỗi": [
+"every",
+"каждые"
+],
+"mở lại": [
+"reopens",
+"снова открывается"
+],
+"người": [
+"people",
+"чел."
+],
+"người chờ": [
+"people waiting",
+"чел. ожидают"
+],
+"người lớn": [
+"adults",
+"взрослых"
+],
+"ngưỡng nóng": [
+"heat threshold",
+"порог жары"
+],
+"ngừng": [
+"stopped",
+"остановлено"
+],
+"nhân viên buồng": [
+"housekeeping staff",
+"сотрудники уборки"
+],
+"nhóm": [
+"groups",
+"групп"
+],
+"nhóm #": [
+"group #",
+"группа #"
+],
+"nhóm đang xếp hàng": [
+"groups queueing",
+"групп в очереди"
+],
+"nhóm.": [
+"groups.",
+"групп."
+],
+"nơi": [
+"places",
+"мест"
+],
+"ph": [
+"min",
+"мин"
+],
+"phát thải": [
+"emissions",
+"выбросы"
+],
+"phòng": [
+"rooms",
+"номеров"
+],
+"phòng KS Bờ": [
+"Mainland Hotel rooms",
+"номера Отеля на материке"
+],
+"phòng có khách": [
+"occupied rooms",
+"занятых номеров"
+],
+"phòng có khách đêm nay": [
+"occupied rooms tonight",
+"занятых номеров этой ночью"
+],
+"phòng dọn trong ngày": [
+"rooms cleaned today",
+"номеров убрано за день"
+],
+"phòng đang dọn": [
+"rooms being cleaned",
+"номера на уборке"
+],
+"phút": [
+"min",
+"мин"
+],
+"phút khi có khách": [
+"min when occupied",
+"мин при наличии гостей"
+],
+"phút khi có khách. Khoảng": [
+"min when occupied. About",
+"мин при наличии гостей. Около"
+],
+"phút. KS Bờ ↔ ga cáp treo": [
+"min. Mainland Hotel ↔ cable-car station",
+"мин. Отель на материке ↔ станция канатной дороги"
+],
+"quy tắc": [
+"rules",
+"правил"
+],
+"seed mỗi kịch bản": [
+"seeds per scenario",
+"seed на сценарий"
+],
+"so với Cơ sở": [
+"vs Baseline",
+"по сравнению с базовым"
+],
+"sảnh": [
+"lobby",
+"лобби"
+],
+"sảnh KS Bờ": [
+"Mainland Hotel lobby",
+"лобби Отеля на материке"
+],
+"sức chứa.": [
+"capacity.",
+"вместимость."
+],
+"thành phố": [
+"city",
+"город"
+],
+"trong khu": [
+"in area",
+"в зоне"
+],
+"trên cabin": [
+"in cabin",
+"в кабине"
+],
+"trên tàu": [
+"on board",
+"на борту"
+],
+"trên xe": [
+"on board",
+"в салоне"
+],
+"trẻ em": [
+"children",
+"дети"
+],
+"tại": [
+"at",
+"в"
+],
+"tầng": [
+"floor",
+"этаж"
+],
+"tốt nhất": [
+"best",
+"лучший"
+],
+"tồn đọng cao nhất": [
+"peak backlog",
+"пиковый объём невыполненной работы"
+],
+"tổng": [
+"total",
+"всего"
+],
+"từ": [
+"from",
+"с"
+],
+"vượt": [
+"above",
+"выше"
+],
+"xem phòng": [
+"view room",
+"открыть номер"
+],
+"Áp dụng cả bốn chính sách cùng lúc.": [
+"Applies all four policies at once.",
+"Применяет все четыре политики одновременно."
+],
+"Áp lực giờ giấc": [
+"Time pressure",
+"Нехватка времени"
+],
+"Ô xanh là nhóm đang ở khu đó, số trên ô là phòng của họ. Bấm để xem lịch cả ngày của phòng.": [
+"Green tiles are groups currently in that area; the number on a tile is their room. Click to see the room's full-day schedule.",
+"Зелёные ячейки — группы, находящиеся в этой зоне; число на ячейке — их номер. Нажмите, чтобы увидеть расписание номера на весь день."
+],
+"× trung bình ngày.": [
+"× daily average.",
+"× от среднесуточного значения."
+],
+"Ùn tắc": [
+"Congestion",
+"Скопление"
+],
+"Ăn": [
+"Eat",
+"Еда"
+],
+"Ăn uống": [
+"Dining",
+"Питание"
+],
+"Đang chạy": [
+"Running",
+"Работает"
+],
+"Đang di chuyển": [
+"Travelling",
+"В пути"
+],
+"Đang dọn": [
+"Cleaning",
+"Уборка"
+],
+"Đang dọn phòng": [
+"Cleaning room",
+"Идёт уборка"
+],
+"Đang dừng": [
+"Stopped",
+"Остановлено"
+],
+"Đang dựng mô hình 3D": [
+"Building 3D model",
+"Построение 3D-модели"
+],
+"Đang làm gì.": [
+"What they are doing.",
+"Чем заняты."
+],
+"Đang ngủ": [
+"Asleep",
+"Спят"
+],
+"Đang về phòng": [
+"Returning to room",
+"Возвращаются в номер"
+],
+"Đang xếp hàng": [
+"Queuing",
+"В очереди"
+],
+"Đang đi": [
+"Moving",
+"В пути"
+],
+"Đang đi tới": [
+"Heading to",
+"Направляются в"
+],
+"Đang ở đâu": [
+"Current location",
+"Где сейчас"
+],
+"Đi bộ": [
+"Walking",
+"Пешком"
+],
+"Đi công viên": [
+"Go to the park",
+"Поход в парк"
+],
+"Điều hòa": [
+"AC",
+"Кондиционер"
+],
+"Điều hòa chiếm": [
+"AC accounts for",
+"На кондиционеры приходится"
+],
+"Điều hòa phòng": [
+"Room air conditioning",
+"Кондиционирование номеров"
+],
+"Điều hòa phòng (kWh)": [
+"Room AC (kWh)",
+"Кондиционеры номеров (kWh)"
+],
+"Điều hòa phòng – KS Bờ": [
+"Room AC – Mainland Hotel",
+"Кондиционеры номеров – Отель на материке"
+],
+"Điều hòa theo hiện diện": [
+"Occupancy-based AC",
+"Кондиционирование по присутствию"
+],
+"Điều khiển mô phỏng": [
+"Simulation controls",
+"Управление симуляцией"
+],
+"Điều phối chuyến trò chơi": [
+"Ride dispatch coordination",
+"Координация запуска аттракционов"
+],
+"Điểm nghẽn": [
+"Bottleneck",
+"Узкое место"
+],
+"Điểm tham quan": [
+"Attractions",
+"Достопримечательности"
+],
+"Điểm xe ga cáp treo": [
+"Cable-car station shuttle stop",
+"Остановка шаттла у станции канатной дороги"
+],
+"Điểm đã đóng cửa không nhận khách mới": [
+"Closed venues admit no new guests",
+"Закрытые объекты не принимают новых гостей"
+],
+"Điểm đặt khách 23–26°C (đa số 24–25°C); chính sách ≠ tuân thủ của khách.": [
+"Guest setpoints 23–26°C (mostly 24–25°C); policy ≠ guest compliance.",
+"Уставки гостей 23–26°C (в основном 24–25°C); политика ≠ соблюдение гостями."
+],
+"Điện": [
+"Electricity",
+"Электроэнергия"
+],
+"Điện &": [
+"Electricity &",
+"Электроэнергия &"
+],
+"Điện & phát thải": [
+"Electricity & emissions",
+"Электроэнергия и выбросы"
+],
+"Điện KS / đêm phòng (kWh)": [
+"Hotel electricity / room-night (kWh)",
+"Электроэнергия отеля / номеро-ночь (kWh)"
+],
+"Điện công viên (kWh)": [
+"Park electricity (kWh)",
+"Электроэнергия парка (kWh)"
+],
+"Điện cơ sở": [
+"Base electricity",
+"Базовая электроэнергия"
+],
+"Điện cả ngày": [
+"Whole-day electricity",
+"Электроэнергия за день"
+],
+"Điện dùng khi không có người": [
+"Electricity used when unoccupied",
+"Электроэнергия при отсутствии людей"
+],
+"Điện khách sạn (kWh)": [
+"Hotel electricity (kWh)",
+"Электроэнергия отеля (kWh)"
+],
+"Điện kịch bản": [
+"Scenario electricity",
+"Электроэнергия сценария"
+],
+"Điện lưới quốc gia: T1=525420.4; T2=530252.8; T3=678606.7; T4=766637; T5=716770; T6=819497.3; T7=795777.8; T8=895480.1; T9=793319.8; T10=711196; T11=648385.9; T12=576188.8 [kWh]": [
+"National grid electricity: T1=525420.4; T2=530252.8; T3=678606.7; T4=766637; T5=716770; T6=819497.3; T7=795777.8; T8=895480.1; T9=793319.8; T10=711196; T11=648385.9; T12=576188.8 [kWh]",
+"Электроэнергия из национальной сети: T1=525420.4; T2=530252.8; T3=678606.7; T4=766637; T5=716770; T6=819497.3; T7=795777.8; T8=895480.1; T9=793319.8; T10=711196; T11=648385.9; T12=576188.8 [kWh]"
+],
+"Điện lưới theo tháng (kWh) – tự khai, bản nháp. Không rõ ranh giới (có gồm công viên?).": [
+"Monthly grid electricity (kWh) – self-reported, draft. Boundary unclear (includes the park?).",
+"Сетевая электроэнергия по месяцам (kWh) – по самооценке, черновик. Границы неясны (включая парк?)."
+],
+"Điện mặt trời theo tháng (kWh) – tự khai.": [
+"Monthly solar electricity (kWh) – self-reported.",
+"Солнечная электроэнергия по месяцам (kWh) – по самооценке."
+],
+"Điện năng = công suất trung bình × thời gian": [
+"Energy = average power × duration",
+"Электроэнергия = средняя мощность × время"
+],
+"Điện phương tiện mặc định nằm ngoài ranh giới.": [
+"Vehicle electricity is outside the boundary by default.",
+"Электроэнергия транспорта по умолчанию вне границ учёта."
+],
+"Điện theo mục đích sử dụng": [
+"Electricity by end use",
+"Электроэнергия по видам использования"
+],
+"Điện từng mục đích sử dụng và CO2e mỗi 15 phút": [
+"Electricity by end use and CO2e every 15 minutes",
+"Электроэнергия по видам использования и CO2e каждые 15 минут"
+],
+"Điện điều hòa phòng KS Đảo": [
+"Island Hotel room AC electricity",
+"Электроэнергия кондиционеров номеров Отеля на острове"
+],
+"Điện để giặt nốt phần tồn (kWh)": [
+"Electricity to finish remaining laundry (kWh)",
+"Электроэнергия на достирку остатка (kWh)"
+],
+"Đo phát thải carbon hằng tháng.": [
+"Carbon emissions measured monthly.",
+"Ежемесячное измерение выбросов углерода."
+],
+"Đào tạo bảo tồn đa dạng sinh học cho NV: Có": [
+"Biodiversity conservation training for staff: Yes",
+"Обучение персонала сохранению биоразнообразия: Да"
+],
+"Đào tạo bảo vệ quyền lợi người lao động: Có": [
+"Training on protecting workers' rights: Yes",
+"Обучение защите прав работников: Да"
+],
+"Đào tạo nhân viên hàng năm về MT-VH-XH: Có": [
+"Annual staff training on environmental, cultural and social topics: Yes",
+"Ежегодное обучение персонала по экологическим, культурным и социальным вопросам: Да"
+],
+"Đào tạo pháp luật về ĐVHD cho NV/khách: Có đào tạo cho cả nhân viên và khách hàng": [
+"Wildlife law training for staff/guests: Training provided for both staff and guests",
+"Обучение законодательству о диких животных для персонала/гостей: проводится и для сотрудников, и для гостей"
+],
+"Đám đông": [
+"Crowd",
+"Толпа"
+],
+"Đánh đổi điện năng – thời gian chờ": [
+"Electricity – waiting time trade-off",
+"Компромисс: электроэнергия – время ожидания"
+],
+"Đáy lúc": [
+"Low at",
+"Минимум в"
+],
+"Đã chọn": [
+"Selected",
+"Выбрано"
+],
+"Đã rời khu": [
+"Left the area",
+"Покинули зону"
+],
+"Đã đi rồi": [
+"Already left",
+"Уже ушли"
+],
+"Đã đưa vào mô hình": [
+"Included in the model",
+"Включено в модель"
+],
+"Đóng, quay lại bản đồ": [
+"Close, back to the map",
+"Закрыть, вернуться к карте"
+],
+"Đông": [
+"Crowded",
+"Многолюдно"
+],
+"Đúng 533 phòng sản xuất, mã phòng duy nhất": [
+"Exactly 533 production rooms, unique room IDs",
+"Ровно 533 рабочих номера, уникальные коды номеров"
+],
+"Đường hình dạng phụ tải theo ngày so với mức trung bình": [
+"Daily load-shape curve relative to the average",
+"Кривая суточного профиля нагрузки относительно среднего"
+],
+"Đạt": [
+"Passed",
+"Пройдено"
+],
+"Đạt yêu cầu kiểm tra": [
+"Passes checks",
+"Проверки пройдены"
+],
+"Đất liền ↔ đảo": [
+"Mainland ↔ island",
+"Материк ↔ остров"
+],
+"Đỉnh 15 phút": [
+"15-min peak",
+"15-мин пик"
+],
+"Đỉnh Phiêu Lưu": [
+"Adventure Peak",
+"Пик Приключений"
+],
+"Đỉnh công suất 15 phút (kW)": [
+"Peak 15-min power (kW)",
+"Пиковая 15-мин мощность (kW)"
+],
+"Đỉnh lúc": [
+"Peak at",
+"Пик в"
+],
+"Đồ giặt tồn (kg)": [
+"Laundry backlog (kg)",
+"Невыстиранное бельё (kg)"
+],
+"Đồng hồ điện theo bộ phận.": [
+"Electricity meters by department.",
+"Счётчики электроэнергии по подразделениям."
+],
+"Đổi nhóm khác": [
+"Switch group",
+"Сменить группу"
+],
+"Độ dài hàng chờ": [
+"Queue length",
+"Длина очереди"
+],
+"Độ-giờ vượt ngưỡng (phòng có khách)": [
+"Degree-hours above threshold (occupied rooms)",
+"Градусо-часы выше порога (занятые номера)"
+],
+"Đội ngũ PTBV có ngân sách: Có": [
+"Sustainability team has a budget: Yes",
+"У команды по устойчивому развитию есть бюджет: Да"
+],
+"Đỡ mệt": [
+"Fatigue relief",
+"Снятие усталости"
+],
+"Đỡ nóng": [
+"Heat relief",
+"Снижение жары"
+],
+"Đỡ đói": [
+"Hunger relief",
+"Утоление голода"
+],
+"đang ngủ": [
+"asleep",
+"спят"
+],
+"điều hòa": [
+"AC",
+"кондиционер"
+],
+"điểm xe ga cáp treo": [
+"cable-car station shuttle stop",
+"остановка шаттла у станции канатной дороги"
+],
+"điểm đến:": [
+"destination:",
+"пункт назначения:"
+],
+"đã bán": [
+"sold",
+"продано"
+],
+"đạt.": [
+"passed.",
+"пройдено."
+],
+"đặt": [
+"set",
+"уставка"
+],
+"đỉnh": [
+"peak",
+"пик"
+],
+"Ưu tiên dọn phòng khi khách đang ở công viên, giữ điều hòa ở mức chờ khi dọn, khuyến khích dùng lại khăn.": [
+"Prioritise housekeeping while guests are in the park, keep AC on standby during cleaning, encourage towel reuse.",
+"Приоритет уборки номеров, пока гости в парке, кондиционер в режиме ожидания во время уборки, поощрение повторного использования полотенец."
+],
+"Ưu tiên hàng hóa/dịch vụ sản xuất tại địa phương: Có": [
+"Preference for locally produced goods/services: Yes",
+"Приоритет товаров/услуг местного производства: Да"
+],
+"Ưu tiên tuyển dụng lao động địa phương/khó khăn: Có": [
+"Prioritises hiring local/disadvantaged workers: Yes",
+"Приоритет найма местных/социально уязвимых работников: Да"
+],
+"ước tính, không tính vào phát thải điện": [
+"estimated, not included in electricity emissions",
+"оценка, не входит в выбросы от электроэнергии"
+],
+"Δ phút": [
+"Δ min",
+"Δ мин"
+],
+"Ẩn chỉ số": [
+"Hide figures",
+"Скрыть показатели"
+],
+"Ở khách sạn": [
+"At the hotel",
+"В отеле"
+],
+"Ở lại": [
+"Stay",
+"Остаться"
+],
+"Ở tiện ích trong KS": [
+"At hotel amenities",
+"В зонах удобств отеля"
+],
+"Ở trạng thái này": [
+"In this state",
+"В этом состоянии"
+],
+"ở thành phố": [
+"in the city",
+"в городе"
+],
+"− Cơ sở": [
+"− Baseline",
+"− Базовый"
+]
+}

@@ -9,6 +9,7 @@ site/dashboard.html is a static dashboard (same views as the Streamlit app, with
 site/data/ holds precomputed JSON + CSV downloads.
 """
 import base64
+import hashlib
 import os
 import json
 import shutil
@@ -23,7 +24,7 @@ from simulation.layout import room_layout
 from simulation.metrics import (COMPARE_METRICS, groups_df, interval_df, itinerary_df, queue_stats_df, summary,
                                 verify)
 from simulation.scenarios import SCENARIOS, run_scenario
-from simulation.viewer import build_payload, render_html, room_state_string
+from simulation.viewer import build_payload, render_html, room_state_string, with_i18n
 
 SITE = ROOT / "site"
 SITE_URL = os.environ.get("SITE_URL", "https://abm.icclab.site").rstrip("/")
@@ -304,14 +305,18 @@ def main():
     st["scenarios"] = index
     st["compare"] = compare_data()
     (DATA / "static.json").write_text(json.dumps(st, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    # versioned URL: chat apps and social sites cache link previews by image URL, so a new image needs a new URL
+    og_img = ROOT / "web" / "og-image.jpg"
+    og_url = f"{SITE_URL}/og-image.jpg" + (f"?v={hashlib.md5(og_img.read_bytes()).hexdigest()[:8]}" if og_img.exists() else "")
     head = [f'<meta property="og:{k}" content="{v}" />' for k, v in [
         ("type", "website"), ("title", "Virtual Hotel Monitoring"), ("url", SITE_URL + "/"),
         ("description", "Bản đồ 3D phát lại một ngày mô phỏng: khách, hàng chờ, xe nội khu và 533 phòng khách sạn."),
-        ("image", f"{SITE_URL}/og-image.jpg")]]
+        ("image", og_url), ("image:width", "1200"), ("image:height", "630")]]
+    head.append('<meta name="twitter:card" content="summary_large_image" />')
     head.append(f'<link rel="canonical" href="{SITE_URL}/" />')
     (SITE / "index.html").write_text(home.replace("<title>", "\n    ".join(head + ["<title>"]), 1), encoding="utf-8")
-    (SITE / "dashboard.html").write_text((ROOT / "web" / "dashboard.html").read_text(encoding="utf-8")
-                                         .replace('content="og-image.jpg"', f'content="{SITE_URL}/og-image.jpg"'),
+    (SITE / "dashboard.html").write_text(with_i18n((ROOT / "web" / "dashboard.html").read_text(encoding="utf-8"))
+                                         .replace('content="og-image.jpg"', f'content="{og_url}"'),
                                          encoding="utf-8")
     if (ROOT / "web" / "og-image.jpg").exists():
         shutil.copy(ROOT / "web" / "og-image.jpg", SITE / "og-image.jpg")

@@ -124,6 +124,7 @@ simulation/                 config, rng streams, environment, agents, decisions,
                             metrics, layout (room floor plan), inputs (source-file inspection), viewer (3D payload)
 web/dashboard.html          static dashboard: rooms, groups, energy, queues, compare, data (plain JS + SVG)
 web/resort3d_template.html  3D map with the hotel floor/room panel (three.js r147 + GSAP 3.12.5)
+web/i18n.js  i18n_dict.json  VI / EN / RU switch for both pages; table keyed by the Vietnamese text, inlined at build
 config/defaults.json        all synthetic parameters
 tests/                      pytest verification tests
 assumptions.csv  verified_facts.csv  data_provenance.md  rule_registry.csv
