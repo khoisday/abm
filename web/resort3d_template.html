@@ -40,7 +40,7 @@
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
   .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  .vhm-root { position: relative; height: 100vh; min-height: 860px; display: flex; flex-direction: column; background: var(--bg); color: var(--ink);
+  .vhm-root { position: relative; height: 100vh; min-height: 520px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg); color: var(--ink);
     font-family: 'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.45; transition: background .4s ease, color .4s ease; }
   html.embedded .vhm-root { min-height: 640px; }
   header.vhm-head { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding: 12px 24px; }
@@ -78,6 +78,12 @@
   /* leader-line chips */
   .vhm-chip { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; pointer-events: none; transform: translate3d(-9999px,0,0); }
   .vhm-chip.down { flex-direction: column-reverse; }
+  .vhm-chip .card { pointer-events: auto; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+  .vhm-chip .m, .vhm-chip .tg, .vhm-chip .go { display: none; }
+  .vhm-chip .card:hover .m, .vhm-chip.open .m, .vhm-chip .card:hover .go, .vhm-chip.open .go { display: block; }
+  .vhm-chip .card:hover .tg, .vhm-chip.open .tg { display: inline; }
+  .vhm-chip .card:hover, .vhm-chip.open .card { position: relative; z-index: 5; box-shadow: 0 8px 22px rgba(0,0,0,.16); }
+  .vhm-chip:has(.card:hover), .vhm-chip.open { z-index: 30; }
   .vhm-chip .card { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 6px 9px 7px; border-radius: 4px; background: var(--panel);
     border: 1px solid var(--ink); color: var(--ink); white-space: nowrap; text-align: left; font: inherit; animation: vhm-fade .6s ease .9s both; }
   .vhm-chip.big .card { padding: 7px 10px 8px; }
@@ -252,17 +258,61 @@
   .intro.leave { clip-path: inset(0 0 100% 0); }
   .intro .big { font-size: clamp(54px, 9.4vw, 148px); font-weight: 600; line-height: .95; letter-spacing: -.055em; }
 
+  .m-fab { display: none; }
+  @media (min-width: 1001px) and (max-height: 960px) { .vhm-rail { gap: 2px; } .vhm-rail button { height: 38px; } .vhm-rail .sep { margin: 2px 6px; } }
+  .m-only { display: none; }
   @media (max-width: 1000px) {
-    .vhm-root { height: auto !important; min-height: 100vh; }
-    section.vhm-stage { flex: none !important; height: auto !important; min-height: 0 !important; }
-    .vhm-canvaswrap { position: relative !important; inset: auto !important; height: 62vh !important; min-height: 420px; }
-    .vhm-hud, aside.vhm-aside, .vhm-bottom, .vhm-insp { position: relative !important; left: auto !important; right: auto !important; top: auto !important;
-      bottom: auto !important; width: auto !important; max-width: none !important; max-height: none !important; margin: 12px !important; transform: none !important;
-      overflow: visible !important; }
-    .vhm-rail { flex-direction: row !important; flex-wrap: wrap; }
-    .vhm-left { position: relative !important; left: auto !important; top: auto !important; bottom: auto !important; width: auto !important; max-width: none !important;
-      gap: 0 !important; align-items: stretch !important; }
-    .vhm-chip, .vhm-hint { display: none !important; }
+    .vhm-root { height: 100vh; min-height: 0 !important; }
+    @supports (height: 1svh) { .vhm-root { height: 100svh; } }
+    .vhm-hint, #hudBtn, #bFold, #ticks { display: none !important; }
+    .m-tag[aria-pressed="true"] { background: var(--panel2); }
+    /* round buttons over the map: controls (top left) and the simulation panel (top right) */
+    .m-fab { display: inline-flex; position: absolute; z-index: 22; width: 52px; height: 52px; padding: 0; border-radius: 50%; align-items: center; justify-content: center;
+      border: 1px solid var(--line); background: var(--panel); color: var(--ink); box-shadow: 0 6px 18px rgba(0,0,0,.16); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .m-fab .x, .m-fab[aria-expanded="true"] .ic { display: none; }
+    .m-fab[aria-expanded="true"] .x { display: block; }
+    .m-fab[aria-expanded="true"] { background: var(--primary-bg); color: var(--primary-fg); border-color: var(--primary-bg); }
+    #mTools { left: 10px; top: 10px; }
+    #mSim { right: 10px; top: 10px; }
+    .vhm-left { left: 8px; right: 8px; top: 70px; bottom: auto; width: auto; max-width: none; max-height: calc(100% - 170px); overflow-y: auto; z-index: 21;
+      gap: 8px; align-items: stretch; pointer-events: auto; display: none; scrollbar-width: none; }
+    body.m-tools .vhm-left { display: flex; }
+    .vhm-left .vhm-intro-card, .vhm-left .vhm-rail, aside.vhm-aside, .vhm-bottom { animation: none !important; }
+    .vhm-left .vhm-intro-card, .vhm-left .vhm-rail, aside.vhm-aside { box-shadow: 0 10px 30px rgba(0,0,0,.16); }
+    .vhm-rail { flex-direction: row; flex-wrap: wrap; overflow: visible; flex: none; }
+    .vhm-rail .sep { width: 1px; height: auto; margin: 6px 3px; }
+    .vhm-rail [data-play], .vhm-rail [data-speed] { display: none; }
+    aside.vhm-aside { left: 8px; right: 8px; top: 70px; width: auto; max-width: none; max-height: calc(100% - 170px); z-index: 21; display: none; }
+    body.m-sim aside.vhm-aside { display: flex; }
+    /* compact player always on screen; details open with the chevron */
+    .vhm-bottom { left: 8px; right: 8px; bottom: 8px; padding: 8px 10px; gap: 8px; z-index: 20; }
+    .vhm-bottom .b-main { flex-wrap: nowrap !important; gap: 10px !important; }
+    .vhm-bottom .b-clock { min-width: 0 !important; }
+    .vhm-bottom .b-clock .num22 { font-size: 20px; }
+    .vhm-bottom .b-bar { flex: 1 1 auto !important; }
+    .vhm-bottom .b-more { display: none !important; }
+    body.m-details .vhm-bottom .b-more { display: flex !important; }
+    .m-only { display: inline-flex; flex: none; align-items: center; justify-content: center; height: 44px; border-radius: 8px; border: 1px solid var(--line);
+      background: transparent; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; font: inherit; }
+    .m-play { width: 44px; border-radius: 50%; border: 0; background: var(--primary-bg); color: var(--primary-fg); }
+    .m-speed { width: 42px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+    .m-more { width: 36px; border: 0; }
+    .m-tag { width: 42px; }
+    .m-more svg { transition: transform .2s ease; }
+    body.m-details .m-more svg { transform: rotate(180deg); }
+    /* the floor inspector is a sheet over the lower part of the map */
+    .vhm-insp { background: var(--bg) !important; backdrop-filter: none !important; top: 42%; left: 8px; right: 8px; bottom: 8px; width: auto; max-width: none; padding: 14px 14px 18px; }
+    body.insp-open .m-fab { display: none !important; }
+    /* the loading intro covers the phone screen */
+    .intro { position: fixed !important; padding: 20px 20px 24px; }
+    .intro .big { font-size: clamp(40px, 13.2vw, 104px); }
+  }
+  @media (max-width: 760px) {
+    header.vhm-head { padding: 8px 16px; gap: 4px 12px; }
+    nav.vhm-nav { order: 3; flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; gap: 0 18px; }
+    nav.vhm-nav::-webkit-scrollbar { display: none; }
+    nav.vhm-nav a { flex: none; white-space: nowrap; }
+    section.vhm-stage { margin: 0 8px 8px; }
   }
 </style>
 </head>
@@ -289,7 +339,9 @@
     </div>
     <div id="chips"></div>
 
-    <div class="vhm-hint">Kéo để xoay. +/− để thu phóng. Bấm vào khách sạn để xem từng tầng</div>
+    <div class="vhm-hint">Kéo để xoay. Chuột phải để di chuyển. Cuộn để thu phóng</div>
+    <button type="button" class="m-fab" id="mTools" aria-expanded="false" aria-label="Thanh điều khiển"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg><svg class="x" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+    <button type="button" class="m-fab" id="mSim" aria-expanded="false" aria-label="Tiến trình mô phỏng"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"></path></svg><svg class="x" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
     <div class="vhm-left">
       <div class="vhm-hud vhm-intro-card">
         <div class="aside-head">
@@ -331,6 +383,7 @@
         <button type="button" id="bZoomIn" aria-label="Phóng to"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button>
         <button type="button" id="bZoomOut" aria-label="Thu nhỏ"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
         <button type="button" id="bRecenter" aria-label="Về góc nhìn mặc định"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path><rect x="10" y="10" width="4" height="4"></rect></svg></button>
+        <button type="button" id="bPan" aria-label="Kéo để di chuyển bản đồ" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"></path></svg></button>
         <div class="sep"></div>
         <button type="button" id="bIntro" aria-label="Xem lại phần mở đầu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14"></rect><path d="m10 9 5 3-5 3z"></path></svg></button>
       </div>
@@ -397,22 +450,26 @@
     </aside>
 
     <div class="vhm-hud vhm-bottom">
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px">
-        <div style="display:flex;flex-direction:column;gap:1px;min-width:92px"><span class="mono muted" style="font-size:10px;letter-spacing:.1em;text-transform:uppercase" data-phase>Ban ngày</span><span class="num22" style="letter-spacing:-.03em" data-clock>12:25</span></div>
-        <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:5px">
+      <div class="b-main" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px">
+        <button type="button" class="m-only m-play" data-play aria-label="Chạy mô phỏng"></button>
+        <div class="b-clock" style="display:flex;flex-direction:column;gap:1px;min-width:92px"><span class="mono muted" style="font-size:10px;letter-spacing:.1em;text-transform:uppercase" data-phase>Ban ngày</span><span class="num22" style="letter-spacing:-.03em" data-clock>12:25</span></div>
+        <div class="b-bar" style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:5px">
           <div class="daybar">
             <div style="position:absolute;left:0;top:4px;width:22.9%;height:16px;background:var(--night)"></div>
             <div style="position:absolute;left:79.2%;top:4px;right:0;height:16px;background:var(--night)"></div>
             <div style="position:absolute;left:0;right:0;top:12px;height:1px;background:var(--ink)"></div>
             <div style="position:absolute;left:0;right:0;top:8px;height:9px;background:repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 4.1666%)"></div>
             <div id="openBand" style="position:absolute;top:25px;height:3px;background:var(--ink)"></div>
-            <input class="vhm-range" id="slider" data-time type="range" min="0" max="1435" step="5" value="745" aria-label="Thời điểm mô phỏng" style="position:absolute;inset:0;width:100%;height:30px;margin:0;opacity:0;cursor:pointer">
+            <input class="vhm-range" id="slider" data-time type="range" min="0" max="1435" step="5" value="480" aria-label="Thời điểm mô phỏng" style="position:absolute;inset:0;width:100%;height:30px;margin:0;opacity:0;cursor:pointer">
             <div class="vhm-thumb" id="dayThumb" style="position:absolute;top:0;width:2px;height:30px;margin-left:-1px;background:var(--accent);pointer-events:none"><div style="position:absolute;top:-1px;left:-4px;width:10px;height:10px;background:var(--accent)"></div></div>
           </div>
           <div class="mono muted" id="ticks" style="display:flex;justify-content:space-between;font-size:10px;font-variant-numeric:tabular-nums"></div>
         </div>
+        <button type="button" class="m-only m-speed" data-speed aria-label="Tốc độ mô phỏng">1×</button>
+        <button type="button" class="m-only m-tag" id="mTags" aria-pressed="false" aria-label="Hiện nhãn và chỉ số các khu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg></button>
+        <button type="button" class="m-only m-more" id="mMore" aria-expanded="false" aria-label="Thêm chỉ số và lớp hiển thị"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg></button>
       </div>
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;padding-top:10px;border-top:1px solid var(--line);font-size:12px">
+      <div class="b-more" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;padding-top:10px;border-top:1px solid var(--line);font-size:12px">
         <div class="bottom-stats" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px">
           <span><span class="mono muted" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase">Ngoài trời </span><strong id="tOut">–</strong></span>
           <span><span class="mono muted" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase">TB phòng có khách </span><strong id="tRoom">–</strong></span>
@@ -457,7 +514,7 @@
         <button type="button" class="primary" data-play aria-label="Chạy mô phỏng"></button>
         <button type="button" class="speed" data-speed aria-label="Tốc độ mô phỏng">1×</button>
         <div style="display:flex;flex-direction:column;min-width:92px"><span class="num22" style="letter-spacing:-.03em" data-clock>12:25</span><span class="mono muted" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase" data-phase>Ban ngày</span></div>
-        <input type="range" min="0" max="1435" step="5" value="745" data-time aria-label="Thời điểm mô phỏng">
+        <input type="range" min="0" max="1435" step="5" value="480" data-time aria-label="Thời điểm mô phỏng">
       </div>
       <div class="insp-stats" id="iStats"></div>
       <div class="insp-body">
@@ -1198,12 +1255,32 @@ function buildScene(THREE, canvas, opts) {
   const rig = { theta: CAM.theta, phi: CAM.phi, r: CAM.r, target: HOME.clone(), want: HOME.clone(), offX: 0, offY: 0 };
   const tr = { theta: rig.theta, phi: rig.phi, r: rig.r }; let flying = false, viewMode = null;
   let W = 1, Hh = 1;
-  const wantOff = () => (viewMode && W > 1000 ? { x: W * 0.58, y: 40 } : (opts.offset ? opts.offset(W, Hh) : { x: 0, y: 0 }));
+  const wantOff = () => (viewMode && W > 1000 ? { x: W * 0.58, y: 40 } : viewMode ? { x: 0, y: Hh * 0.58 } : (opts.offset ? opts.offset(W, Hh) : { x: 0, y: 0 }));   // phones: the floor sheet covers the lower part
   function applyView() { camera.aspect = (W + rig.offX) / (Hh + rig.offY); camera.setViewOffset(W + rig.offX, Hh + rig.offY, rig.offX, rig.offY, W, Hh); camera.updateProjectionMatrix(); }
-  function resize() { const p = canvas.parentElement; W = Math.max(1, p.clientWidth); Hh = Math.max(1, p.clientHeight); renderer.setSize(W, Hh, false); const o = wantOff(); rig.offX = o.x; rig.offY = o.y; applyView(); }
+  // default distance: the designed desktop view, or further out until the whole board fits (phones, small windows)
+  const fitPts = [];
+  for (const x of [-HW, HW]) for (const z of [-HD, HD]) fitPts.push(new THREE.Vector3(x, BASE, z), new THREE.Vector3(x, LAND + 2, z));
+  fitPts.push(new THREE.Vector3(-HW * 0.6, 24, -HD), new THREE.Vector3(HW * 0.2, 24, -HD));   // ridge at the back of the island
+  function fitR() {
+    const v = new THREE.Vector3(), sp = Math.sin(CAM.phi);
+    const phone = W <= 1000, yTop = phone ? 1 - 2 * 70 / Hh : 0.94, yBot = phone ? -1 + 2 * 86 / Hh : -0.94;   // keep clear of the round buttons and the player
+    const fits = (r) => {
+      camera.position.set(HOME.x + r * sp * Math.sin(CAM.theta), HOME.y + r * Math.cos(CAM.phi), HOME.z + r * sp * Math.cos(CAM.theta)); camera.lookAt(HOME); camera.updateMatrixWorld();
+      return fitPts.every((p) => { v.copy(p).project(camera); return Math.abs(v.x) <= 0.96 && v.y <= yTop && v.y >= yBot; });
+    };
+    let lo = 60, hi = 1600; for (let i = 0; i < 22; i++) { const m = (lo + hi) / 2; if (fits(m)) hi = m; else lo = m; }
+    return Math.round(hi);
+  }
+  let userZoom = false;
+  const clampR = (r) => Math.max(viewMode ? 45 : 90, Math.min(Math.max(340, CAM.r * 1.3), r));
+  function resize() {
+    const p = canvas.parentElement; W = Math.max(1, p.clientWidth); Hh = Math.max(1, p.clientHeight); renderer.setSize(W, Hh, false); const o = wantOff(); rig.offX = o.x; rig.offY = o.y; applyView();
+    const fr = Math.max(285, fitR()); if (!userZoom && !viewMode && Math.abs(tr.r - CAM.r) < 0.5) { if (Math.abs(rig.r - CAM.r) < 0.5) rig.r = fr; tr.r = fr; } CAM.r = fr;
+  }
   resize();
   let ro = null; if (window.ResizeObserver) { ro = new ResizeObserver(resize); ro.observe(canvas.parentElement); }
-  let dragging = false, lx = 0, ly = 0, moved = 0, hoverT = 0;
+  let dragging = false, lx = 0, ly = 0, moved = 0, hoverT = 0, panMode = false, panDrag = false, pinch = null, followOn = false;
+  const ptrs = new Map();
   const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
   const pickables = hotelParts.hotel.concat(hotelParts.mhotel);
   function pickAt(cx, cy) {
@@ -1211,16 +1288,43 @@ function buildScene(THREE, canvas, opts) {
     ndc.set((cx - rc.left) / rc.width * 2 - 1, -((cy - rc.top) / rc.height) * 2 + 1); raycaster.setFromCamera(ndc, camera);
     const hit = raycaster.intersectObjects(pickables, true)[0]; let o = hit ? hit.object : null; while (o && !o.userData.pick) o = o.parent; return o ? o.userData.pick : null;
   }
-  canvas.addEventListener('pointerdown', (e) => { dragging = true; moved = 0; if (flying) { gsap.killTweensOf(rig); flying = false; Object.assign(tr, { theta: rig.theta, phi: rig.phi, r: rig.r }); } lx = e.clientX; ly = e.clientY; canvas.style.cursor = 'grabbing'; if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!dragging) { const now = performance.now(); if (now - hoverT > 70) { hoverT = now; canvas.style.cursor = pickAt(e.clientX, e.clientY) ? 'pointer' : 'grab'; } return; }
-    moved += Math.abs(e.clientX - lx) + Math.abs(e.clientY - ly);
-    tr.theta = Math.max(-1.2, Math.min(1.2, tr.theta - (e.clientX - lx) * 0.005)); tr.phi = Math.max(0.55, Math.min(1.25, tr.phi - (e.clientY - ly) * 0.004)); lx = e.clientX; ly = e.clientY;
+  // one pointer rotates, or moves the map (pan button, right mouse button or Shift); two fingers pinch to zoom and move; the wheel zooms
+  const idleCursor = () => (panMode ? 'move' : 'grab');
+  function pan(dx, dy) {
+    if (followOn) return;
+    const k = 2 * rig.r * Math.tan(camera.fov * Math.PI / 360) / Hh, c = Math.cos(rig.theta), s = Math.sin(rig.theta), v = dy * k / Math.max(0.35, Math.cos(rig.phi));
+    rig.want.x = Math.max(-HW, Math.min(HW, rig.want.x - c * dx * k - s * v));
+    rig.want.z = Math.max(-HD, Math.min(HD, rig.want.z + s * dx * k - c * v));
+    rig.target.copy(rig.want);
+  }
+  const pair = () => { const [a, b] = [...ptrs.values()]; return { d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, ang: Math.atan2(b.y - a.y, b.x - a.x) }; };
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  canvas.addEventListener('pointerdown', (e) => {
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (flying) { gsap.killTweensOf(rig); flying = false; Object.assign(tr, { theta: rig.theta, phi: rig.phi, r: rig.r }); }
+    if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    if (ptrs.size === 2) { pinch = Object.assign(pair(), { r: tr.r }); dragging = false; return; }
+    dragging = true; moved = 0; panDrag = panMode || e.button === 2 || e.shiftKey; lx = e.clientX; ly = e.clientY; canvas.style.cursor = panDrag ? 'move' : 'grabbing';
   });
-  window.addEventListener('pointerup', (e) => { if (!dragging) return; dragging = false; canvas.style.cursor = 'grab'; if (moved < 6 && opts.onPick) { const k = pickAt(e.clientX, e.clientY); if (k) opts.onPick(k); } });
+  canvas.addEventListener('pointermove', (e) => {
+    const pp = ptrs.get(e.pointerId); if (pp) { pp.x = e.clientX; pp.y = e.clientY; }
+    if (pinch && ptrs.size >= 2) { const q = pair(); userZoom = true; tr.r = clampR(pinch.r * pinch.d / Math.max(20, q.d)); pan(q.mx - pinch.mx, q.my - pinch.my); let da = q.ang - pinch.ang; if (da > Math.PI) da -= 2 * Math.PI; if (da < -Math.PI) da += 2 * Math.PI; tr.theta = Math.max(-1.2, Math.min(1.2, tr.theta + da)); pinch.mx = q.mx; pinch.my = q.my; pinch.ang = q.ang; return; }
+    if (!dragging) { const now = performance.now(); if (now - hoverT > 70 && e.pointerType === 'mouse') { hoverT = now; canvas.style.cursor = pickAt(e.clientX, e.clientY) ? 'pointer' : idleCursor(); } return; }
+    moved += Math.abs(e.clientX - lx) + Math.abs(e.clientY - ly);
+    if (panDrag) pan(e.clientX - lx, e.clientY - ly);
+    else { tr.theta = Math.max(-1.2, Math.min(1.2, tr.theta - (e.clientX - lx) * 0.005)); tr.phi = Math.max(0.55, Math.min(1.25, tr.phi - (e.clientY - ly) * 0.004)); }
+    lx = e.clientX; ly = e.clientY;
+  });
+  const release = (e) => {
+    ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null;
+    if (!dragging) return; dragging = false; canvas.style.cursor = idleCursor();
+    if (e.type === 'pointerup' && moved < 6 && e.button !== 2 && opts.onPick) { const k = pickAt(e.clientX, e.clientY); if (k) opts.onPick(k); }
+  };
+  window.addEventListener('pointerup', release); window.addEventListener('pointercancel', release);
+  canvas.addEventListener('wheel', (e) => { e.preventDefault(); userZoom = true; tr.r = clampR(tr.r * Math.exp(Math.max(-60, Math.min(60, e.deltaY)) * 0.004)); }, { passive: false });
 
   // ---------- state + data-driven updates ----------
-  const st = { t: 745, rooms: false, agents: true, night: 0, layer: 'agents', followGid: null };
+  const st = { t: 480, rooms: false, agents: true, night: 0, layer: 'agents', followGid: null };
   const CC = { walkD: col('#26321F'), walkN: col('#F4F0DB'), dwellD: col('#7A876C'), dwellN: col('#B9BFA5'), q: col('#E2563A'), home: col('#E9A93A'), follow: col('#1F7FA8') };
   const RING = { ok: col('#7C9466'), busy: col('#F2B544'), over: col('#E2563A') };
   const pX = new Float32Array(NP), pZ = new Float32Array(NP);
@@ -1341,13 +1445,14 @@ function buildScene(THREE, canvas, opts) {
     setAgents(v) { st.agents = v; applyLayer(); },
     setLayer(l) { st.layer = l; applyLayer(); if (l === 'heat') { heat.fill(0); for (let i = 0; i < 24; i++) updateHeat(pX, pZ, nP); } if (l === 'flow') updateRibbons(); },
     refreshData() { lastK = -1; wHist.clear(); for (const k in routeCache) delete routeCache[k]; },
-    setFollow(gid) { st.followGid = gid; if (gid === null) { rig.want.copy(HOME); tr.r = CAM.r; tr.phi = CAM.phi; } else { tr.r = 120; tr.phi = 0.78; } },
+    setFollow(gid) { st.followGid = gid; followOn = gid !== null; if (gid === null) { rig.want.copy(HOME); tr.r = CAM.r; tr.phi = CAM.phi; } else { tr.r = 120; tr.phi = 0.78; } },
     focus(key) { const z = ZONE[key]; if (!z) return; st.followGid = null; const cpt = z.c || (z.rect ? [(z.rect[0] + z.rect[1]) / 2, (z.rect[2] + z.rect[3]) / 2] : z.ent); rig.want.set(cpt[0], LAND, cpt[1]); tr.r = 150; tr.phi = 0.8; },
     setTheme(dark) { floorMat.map = floorTex[dark ? 1 : 0]; floorMat.needsUpdate = true; shMat.opacity = dark ? 0.85 : 0.42; plinth.material.color.set(dark ? '#232A1E' : '#2E3A26'); edgeLine.material.color.set(dark ? '#8E9A7A' : '#F4F0DB'); },
     holdIntro() { gsap.killTweensOf(rig); flying = true; Object.assign(rig, { theta: 0.95, phi: 0.3, r: 600 }); },
     flyIn(dur) { flying = true; Object.assign(tr, { theta: CAM.theta, phi: CAM.phi, r: CAM.r }); gsap.to(rig, { theta: CAM.theta, phi: CAM.phi, r: CAM.r, duration: dur || 3.8, ease: 'power3.inOut', onComplete: () => { flying = false; } }); },
-    zoom(d) { tr.r = Math.max(viewMode ? 45 : 110, Math.min(340, tr.r - d * 24)); },
-    recenter() { st.followGid = null; viewMode = null; rig.want.copy(HOME); Object.assign(tr, CAM); },
+    zoom(d) { userZoom = true; tr.r = clampR(tr.r * (d > 0 ? 0.86 : 1.16)); },
+    setPanMode(v) { panMode = v; canvas.style.cursor = idleCursor(); },
+    recenter() { st.followGid = null; followOn = false; userZoom = false; viewMode = null; rig.want.copy(HOME); Object.assign(tr, CAM); },
     inspect(k) {
       Object.keys(cutPlanes).forEach((key) => { cutPlanes[key].constant = 1e4; });
       viewMode = k || null;
@@ -1394,7 +1499,7 @@ let hudRects = [], stageH = 1e4;
 function measureChips() {
   for (const k in chips) { chips[k].w = chips[k].card.offsetWidth; chips[k].h = chips[k].card.offsetHeight; }
   const sr = stageEl.getBoundingClientRect(); stageH = sr.height;
-  hudRects = [...document.querySelectorAll('.vhm-intro-card, .vhm-rail, aside.vhm-aside, .vhm-bottom, .vhm-insp')].filter((e) => e.offsetParent !== null)
+  hudRects = [...document.querySelectorAll('.vhm-intro-card, .vhm-rail, aside.vhm-aside, .vhm-bottom, .vhm-insp, .m-fab')].filter((e) => e.offsetParent !== null)
     .map((e) => { const r = e.getBoundingClientRect(); return [r.left - sr.left, r.top - sr.top, r.right - sr.left, r.bottom - sr.top]; });
 }
 const CHIP_PRIORITY = ['follow', 'ROOMS', 'MHOTEL'].concat(CHIP_ORDER.filter((k) => k !== 'ROOMS' && k !== 'MHOTEL'));
@@ -1429,7 +1534,7 @@ function placeChips(p) {
 }
 
 // ------------------------------------------------------------------ UI state
-const S = { t: 745, playing: false, si: 0, labels: true, agents: true, rooms: false, dark: document.documentElement.dataset.theme === 'dark', occ: D0.meta.occupancy || 80,
+const S = { t: 480, playing: false, si: 0, labels: true, agents: true, rooms: false, pan: false, dark: document.documentElement.dataset.theme === 'dark', occ: D0.meta.occupancy || 80,
   layer: 'agents', tab: 'crowd', following: false, gidx: 0, hud: true, frameK: -1, insp: null, floor: null, room: null, inspK: -1 };
 const SPEEDS = [1, 2, 4, 8];
 let scene3 = null;
@@ -1457,13 +1562,22 @@ $('hudBtn').onclick = () => { S.hud = !S.hud; document.body.classList.toggle('hi
 const PLAY = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"></path></svg>';
 const PAUSE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>';
 function setPlaying(p) { S.playing = p; $$('[data-play]').forEach((b) => { b.innerHTML = p ? PAUSE : PLAY; b.setAttribute('aria-label', p ? 'Tạm dừng mô phỏng' : 'Chạy mô phỏng'); }); }
-setPlaying(false);
+setPlaying(true);   // the day plays on its own from 08:00 and loops
 $$('[data-play]').forEach((b) => { b.onclick = () => setPlaying(!S.playing); });
 $$('[data-speed]').forEach((b) => { b.onclick = () => { S.si = (S.si + 1) % SPEEDS.length; $$('[data-speed]').forEach((x) => { x.textContent = SPEEDS[S.si] + '×'; }); }; });
-$('bReset').onclick = () => { setPlaying(false); setT(0); };
+$('bReset').onclick = () => { setT(0); setPlaying(true); };
 const toggle = (id, key, fn) => { $(id).onclick = () => { S[key] = !S[key]; $(id).setAttribute('aria-pressed', String(S[key])); if (fn) fn(S[key]); }; };
-toggle('bLabels', 'labels', (v) => { chipsEl.style.display = v ? '' : 'none'; S.frameK = -1; });
+function setLabels(v) { S.labels = v; chipsEl.style.display = v ? '' : 'none'; ['bLabels', 'mTags'].forEach((id) => $(id).setAttribute('aria-pressed', String(v))); if (v) measureChips(); S.frameK = -1; }
+$('bLabels').onclick = () => setLabels(!S.labels); $('mTags').onclick = () => setLabels(!S.labels);
+// details of a chip: hover with a mouse, press and hold on a touch screen
+let holdT = null, held = null, heldClick = false;
+chipsEl.addEventListener('pointerdown', (e) => { const el = e.target.closest('.vhm-chip'); if (!el || e.pointerType === 'mouse') return; clearTimeout(holdT); holdT = setTimeout(() => { if (held && held !== el) held.classList.remove('open'); held = el; el.classList.add('open'); heldClick = true; }, 380); });
+const endHold = () => { clearTimeout(holdT); if (held) { const el = held; setTimeout(() => { el.classList.remove('open'); if (held === el) held = null; }, 2600); } };
+chipsEl.addEventListener('pointerup', endHold); chipsEl.addEventListener('pointercancel', endHold);
+chipsEl.addEventListener('click', (e) => { if (heldClick) { e.stopPropagation(); e.preventDefault(); heldClick = false; } }, true);
+chipsEl.addEventListener('contextmenu', (e) => e.preventDefault());
 toggle('bAgents', 'agents', (v) => { if (scene3) scene3.setAgents(v); });
+toggle('bPan', 'pan', (v) => { if (scene3) scene3.setPanMode(v); });
 toggle('bRooms', 'rooms', (v) => { if (scene3) scene3.setRooms(v); $('legRooms').classList.toggle('hidden', !v); });
 $('legRooms').innerHTML = '<span class="mono muted" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase">Phòng</span>' +
   [['3', 'Có khách, thức'], ['4', 'Có khách, ngủ'], ['2', 'Vắng, điều hòa chạy'], ['1', 'Vắng, điều hòa tắt'], ['5', 'Đang dọn'], ['6', 'Có khách > ngưỡng nóng'], ['0', 'Phòng trống (không bán)']]
@@ -1472,6 +1586,17 @@ $('bZoomIn').onclick = () => scene3 && scene3.zoom(1);
 $('bZoomOut').onclick = () => scene3 && scene3.zoom(-1);
 $('bRecenter').onclick = () => { stopFollow(); closeInsp(); scene3 && scene3.recenter(); };
 $('bIntro').onclick = () => { if (scene3) scene3.holdIntro(); startIntro(); };
+// phones: the toolbar and the simulation panel open from round buttons over the map (one at a time)
+const M_PANELS = { tools: ['mTools', 'm-tools'], sim: ['mSim', 'm-sim'] };
+function mPanel(which) {
+  for (const k in M_PANELS) { const [id, cls] = M_PANELS[k]; const open = k === which && !document.body.classList.contains(cls); document.body.classList.toggle(cls, open); $(id).setAttribute('aria-expanded', String(open)); }
+  S.frameK = -1;
+}
+$('mTools').onclick = () => mPanel('tools'); $('mSim').onclick = () => mPanel('sim');
+$('mMore').onclick = () => { const o = document.body.classList.toggle('m-details'); $('mMore').setAttribute('aria-expanded', String(o)); };
+// on touch screens one finger moves the map; the pan button switches it back to turning
+if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) { S.pan = true; $('bPan').setAttribute('aria-pressed', 'true'); }
+setLabels(false);   // labels start hidden; the tag button shows them
 const fold = (btn, panel) => { $(btn).onclick = () => { const c = panel.classList.toggle('collapsed'); $(btn).setAttribute('aria-expanded', String(!c)); $(btn).setAttribute('aria-label', c ? 'Mở rộng bảng' : 'Thu gọn bảng'); S.frameK = -1; }; };
 fold('bFold', $('aside')); fold('bFoldIntro', document.querySelector('.vhm-intro-card'));
 window.addEventListener('resize', () => { S.frameK = -1; });
@@ -1777,7 +1902,7 @@ setTimeout(() => {
   try {
     scene3 = buildScene(THREE, $('scene'), { offset: (w) => (w > 1000 ? { x: 300, y: 90 } : { x: 0, y: 0 }), onProject: placeChips,
       onPick: (k) => openInsp(k === 'mhotel' ? 1 : 0) });
-    scene3.setTheme(S.dark); scene3.setTime(S.t);
+    scene3.setTheme(S.dark); scene3.setTime(S.t); scene3.setPanMode(S.pan);
     if (showIntro) scene3.holdIntro(); else scene3.flyIn(embedded ? 2.2 : 3.8);
     drawSpark(); ready = true;
     gsap.ticker.add((time, dt) => {
