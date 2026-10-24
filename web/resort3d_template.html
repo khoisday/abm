@@ -190,7 +190,9 @@
   .sw i.l { width: 16px; height: 4px; }
   .bottom-stats strong { font-weight: 600; }
   .hidden { display: none !important; }
-  body.hide-ui .vhm-hud:not(.keep), body.hide-ui .vhm-chip, body.hide-ui .vhm-hint { display: none !important; }
+  body.hide-ui .vhm-hud:not(.keep), body.hide-ui .vhm-hint { display: none !important; }
+  /* hiding the figures keeps the place names (when labels are on): only the numbers go */
+  body.hide-ui .vhm-chip .m, body.hide-ui .vhm-chip .tg, body.hide-ui .vhm-chip .go { display: none !important; }
   body.insp-open .vhm-left, body.insp-open aside.vhm-aside, body.insp-open .vhm-bottom, body.insp-open .vhm-hint { display: none !important; }
 
   /* hotel inspector: floors, rooms and each room's day */
@@ -1556,7 +1558,7 @@ window.addEventListener('storage', (e) => { if (e.key === 'vhm-theme' && e.newVa
   $('scenBtn').onclick = (e) => { const open = !$('scenMenu').classList.contains('open'); $('scenMenu').classList.toggle('open', open); $('scenBtn').setAttribute('aria-expanded', String(open)); e.stopPropagation(); };
   document.addEventListener('click', () => { $('scenMenu').classList.remove('open'); $('scenBtn').setAttribute('aria-expanded', 'false'); });
 })();
-$('hudBtn').onclick = () => { S.hud = !S.hud; document.body.classList.toggle('hide-ui', !S.hud); $('hudBtn').textContent = S.hud ? 'Ẩn chỉ số' : 'Hiện chỉ số'; S.frameK = -1; };
+$('hudBtn').onclick = () => { S.hud = !S.hud; document.body.classList.toggle('hide-ui', !S.hud); $('hudBtn').textContent = S.hud ? 'Ẩn chỉ số' : 'Hiện chỉ số'; if (S.labels) measureChips(); S.frameK = -1; };
 
 // time controls (rail and inspector share them)
 const PLAY = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"></path></svg>';
