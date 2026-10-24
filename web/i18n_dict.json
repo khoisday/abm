@@ -1503,6 +1503,10 @@
 "Guest groups",
 "Группы гостей"
 ],
+"Nhóm này không có lần quyết định nào có từ hai phương án trở lên.": [
+"This group made no decision with two or more options.",
+"У этой группы нет решений с двумя и более вариантами."
+],
 "Nhóm sau": [
 "Groups behind",
 "Группы позади"
@@ -2834,6 +2838,10 @@
 "Đang ngủ": [
 "Asleep",
 "Спят"
+],
+"Đang tải các lần quyết định…": [
+"Loading decisions…",
+"Загрузка решений…"
 ],
 "Đang về phòng": [
 "Returning to room",

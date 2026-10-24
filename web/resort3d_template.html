@@ -55,6 +55,15 @@
   .lang-switch { --lang-on: var(--bg); --lang-ink: var(--ink); border-color: var(--line) !important; }
   .lang-switch button + button { border-left-color: var(--line) !important; }
   .head-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; position: relative; }
+  /* wide screens: one header row; the section links scroll sideways before anything wraps (long EN/RU labels) */
+  @media (min-width: 1001px) {
+    header.vhm-head { flex-wrap: nowrap; }
+    nav.vhm-nav { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    nav.vhm-nav::-webkit-scrollbar { display: none; }
+    nav.vhm-nav a { flex: none; white-space: nowrap; }
+    .head-tools { flex: none; flex-wrap: nowrap; }
+  }
+  @media (min-width: 1001px) and (max-width: 1500px) { nav.vhm-nav a .mono, #scenBtn .muted { display: none; } nav.vhm-nav { gap: 2px 16px; } }
   .btn-outline { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line);
     background: var(--panel); color: var(--ink); font-size: 13.5px; cursor: pointer; }
   .btn-ghost { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; border: 0; background: transparent; color: var(--muted);
@@ -264,6 +273,7 @@
 
   .m-fab { display: none; }
   @media (min-width: 1001px) and (max-height: 960px) { .vhm-rail { gap: 2px; } .vhm-rail button { height: 38px; } .vhm-rail .sep { margin: 2px 6px; } }
+  @media (min-width: 1001px) and (max-height: 820px) { .vhm-rail { gap: 1px; } .vhm-rail button { height: 34px; } .vhm-rail .sep { margin: 1px 6px; } }
   .m-only { display: none; }
   @media (max-width: 1000px) {
     .vhm-root { height: 100vh; min-height: 0 !important; }
@@ -1608,6 +1618,8 @@ if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) { S.pan
 setLabels(false);   // labels start hidden; the tag button shows them
 const fold = (btn, panel) => { $(btn).onclick = () => { const c = panel.classList.toggle('collapsed'); $(btn).setAttribute('aria-expanded', String(!c)); $(btn).setAttribute('aria-label', c ? 'Mở rộng bảng' : 'Thu gọn bảng'); S.frameK = -1; }; };
 fold('bFold', $('aside')); fold('bFoldIntro', document.querySelector('.vhm-intro-card'));
+// short screens (a 720p TV, a small laptop): start with the intro card folded so the tool rail fits
+if (innerWidth > 1000 && innerHeight <= 820) $('bFoldIntro').click();
 window.addEventListener('resize', () => { S.frameK = -1; });
 document.addEventListener('i18n:changed', () => { if (S.labels) measureChips(); S.frameK = -1; });
 

@@ -37,6 +37,15 @@ main{padding-left:10px!important;padding-right:10px!important}
 .lang-switch button{min-width:30px;padding:0 4px}
 main section,main aside,main aside section{padding-left:14px!important;padding-right:14px!important}
 }
+/* wide screens: one header row; the section links scroll sideways before anything wraps (long EN/RU labels) */
+@media (min-width: 1001px){
+.vhm-head{flex-wrap:nowrap!important}
+.vhm-nav{flex:0 1 auto;min-width:0;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none}
+.vhm-nav::-webkit-scrollbar{display:none}
+.vhm-nav a{flex:none;white-space:nowrap}
+.vhm-head>div:last-child{flex:none;flex-wrap:nowrap!important}
+}
+@media (min-width: 1001px) and (max-width: 1500px){.vhm-nav a>span:first-child,.vhm-head button[aria-haspopup]>span:first-child{display:none}}
 /* scenario menu opened from the header button (shared by all pages) */
 .scen-menu{position:absolute;z-index:40;min-width:270px;padding:6px;border-radius:10px;background:#FBF8EB;border:1px solid #D6CEAE;box-shadow:0 12px 30px rgba(0,0,0,.12);display:flex;flex-direction:column;font-family:'Inter Tight',system-ui,sans-serif}
 .scen-menu[hidden]{display:none}
@@ -330,6 +339,8 @@ main section,main aside,main aside section{padding-left:14px!important;padding-r
 <h2 id="gp-why" style="margin: 0; display: flex; align-items: baseline; gap: 8px; font-size: 19px; font-weight: 600; letter-spacing: -0.02em"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 500; color: {{c.accentText}}">B</span>Lý do lựa chọn</h2>
 <span style="font-size: 12.5px; color: {{c.muted}}">Thành phần hữu dụng của các phương án tại mỗi lần ra quyết định.</span>
 </div>
+<template data-if="noDecs"><p style="margin: 0; font-size: 13px; color: {{c.muted}}">{{decNote}}</p></template>
+<template data-if="hasDecs">
 <div role="tablist" aria-label="Lần quyết định" style="display: flex; flex-wrap: wrap; gap: 6px">
 <template data-for="decTabs" data-as="d"><button type="button" role="tab" aria-selected="{{d.sel}}" onClick="{{d.pick}}" style="min-width: 44px; min-height: 40px; padding: 0 10px; border: 1px solid {{c.ink}}; border-radius: 7px; background: {{d.bg}}; color: {{d.fg}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; cursor: pointer">{{d.label}}</button></template>
 </div>
@@ -349,6 +360,7 @@ main section,main aside,main aside section{padding-left:14px!important;padding-r
 <template data-for="compLegend" data-as="lg"><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 10px; height: 8px; background: {{lg.c}}"></span>{{lg.l}}</span></template>
 </div>
 <span style="font-size: 11.5px; color: {{c.muted}}">Bên phải vạch giữa là phần cộng vào hữu dụng, bên trái là phần bị trừ. Xác suất chọn tính theo logit đa thức.</span>
+</template>
 </section>
 
 <section aria-labelledby="gp-park" style="box-sizing: border-box; padding: 18px 20px 20px; border-radius: 10px; background: {{c.panel}}; border: 1px solid {{c.line}}; display: flex; flex-direction: column; gap: 12px; animation: vhm-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.16s both">
@@ -503,7 +515,7 @@ main section,main aside,main aside section{padding-left:14px!important;padding-r
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: {{c.muted}}">Công suất ÷ trung bình ngày</span>
 </div>
 <div style="display: flex; gap: 10px">
-<div style="display: flex; flex-direction: column; justify-content: space-between; height: 180px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: {{c.muted}}; text-align: right"><span>1,5</span><span>1,0</span><span>0,5</span></div>
+<div style="display: flex; flex-direction: column; justify-content: space-between; height: 180px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: {{c.muted}}; text-align: right"><span>{{shapeHi}}</span><span>1,0</span><span>{{shapeLo}}</span></div>
 <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
 <svg viewBox="0 0 960 180" preserveAspectRatio="none" style="width: 100%; height: 180px; display: block" role="img" aria-label="Đường hình dạng phụ tải theo ngày so với mức trung bình">
 <line x1="0" y1="90" x2="960" y2="90" stroke="{{c.ink}}" stroke-dasharray="5 5" vector-effect="non-scaling-stroke"></line>
@@ -783,10 +795,10 @@ main section,main aside,main aside section{padding-left:14px!important;padding-r
 </div>
 <svg viewBox="0 0 600 380" style="width: 100%; height: auto; display: block; font-family: 'JetBrains Mono', monospace" role="img" aria-label="Biểu đồ phân tán điện năng cả ngày và thời gian chờ trung bình của 5 kịch bản, mỗi chấm nhỏ là một seed">
 <template data-for="gridX" data-as="g"><line x1="{{g.x}}" y1="20" x2="{{g.x}}" y2="330" stroke="{{c.line}}"></line><text x="{{g.x}}" y="350" font-size="11" fill="{{c.muted}}" text-anchor="middle">{{g.t}}</text></template>
-<template data-for="gridY" data-as="g"><line x1="60" y1="{{g.y}}" x2="590" y2="{{g.y}}" stroke="{{c.line}}"></line><text x="52" y="{{g.ty}}" font-size="11" fill="{{c.muted}}" text-anchor="end">{{g.t}}</text></template>
-<line x1="60" y1="330" x2="590" y2="330" stroke="{{c.ink}}"></line>
+<template data-for="gridY" data-as="g"><line x1="60" y1="{{g.y}}" x2="570" y2="{{g.y}}" stroke="{{c.line}}"></line><text x="52" y="{{g.ty}}" font-size="11" fill="{{c.muted}}" text-anchor="end">{{g.t}}</text></template>
+<line x1="60" y1="330" x2="570" y2="330" stroke="{{c.ink}}"></line>
 <line x1="60" y1="20" x2="60" y2="330" stroke="{{c.ink}}"></line>
-<text x="325" y="374" font-size="11" fill="{{c.muted}}" text-anchor="middle">Điện cả ngày (MWh)</text>
+<text x="315" y="374" font-size="11" fill="{{c.muted}}" text-anchor="middle">Điện cả ngày (MWh)</text>
 <text x="14" y="175" font-size="11" fill="{{c.muted}}" text-anchor="middle" transform="rotate(-90 14 175)">Chờ trung bình (phút)</text>
 <template data-for="seedDots" data-as="p"><circle cx="{{p.x}}" cy="{{p.y}}" r="3.5" fill="{{p.c}}" fill-opacity="0.35"></circle></template>
 <template data-for="meanDots" data-as="p"><rect x="{{p.rx}}" y="{{p.ry}}" width="12" height="12" fill="{{p.c}}" stroke="{{c.panel}}" stroke-width="2"></rect><text x="{{p.tx}}" y="{{p.ty}}" font-size="12" font-weight="600" fill="{{c.ink}}" font-family="Inter Tight, sans-serif">{{p.l}}</text></template>
@@ -922,10 +934,10 @@ main section,main aside,main aside section{padding-left:14px!important;padding-r
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 0 28px">
 <template data-for="ass" data-as="a">
-<div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 0; border-bottom: 1px solid {{c.line}}">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 10px 0; border-bottom: 1px solid {{c.line}}">
 <span style="display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: {{c.muted}}">{{a.cat}}</span><span style="font-size: 13.5px; font-weight: 600">{{a.l}}</span></span>
-<span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; max-width: 170px; overflow-wrap: anywhere">{{a.v}}</span>
-<span style="grid-column: span 2; font-size: 12px; color: {{c.muted}}">{{a.note}}</span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; line-height: 1.5; font-variant-numeric: tabular-nums; overflow-wrap: anywhere">{{a.v}}</span>
+<span style="font-size: 12px; color: {{c.muted}}">{{a.note}}</span>
 </div>
 </template>
 </div>
@@ -1265,6 +1277,7 @@ class Groups extends Page {
     const s = this.state, slug = scen().slug, key = slug + ':' + Math.floor(g.group_id / 25);
     if (!app.dec[key]) this.decs(g.group_id);
     const DL = app.dec[key] && app.dec[key] !== 'loading' ? app.dec[key][String(g.group_id)] || [] : [];
+    const decLoading = !app.dec[key] || app.dec[key] === 'loading';
     const decs = DL.filter((d) => d.options && d.options.length > 1);
     // each stop is linked to the latest decision before it that chose that place
     const chose = (x, d) => (x.act ? facLabel[x.act] === d.chosen || ZONE_VI[x.act] === d.chosen : d.chosen.startsWith('Nghỉ'));
@@ -1303,8 +1316,9 @@ class Groups extends Page {
       eyebrow: eyebrow('03'), ids: ids.map((x) => String(x).padStart(3, '0')), gid: String(g.group_id).padStart(3, '0'),
       onGroup: (e) => this.setState({ gi: Math.max(0, ids.indexOf(Number(e.target.value))), dec: 0 }),
       prev: () => this.setState({ gi: (this.state.gi + ids.length - 1) % ids.length, dec: 0 }), next: () => this.setState({ gi: (this.state.gi + 1) % ids.length, dec: 0 }),
-      facts, strip, stops, tripNote: hm(D0) + ' – 24:00. ' + decs.length + ' lần quyết định', ticks, tickN: ticks.length,
-      decTabs, hasDecs: decs.length > 0, noDecs: !decs.length, dv: { time: Dd ? hm(Dd.t) : '', from, n, opts },
+      facts, strip, stops, tripNote: hm(D0) + ' – 24:00' + (decLoading ? '' : '. ' + decs.length + ' lần quyết định'), ticks, tickN: ticks.length,
+      decTabs, hasDecs: decs.length > 0, noDecs: !decs.length,
+      decNote: decLoading ? 'Đang tải các lần quyết định…' : 'Nhóm này không có lần quyết định nào có từ hai phương án trở lên.', dv: { time: Dd ? hm(Dd.t) : '', from, n, opts },
       compLegend: COMP.map((x) => ({ c: x.c, l: x.l })), parkRows, parkTotal: parkN + '/' + G.length + ' nhóm (' + Math.round(parkN / Math.max(1, G.length) * 100) + '%)',
     };
   }
@@ -1335,7 +1349,9 @@ class Energy extends Page {
     const byUse = U.map((u) => ({ l: u.l, c: u.c, v: fmt(byKey[u.k]), p: Math.round(byKey[u.k] / kwhDay * 100) + '%', w: (byKey[u.k] / maxU * 100).toFixed(1) + '%', n: byKey[u.k] })).sort((a, b) => b.n - a.n);
     const co2 = E.emissions, cMax = Math.ceil(Math.max(...co2) / 20) * 20;
     const co2Bars = co2.map((v, j) => ({ x: (j * 960 / N + 1).toFixed(1), y: (180 - v / cMax * 180).toFixed(1), h: (v / cMax * 180).toFixed(1), f: j === i ? '#F15534' : c.ink }));
-    const Rr = tot.map((v) => v / meanKw), YR = (r) => 180 - (r - 0.5) / 1.0 * 180;
+    // y range symmetric around the daily mean (1.0), wide enough for the night trough and the evening peak
+    const Rr = tot.map((v) => v / meanKw), half = Math.max(0.5, Math.ceil(Math.max(...Rr.map((r) => Math.abs(r - 1))) * 4) / 4);
+    const YR = (r) => 90 - (r - 1) / half * 90;
     let sl = ''; Rr.forEach((r, j) => { sl += (j ? ' L' : 'M') + X(j).toFixed(1) + ' ' + YR(r).toFixed(1); });
     const sa = 'M' + X(0).toFixed(1) + ' 90 ' + sl.replace('M', 'L') + ' L' + X(N - 1).toFixed(1) + ' 90 Z';
     const det = {}; E.detail.forEach((d) => { det[d.key] = d.kwh; });
@@ -1343,6 +1359,7 @@ class Energy extends Page {
     const sold = D.ops.sold;
     return {
       eyebrow: eyebrow('04'),
+      shapeHi: fmt(1 + half, 2), shapeLo: fmt(1 - half, 2),
       kpis: [
         { l: 'Điện cả ngày', v: fmt(kwhDay / 1000, 1), u: 'MWh', sub: fmt(D.kpi.hotel_kwh_per_occupied_room_night, 1) + ' kWh mỗi phòng bán (KS Đảo)' },
         { l: 'Đỉnh 15 phút', v: fmt(tot[pk]), u: 'kW', sub: 'Lúc ' + hm(pk * step) },
@@ -1462,7 +1479,7 @@ class Compare extends Page {
     const ex = R.total_kwh.flat(), wy = R.attraction_mean_wait_min.flat();
     const nice = (lo, hi, n) => { const st = Math.pow(10, Math.floor(Math.log10((hi - lo) / n))); const s2 = [1, 2, 2.5, 5, 10].map((x) => x * st).find((x) => (hi - lo) / x <= n) || st * 10; return { lo: Math.floor(lo / s2) * s2, hi: Math.ceil(hi / s2) * s2, st: s2 }; };
     const ax = nice(Math.min(...ex), Math.max(...ex), 5), ay = nice(Math.min(...wy), Math.max(...wy), 5);
-    const PX = (v) => 60 + (v - ax.lo) / (ax.hi - ax.lo || 1) * 530, PY = (v) => 330 - (v - ay.lo) / (ay.hi - ay.lo || 1) * 310;
+    const PX = (v) => 60 + (v - ax.lo) / (ax.hi - ax.lo || 1) * 510, PY = (v) => 330 - (v - ay.lo) / (ay.hi - ay.lo || 1) * 310;
     const gridX = [], gridY = [];
     for (let v = ax.lo; v <= ax.hi + 1e-9; v += ax.st) gridX.push({ x: PX(v).toFixed(1), t: fmt(v, ax.st < 1 ? 1 : 0) });
     for (let v = ay.lo; v <= ay.hi + 1e-9; v += ay.st) gridY.push({ y: PY(v).toFixed(1), ty: (PY(v) + 4).toFixed(1), t: fmt(v, ay.st < 1 ? 1 : 0) });

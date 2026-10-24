@@ -25,22 +25,38 @@
     const v = DICT[k].map((s) => ((s.match(NUM) || []).length === kn.length ? s.replace(NUM, HOLE) : null));
     if (v.every((x) => x != null)) TPL.set(tk, v);
   }
-  // phrase fallback for text the code assembles from pieces; longest phrase first, whole words only
-  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const LETTER = /[\p{L}\p{N}]/u;
-  const frags = Object.keys(DICT).filter((k) => k.length > 1).sort((a, b) => b.length - a.length);
-  const FRAG = frags.length ? new RegExp(frags.map((k) => (LETTER.test(k[0]) ? '(?<![\\p{L}\\p{N}])' : '') + esc(k) +
-    (LETTER.test(k[k.length - 1]) ? '(?![\\p{L}\\p{N}])' : '')).join('|'), 'gu') : null;
+  // phrase fallback for text the code assembles from pieces: at each position the longest known phrase wins,
+  // whole words only. Plain loops and no lookbehind or \p{} regex, so older TV browsers run it too.
+  const isL = (c) => /[0-9A-Za-z\u00C0-\u024F\u1E00-\u1EFF\u0400-\u04FF]/.test(c || '');
+  const FIRST = {};
+  Object.keys(DICT).filter((k) => k.length > 1).sort((a, b) => b.length - a.length)
+    .forEach((k) => { (FIRST[k[0]] || (FIRST[k[0]] = [])).push(k); });
+  function phrases(s, col) {
+    let out = '', i = 0;
+    while (i < s.length) {
+      const list = FIRST[s[i]]; let hit = null;
+      if (list && !(isL(s[i]) && isL(s[i - 1]))) {
+        for (let j = 0; j < list.length; j++) {
+          const k = list[j], e = i + k.length;
+          if (s.startsWith(k, i) && !(isL(k[k.length - 1]) && isL(s[e]))) { hit = k; break; }
+        }
+      }
+      if (hit) { out += DICT[hit][col]; i += hit.length; } else { out += s[i]; i += 1; }
+    }
+    return out;
+  }
 
   // the pages write numbers the Vietnamese way (1.830 and 20,0): English gets 1,830 and 20.0, Russian 1 830 and 20,0
-  const VNUM = /(?<![\d.,])(\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+,\d+)(?!\d|[.,]\d)/g;
-  const numFix = (s) => s.replace(VNUM, (x) => (lang === 'en' ? x.replace(/[.,]/g, (c) => (c === '.' ? ',' : '.')) : x.replace(/\./g, ' ')));
+  // (a plain no-break space: TV fonts often lack the narrow one)
+  const VNUM = /(^|[^\d.,])(\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+,\d+)(?!\d|[.,]\d)/g;
+  const numFix = (s) => s.replace(VNUM, (x, pre, n) => pre +
+    (lang === 'en' ? n.replace(/[.,]/g, (c) => (c === '.' ? ',' : '.')) : n.replace(/\./g, '\u00A0')));
 
   const cache = new Map();
   function tr(s) {
     if (lang === 'vi') return s;
     const hit = cache.get(s); if (hit !== undefined) return hit;
-    const out = numFix(/\p{L}/u.test(s) ? words(s) : s);
+    const out = numFix(/[A-Za-z\u00C0-\u024F\u1E00-\u1EFF]/.test(s) ? words(s) : s);
     if (cache.size > 20000) cache.clear();
     cache.set(s, out);
     return out;
@@ -52,7 +68,7 @@
       const nums = core.match(NUM), t = nums && TPL.get(core.replace(NUM, HOLE));
       if (t) { let j = 0; out = t[col].replace(/\u0001/g, () => nums[j++]); }
     }
-    if (out == null) out = FRAG ? core.replace(FRAG, (x) => DICT[x][col]) : core;
+    if (out == null) out = phrases(core, col);
     return m[1] + out + m[3];
   }
 
